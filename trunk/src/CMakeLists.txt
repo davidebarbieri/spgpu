@@ -76,9 +76,9 @@ add_global_sources(${CXX_SOURCES})
 file( GLOB_RECURSE CUDA_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cu" )
 
 # just sm13
-set(SM13_SRCS "${CMAKE_CURRENT_SOURCE_DIR}/core/kernels/ell_dspmv.cu")
-set(SM13_SRCS "${CMAKE_CURRENT_SOURCE_DIR}/core/kernels/hell_dspmv.cu")
-set(SM13_SRCS "${CMAKE_CURRENT_SOURCE_DIR}/core/kernels/daxpby.cu")
+list(APPEND SM13_SRCS "${CMAKE_CURRENT_SOURCE_DIR}/core/kernels/ell_dspmv.cu")
+list(APPEND SM13_SRCS "${CMAKE_CURRENT_SOURCE_DIR}/core/kernels/hell_dspmv.cu")
+list(APPEND SM13_SRCS "${CMAKE_CURRENT_SOURCE_DIR}/core/kernels/daxpby.cu")
 
 
 list (REMOVE_ITEM CUDA_SOURCES ${SM13_SRCS}) # compile just for sm13
@@ -99,6 +99,9 @@ cuda_include_directories (${GLOBAL_INCLUDES})
 link_directories (${GLOBAL_LIBRARIES}) 
 
 set(GENCODE -gencode=arch=compute_11,code=sm_11  -gencode=arch=compute_20,code=sm_20)
+
+message(STATUS "13" ${CUDA_SM13_SOURCES})
+message(STATUS "XX" ${CUDA_SOURCES})
 
 cuda_compile(cuda_sm13_objs ${CUDA_SM13_SOURCES} OPTIONS -gencode=arch=compute_13,code=sm_13)
 cuda_compile(cuda_objs ${CUDA_SOURCES} OPTIONS ${GENCODE})
