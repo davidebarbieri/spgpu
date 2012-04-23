@@ -90,7 +90,7 @@ add_include_dirs(${CMAKE_CURRENT_SOURCE_DIR})
 
 
 
-find_package(CUDA 4 REQUIRED)
+find_package(CUDA)
 
 # include directories
 include_directories (${GLOBAL_INCLUDES})

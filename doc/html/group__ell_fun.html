@@ -80,11 +80,15 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <tr><td colspan="2"><h2><a name="define-members"></a>
 Defines</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ell_fun.html#gac76c55a904f99c7cd844688799f9a158">ELL_PITCH_ALIGN_BYTE</a>&#160;&#160;&#160;128</td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">if you change this pitch, assure it's divisible by 16 (2 doubles) or die  <a href="#gac76c55a904f99c7cd844688799f9a158"></a><br/></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">This is the pitch alignment that must be fullfilled by the coefficients and the row pointers allocations.  <a href="#gac76c55a904f99c7cd844688799f9a158"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ell_fun.html#ga8b705fa419969f18acc20d2cbb9f6f3a">HELL_PITCH_ALIGN_BYTE</a>&#160;&#160;&#160;128</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">This is the pitch alignment that must be fullfilled by the coefficients and the row pointers allocations.  <a href="#ga8b705fa419969f18acc20d2cbb9f6f3a"></a><br/></td></tr>
 <tr><td colspan="2"><h2><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ell_fun.html#gae0fa1c1190d4a0dd961a7c3c5f4a4e3f">spgpuSellspmv</a> (<a class="el" href="group__core_fun.html#ga5d4825ac610d6524df843758da392dec">spgpuHandle_t</a> handle, <a class="el" href="group__core_fun.html#ga208309018bbf41da4094eb99cf27210c">__device</a> float *z, const <a class="el" href="group__core_fun.html#ga208309018bbf41da4094eb99cf27210c">__device</a> float *y, float alpha, const <a class="el" href="group__core_fun.html#ga208309018bbf41da4094eb99cf27210c">__device</a> float *cM, const <a class="el" href="group__core_fun.html#ga208309018bbf41da4094eb99cf27210c">__device</a> int *rP, int cMPitch, int rPPitch, const <a class="el" href="group__core_fun.html#ga208309018bbf41da4094eb99cf27210c">__device</a> int *rS, int rows, const <a class="el" href="group__core_fun.html#ga208309018bbf41da4094eb99cf27210c">__device</a> float *x, float beta, int baseIndex)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ell_fun.html#ga281d5cdfbccbd689e9cc145726e98032">spgpuDellspmv</a> (<a class="el" href="group__core_fun.html#ga5d4825ac610d6524df843758da392dec">spgpuHandle_t</a> handle, <a class="el" href="group__core_fun.html#ga208309018bbf41da4094eb99cf27210c">__device</a> double *z, const <a class="el" href="group__core_fun.html#ga208309018bbf41da4094eb99cf27210c">__device</a> double *y, double alpha, const <a class="el" href="group__core_fun.html#ga208309018bbf41da4094eb99cf27210c">__device</a> double *cM, const <a class="el" href="group__core_fun.html#ga208309018bbf41da4094eb99cf27210c">__device</a> int *rP, int cMPitch, int rPPitch, const <a class="el" href="group__core_fun.html#ga208309018bbf41da4094eb99cf27210c">__device</a> int *rS, int rows, const <a class="el" href="group__core_fun.html#ga208309018bbf41da4094eb99cf27210c">__device</a> double *x, double beta, int baseIndex)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ell_fun.html#ga558ee58891f0ecc934991de14e88c651">spgpuShellspmv</a> (<a class="el" href="group__core_fun.html#ga5d4825ac610d6524df843758da392dec">spgpuHandle_t</a> handle, <a class="el" href="group__core_fun.html#ga208309018bbf41da4094eb99cf27210c">__device</a> float *z, const <a class="el" href="group__core_fun.html#ga208309018bbf41da4094eb99cf27210c">__device</a> float *y, float alpha, const <a class="el" href="group__core_fun.html#ga208309018bbf41da4094eb99cf27210c">__device</a> float *cM, const <a class="el" href="group__core_fun.html#ga208309018bbf41da4094eb99cf27210c">__device</a> int *rP, int hackSize, const <a class="el" href="group__core_fun.html#ga208309018bbf41da4094eb99cf27210c">__device</a> int *hackOffsets, const <a class="el" href="group__core_fun.html#ga208309018bbf41da4094eb99cf27210c">__device</a> int *rS, const <a class="el" href="group__core_fun.html#ga208309018bbf41da4094eb99cf27210c">__device</a> int *rIdx, int rows, const <a class="el" href="group__core_fun.html#ga208309018bbf41da4094eb99cf27210c">__device</a> float *x, float beta, int baseIndex)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ell_fun.html#gaee6403b8f2c93cc10a337423ad94d5d6">spgpuDhellspmv</a> (<a class="el" href="group__core_fun.html#ga5d4825ac610d6524df843758da392dec">spgpuHandle_t</a> handle, <a class="el" href="group__core_fun.html#ga208309018bbf41da4094eb99cf27210c">__device</a> double *z, const <a class="el" href="group__core_fun.html#ga208309018bbf41da4094eb99cf27210c">__device</a> double *y, double alpha, const <a class="el" href="group__core_fun.html#ga208309018bbf41da4094eb99cf27210c">__device</a> double *cM, const <a class="el" href="group__core_fun.html#ga208309018bbf41da4094eb99cf27210c">__device</a> int *rP, int hackSize, const <a class="el" href="group__core_fun.html#ga208309018bbf41da4094eb99cf27210c">__device</a> int *hackOffsets, const <a class="el" href="group__core_fun.html#ga208309018bbf41da4094eb99cf27210c">__device</a> int *rS, const <a class="el" href="group__core_fun.html#ga208309018bbf41da4094eb99cf27210c">__device</a> int *rIdx, int rows, const <a class="el" href="group__core_fun.html#ga208309018bbf41da4094eb99cf27210c">__device</a> double *x, double beta, int baseIndex)</td></tr>
 </table>
 <hr/><h2>Define Documentation</h2>
 <a class="anchor" id="gac76c55a904f99c7cd844688799f9a158"></a><!-- doxytag: member="ell.h::ELL_PITCH_ALIGN_BYTE" ref="gac76c55a904f99c7cd844688799f9a158" args="" -->
@@ -98,11 +102,257 @@ Functions</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>if you change this pitch, assure it's divisible by 16 (2 doubles) or die </p>
+<p>This is the pitch alignment that must be fullfilled by the coefficients and the row pointers allocations. </p>
+
+</div>
+</div>
+<a class="anchor" id="ga8b705fa419969f18acc20d2cbb9f6f3a"></a><!-- doxytag: member="hell.h::HELL_PITCH_ALIGN_BYTE" ref="ga8b705fa419969f18acc20d2cbb9f6f3a" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define <a class="el" href="group__ell_fun.html#ga8b705fa419969f18acc20d2cbb9f6f3a">HELL_PITCH_ALIGN_BYTE</a>&#160;&#160;&#160;128</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>This is the pitch alignment that must be fullfilled by the coefficients and the row pointers allocations. </p>
 
 </div>
 </div>
 <hr/><h2>Function Documentation</h2>
+<a class="anchor" id="ga281d5cdfbccbd689e9cc145726e98032"></a><!-- doxytag: member="ell.h::spgpuDellspmv" ref="ga281d5cdfbccbd689e9cc145726e98032" args="(spgpuHandle_t handle, __device double *z, const __device double *y, double alpha, const __device double *cM, const __device int *rP, int cMPitch, int rPPitch, const __device int *rS, int rows, const __device double *x, double beta, int baseIndex)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="group__ell_fun.html#ga281d5cdfbccbd689e9cc145726e98032">spgpuDellspmv</a> </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__core_fun.html#ga5d4825ac610d6524df843758da392dec">spgpuHandle_t</a>&#160;</td>
+          <td class="paramname"><em>handle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__core_fun.html#ga208309018bbf41da4094eb99cf27210c">__device</a> double *&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="group__core_fun.html#ga208309018bbf41da4094eb99cf27210c">__device</a> double *&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>alpha</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="group__core_fun.html#ga208309018bbf41da4094eb99cf27210c">__device</a> double *&#160;</td>
+          <td class="paramname"><em>cM</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="group__core_fun.html#ga208309018bbf41da4094eb99cf27210c">__device</a> int *&#160;</td>
+          <td class="paramname"><em>rP</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cMPitch</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>rPPitch</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="group__core_fun.html#ga208309018bbf41da4094eb99cf27210c">__device</a> int *&#160;</td>
+          <td class="paramname"><em>rS</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>rows</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="group__core_fun.html#ga208309018bbf41da4094eb99cf27210c">__device</a> double *&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>beta</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>baseIndex</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Computes double precision z = alpha*A*x + beta*y, with A stored in ELLpack Format on GPU. </p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">handle</td><td>The spgpu handle used to call this routine </td></tr>
+    <tr><td class="paramname">z</td><td>The output vector of the routine. z could be y, but not y + k (i.e. an overlapping area over y, but starting from a base index different from y). </td></tr>
+    <tr><td class="paramname">y</td><td>The y input vector </td></tr>
+    <tr><td class="paramname">alpha</td><td>The alpha scalar </td></tr>
+    <tr><td class="paramname">cM</td><td>The ELL non zero values allocation pointer </td></tr>
+    <tr><td class="paramname">rP</td><td>The ELL column indices allocation pointer </td></tr>
+    <tr><td class="paramname">cMPitch</td><td>the pitch of the allocation containing the matrix non zero values </td></tr>
+    <tr><td class="paramname">rPPitch</td><td>the pitch of the allocation containing the matrix non zero column indices </td></tr>
+    <tr><td class="paramname">rS</td><td>the array containing the row sized (in non zero elements) </td></tr>
+    <tr><td class="paramname">rows</td><td>the rows count </td></tr>
+    <tr><td class="paramname">x</td><td>the x vector </td></tr>
+    <tr><td class="paramname">beta</td><td>the beta scalar </td></tr>
+    <tr><td class="paramname">baseIndex</td><td>the ELL format base index used (i.e. 0 for C, 1 for Fortran). </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="gaee6403b8f2c93cc10a337423ad94d5d6"></a><!-- doxytag: member="hell.h::spgpuDhellspmv" ref="gaee6403b8f2c93cc10a337423ad94d5d6" args="(spgpuHandle_t handle, __device double *z, const __device double *y, double alpha, const __device double *cM, const __device int *rP, int hackSize, const __device int *hackOffsets, const __device int *rS, const __device int *rIdx, int rows, const __device double *x, double beta, int baseIndex)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="group__ell_fun.html#gaee6403b8f2c93cc10a337423ad94d5d6">spgpuDhellspmv</a> </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__core_fun.html#ga5d4825ac610d6524df843758da392dec">spgpuHandle_t</a>&#160;</td>
+          <td class="paramname"><em>handle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__core_fun.html#ga208309018bbf41da4094eb99cf27210c">__device</a> double *&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="group__core_fun.html#ga208309018bbf41da4094eb99cf27210c">__device</a> double *&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>alpha</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="group__core_fun.html#ga208309018bbf41da4094eb99cf27210c">__device</a> double *&#160;</td>
+          <td class="paramname"><em>cM</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="group__core_fun.html#ga208309018bbf41da4094eb99cf27210c">__device</a> int *&#160;</td>
+          <td class="paramname"><em>rP</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>hackSize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="group__core_fun.html#ga208309018bbf41da4094eb99cf27210c">__device</a> int *&#160;</td>
+          <td class="paramname"><em>hackOffsets</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="group__core_fun.html#ga208309018bbf41da4094eb99cf27210c">__device</a> int *&#160;</td>
+          <td class="paramname"><em>rS</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="group__core_fun.html#ga208309018bbf41da4094eb99cf27210c">__device</a> int *&#160;</td>
+          <td class="paramname"><em>rIdx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>rows</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="group__core_fun.html#ga208309018bbf41da4094eb99cf27210c">__device</a> double *&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>beta</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>baseIndex</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Computes double precision z = alpha*A*x + beta*y, with A stored in Hacked ELLpack Format on GPU. </p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">handle</td><td>The spgpu handle used to call this routine </td></tr>
+    <tr><td class="paramname">z</td><td>The output vector of the routine. z could be y, but not y + k (i.e. an overlapping area over y, but starting from a base index different from y). </td></tr>
+    <tr><td class="paramname">y</td><td>The y input vector </td></tr>
+    <tr><td class="paramname">alpha</td><td>The alpha scalar </td></tr>
+    <tr><td class="paramname">cM</td><td>The HELL non zero values allocation pointer </td></tr>
+    <tr><td class="paramname">rP</td><td>The HELL column indices allocation pointer </td></tr>
+    <tr><td class="paramname">hackSize</td><td>The constant size of every hack (must be a multiple of 32). </td></tr>
+    <tr><td class="paramname">hackOffsets</td><td>the array of base index offset for every hack of HELL non zero values allocation and HELL indices allocation. </td></tr>
+    <tr><td class="paramname">rS</td><td>the array containing the row sized (in non zero elements) </td></tr>
+    <tr><td class="paramname">rIdx</td><td>(optional) An array containing the row index per every row (i.e. the reorder array) of the Hell matrix. Pass NULL if you don't use a reorder array (i.e. the k-th row is stored in the k-th position in the HELL format). </td></tr>
+    <tr><td class="paramname">rows</td><td>the rows count </td></tr>
+    <tr><td class="paramname">x</td><td>the x vector </td></tr>
+    <tr><td class="paramname">beta</td><td>the beta scalar </td></tr>
+    <tr><td class="paramname">baseIndex</td><td>the ELL format base index used (i.e. 0 for C, 1 for Fortran). </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a class="anchor" id="gae0fa1c1190d4a0dd961a7c3c5f4a4e3f"></a><!-- doxytag: member="ell.h::spgpuSellspmv" ref="gae0fa1c1190d4a0dd961a7c3c5f4a4e3f" args="(spgpuHandle_t handle, __device float *z, const __device float *y, float alpha, const __device float *cM, const __device int *rP, int cMPitch, int rPPitch, const __device int *rS, int rows, const __device float *x, float beta, int baseIndex)" -->
 <div class="memitem">
 <div class="memproto">
@@ -193,7 +443,7 @@ Functions</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<p>Computes z = alpha*A*x + beta*y, with A stored in ELLpack Format on GPU. </p>
+<p>Computes single precision z = alpha*A*x + beta*y, with A stored in ELLpack Format on GPU. </p>
 <dl class="params"><dt><b>Parameters:</b></dt><dd>
   <table class="params">
     <tr><td class="paramname">handle</td><td>The spgpu handle used to call this routine </td></tr>
@@ -215,7 +465,7 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ga558ee58891f0ecc934991de14e88c651"></a><!-- doxytag: member="ell.h::spgpuShellspmv" ref="ga558ee58891f0ecc934991de14e88c651" args="(spgpuHandle_t handle, __device float *z, const __device float *y, float alpha, const __device float *cM, const __device int *rP, int hackSize, const __device int *hackOffsets, const __device int *rS, const __device int *rIdx, int rows, const __device float *x, float beta, int baseIndex)" -->
+<a class="anchor" id="ga558ee58891f0ecc934991de14e88c651"></a><!-- doxytag: member="hell.h::spgpuShellspmv" ref="ga558ee58891f0ecc934991de14e88c651" args="(spgpuHandle_t handle, __device float *z, const __device float *y, float alpha, const __device float *cM, const __device int *rP, int hackSize, const __device int *hackOffsets, const __device int *rS, const __device int *rIdx, int rows, const __device float *x, float beta, int baseIndex)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -311,7 +561,7 @@ Functions</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<p>Computes z = alpha*A*x + beta*y, with A stored in Hacked ELLpack Format on GPU. </p>
+<p>Computes single precision z = alpha*A*x + beta*y, with A stored in Hacked ELLpack Format on GPU. </p>
 <dl class="params"><dt><b>Parameters:</b></dt><dd>
   <table class="params">
     <tr><td class="paramname">handle</td><td>The spgpu handle used to call this routine </td></tr>
@@ -352,7 +602,7 @@ Functions</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Sat Feb 18 2012 00:56:04 for spGpu library by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Apr 23 2012 09:44:50 for spGpu library by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

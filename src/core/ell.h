@@ -29,7 +29,7 @@ extern "C" {
 
 // ELL/HELL Compressed Matrix Format routines
 
-/// if you change this pitch, assure it's divisible by 16 (2 doubles) or I'll kill you
+/// This is the pitch alignment that must be fullfilled by the coefficients and the row pointers allocations.
 #define ELL_PITCH_ALIGN_BYTE 128
 
 /** 
