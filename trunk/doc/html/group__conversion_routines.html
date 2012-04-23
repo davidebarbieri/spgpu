@@ -79,20 +79,18 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <tr><td colspan="2"><h2><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__conversion_routines.html#gadc87180655ae54f2036967afc3c42266">computeEllRowLenghts</a> (int *ellRowLengths, int *ellMaxRowSize, int rowsCount, int nonZerosCount, const int *cooRowIndices, int cooBaseIndex)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__conversion_routines.html#ga63a8b499bd2b28c56ab75cef61845018">computeEllAllocPitch</a> (int *ellValuesPitch, int *ellIndicesPitch, int rowsCount, int valueElementSize)</td></tr>
+<tr><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__conversion_routines.html#ga4157ba831bc295756d0a3e7ee3d7fec6">computeEllAllocPitch</a> (int *ellValuesPitch, int *ellIndicesPitch, int rowsCount)</td></tr>
 <tr><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; </td></tr>
 <tr><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__conversion_routines.html#ga785bd01a228f09436902ae8036d2a9ac">cooToEll</a> (ValueType *ellValues, int *ellIndices, int ellValuesPitch, int ellIndicesPitch, int ellMaxRowSize, int ellBaseIndex, int rowsCount, int nonZerosCount, const int *cooRowIndices, const int *cooColsIndices, const ValueType *cooValues, int cooBaseIndex)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__conversion_routines.html#gad75d73598fe033399536c0e6276d352d">computeHellAllocSize</a> (int *allocationHeight, int hackSize, int rowsCount, const int *ellRowLengths)</td></tr>
-<tr><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; </td></tr>
-<tr><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__conversion_routines.html#ga2697ce9068027d09272299f27904cea0">ellToHell</a> (ValueType *hellValues, int *hellIndices, int *hackOffsets, int hackSize, const ValueType *ellValues, const int *ellIndices, int ellValuesPitch, int ellIndicesPitch, int *ellRowLengths, int rowsCount)</td></tr>
 </table>
 <hr/><h2>Function Documentation</h2>
-<a class="anchor" id="ga63a8b499bd2b28c56ab75cef61845018"></a><!-- doxytag: member="ellconv.hpp::computeEllAllocPitch" ref="ga63a8b499bd2b28c56ab75cef61845018" args="(int *ellValuesPitch, int *ellIndicesPitch, int rowsCount, int valueElementSize)" -->
+<a class="anchor" id="ga4157ba831bc295756d0a3e7ee3d7fec6"></a><!-- doxytag: member="ell_conv.hpp::computeEllAllocPitch" ref="ga4157ba831bc295756d0a3e7ee3d7fec6" args="(int *ellValuesPitch, int *ellIndicesPitch, int rowsCount)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="group__conversion_routines.html#ga63a8b499bd2b28c56ab75cef61845018">computeEllAllocPitch</a> </td>
+          <td class="memname">template&lt; typename T &gt; void <a class="el" href="group__conversion_routines.html#ga4157ba831bc295756d0a3e7ee3d7fec6">computeEllAllocPitch</a> </td>
           <td>(</td>
           <td class="paramtype">int *&#160;</td>
           <td class="paramname"><em>ellValuesPitch</em>, </td>
@@ -107,36 +105,29 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>rowsCount</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>valueElementSize</em>&#160;</td>
+          <td class="paramname"><em>rowsCount</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td><code> [inline]</code></td>
+          <td></td><td></td>
         </tr>
       </table>
 </div>
 <div class="memdoc">
-<p>Compute the ELL format pitch for values array and column indices pitch. Use these to compute the size of values and indices allocations (respectively, ellValuesPitch*maxRowSize and ellIndicesPitch*maxRowSize). </p>
+<p>Compute the ELL format pitch for values array and column indices pitch. Use these to compute the size of values and indices allocations (respectively, ellValuesPitch*maxRowSize and ellIndicesPitch*maxRowSize). T is the type of every value element (i.e. float or double for real values). </p>
 <dl class="params"><dt><b>Parameters:</b></dt><dd>
   <table class="params">
     <tr><td class="paramname">ellValuesPitch</td><td>outputs the values allocation pitch </td></tr>
     <tr><td class="paramname">ellIndicesPitch</td><td>outputs the indices allocation pitch </td></tr>
     <tr><td class="paramname">rowsCount</td><td>the rows count </td></tr>
-    <tr><td class="paramname">valueElementSize</td><td>the size of every value element (i.e. sizeof(float) or sizeof(double) for real values) </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a class="anchor" id="gadc87180655ae54f2036967afc3c42266"></a><!-- doxytag: member="ellconv.hpp::computeEllRowLenghts" ref="gadc87180655ae54f2036967afc3c42266" args="(int *ellRowLengths, int *ellMaxRowSize, int rowsCount, int nonZerosCount, const int *cooRowIndices, int cooBaseIndex)" -->
+<a class="anchor" id="gadc87180655ae54f2036967afc3c42266"></a><!-- doxytag: member="ell_conv.hpp::computeEllRowLenghts" ref="gadc87180655ae54f2036967afc3c42266" args="(int *ellRowLengths, int *ellMaxRowSize, int rowsCount, int nonZerosCount, const int *cooRowIndices, int cooBaseIndex)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -199,46 +190,7 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="gad75d73598fe033399536c0e6276d352d"></a><!-- doxytag: member="ellconv.hpp::computeHellAllocSize" ref="gad75d73598fe033399536c0e6276d352d" args="(int *allocationHeight, int hackSize, int rowsCount, const int *ellRowLengths)" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void <a class="el" href="group__conversion_routines.html#gad75d73598fe033399536c0e6276d352d">computeHellAllocSize</a> </td>
-          <td>(</td>
-          <td class="paramtype">int *&#160;</td>
-          <td class="paramname"><em>allocationHeight</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>hackSize</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>rowsCount</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const int *&#160;</td>
-          <td class="paramname"><em>ellRowLengths</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td><code> [inline]</code></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-</div>
-</div>
-<a class="anchor" id="ga785bd01a228f09436902ae8036d2a9ac"></a><!-- doxytag: member="ellconv.hpp::cooToEll" ref="ga785bd01a228f09436902ae8036d2a9ac" args="(ValueType *ellValues, int *ellIndices, int ellValuesPitch, int ellIndicesPitch, int ellMaxRowSize, int ellBaseIndex, int rowsCount, int nonZerosCount, const int *cooRowIndices, const int *cooColsIndices, const ValueType *cooValues, int cooBaseIndex)" -->
+<a class="anchor" id="ga785bd01a228f09436902ae8036d2a9ac"></a><!-- doxytag: member="ell_conv.hpp::cooToEll" ref="ga785bd01a228f09436902ae8036d2a9ac" args="(ValueType *ellValues, int *ellIndices, int ellValuesPitch, int ellIndicesPitch, int ellMaxRowSize, int ellBaseIndex, int rowsCount, int nonZerosCount, const int *cooRowIndices, const int *cooColsIndices, const ValueType *cooValues, int cooBaseIndex)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -343,81 +295,6 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ga2697ce9068027d09272299f27904cea0"></a><!-- doxytag: member="ellconv.hpp::ellToHell" ref="ga2697ce9068027d09272299f27904cea0" args="(ValueType *hellValues, int *hellIndices, int *hackOffsets, int hackSize, const ValueType *ellValues, const int *ellIndices, int ellValuesPitch, int ellIndicesPitch, int *ellRowLengths, int rowsCount)" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void <a class="el" href="group__conversion_routines.html#ga2697ce9068027d09272299f27904cea0">ellToHell</a> </td>
-          <td>(</td>
-          <td class="paramtype">ValueType *&#160;</td>
-          <td class="paramname"><em>hellValues</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int *&#160;</td>
-          <td class="paramname"><em>hellIndices</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int *&#160;</td>
-          <td class="paramname"><em>hackOffsets</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>hackSize</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const ValueType *&#160;</td>
-          <td class="paramname"><em>ellValues</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const int *&#160;</td>
-          <td class="paramname"><em>ellIndices</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>ellValuesPitch</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>ellIndicesPitch</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int *&#160;</td>
-          <td class="paramname"><em>ellRowLengths</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>rowsCount</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-</div>
-</div>
 </div><!-- contents -->
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
@@ -436,7 +313,7 @@ Functions</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Sat Feb 18 2012 00:56:04 for spGpu library by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Apr 23 2012 09:44:50 for spGpu library by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

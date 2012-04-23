@@ -60,13 +60,13 @@ inline void computeEllRowLenghts(
 }
 
 /** 
-* \fn void computeEllAllocPitch(int* ellValuesPitch, int* ellIndicesPitch, int rowsCount, int valueElementSize)
+* \fn template<typename T> void computeEllAllocPitch(int* ellValuesPitch, int* ellIndicesPitch, int rowsCount)
  * Compute the ELL format pitch for values array and column indices pitch.
  * Use these to compute the size of values and indices allocations (respectively, ellValuesPitch*maxRowSize and ellIndicesPitch*maxRowSize).
+ * T is the type of every value element (i.e. float or double for real values).
  * \param ellValuesPitch outputs the values allocation pitch
  * \param ellIndicesPitch outputs the indices allocation pitch
  * \param rowsCount the rows count
- * \param valueElementSize the size of every value element (i.e. sizeof(float) or sizeof(double) for real values)
 */
 template<typename T>
 void computeEllAllocPitch(

@@ -71,7 +71,7 @@ spgpuStatus_t spgpuCreate(spgpuHandle_t* pHandle, int device);
 void spgpuDestroy(spgpuHandle_t pHandle);
 
 /**
-* \fn void spgpuStreamCreate(cudaStream_t* stream, spgpuHandle_t pHandle)
+* \fn void spgpuStreamCreate(spgpuHandle_t pHandle, cudaStream_t* stream)
 * Create a cuda stream according to the device of the spgpu handle.
 * \param stream outputs the new stream
 * \param pHandle the handle used to obtain the device id for the stream
