@@ -1,0 +1,17 @@
+#summary How to build spgpu on Windows and Linux.
+
+= Introduction =
+
+In this wiki you will learn how to build *spgpu*.
+
+= Linux (and other unix systems) =
+
+{{{
+cd spgpu/build/cmake
+sh configure.sh
+make
+}}}
+
+= Windows (Microsoft Visual Studio 2010) =
+
+You will find the solution file _spgpu.sln_ in spgpu/build/vs2010/
