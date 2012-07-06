@@ -15,9 +15,17 @@
  */
 
 #include "stdio.h"
-#include "cudaprec.h"
+#include "cudalang.h"
+#include "cudadebug.h"
+
+
+extern "C"
+{
+#include "core.h"
+}
 
 //#define USE_CUBLAS
+
 
 #define BLOCK_SIZE 512
 
@@ -50,8 +58,8 @@ __global__ void spgpuSnrm2_kern(int n, float* x)
 
 	if (numSteps % 2)
 	{
-		float x = x[0];
-		res = PREC_FADD(res, PREC_FMUL(x,x));
+		float x1 = x[0];
+		res = PREC_FADD(res, PREC_FMUL(x1,x1));
 	}
 
 	if (threadIdx.x >= 32)
@@ -107,7 +115,7 @@ float spgpuSnrm2(spgpuHandle_t handle, int n, __device float* x)
 	
 	float tRes[128];
 
-	dotKernel<<<blocks, BLOCK_SIZE, 0, handle->currentStream>>>(d_x, d_y, n);
+	spgpuSnrm2_kern<<<blocks, BLOCK_SIZE, 0, handle->currentStream>>>(n, x);
 	cudaMemcpyFromSymbol(&tRes,"reductionResult",blocks*sizeof(float));
 
 	for (int i=0; i<blocks; ++i)
@@ -121,7 +129,7 @@ float spgpuSnrm2(spgpuHandle_t handle, int n, __device float* x)
 #endif
 }
 
-float spgpuSmnrm2(spgpuHandle_t handle, float *y, int n, __device float *x, int count, int pitch)
+void spgpuSmnrm2(spgpuHandle_t handle, float *y, int n, __device float *x, int count, int pitch)
 {
 	for (int i=0; i < count; ++i)
 	{

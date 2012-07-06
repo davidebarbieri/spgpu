@@ -40,7 +40,7 @@ float spgpuSnrm2(spgpuHandle_t handle,
 	int n, 
 	__device float* x);
 	
-float spgpuSmnrm2(spgpuHandle_t handle, 
+void spgpuSmnrm2(spgpuHandle_t handle, 
 	float *y, 
 	int n, 
 	__device float *x, 
@@ -135,12 +135,12 @@ double spgpuDnrm2(spgpuHandle_t handle,
 	__device double* x);
 
 	
-double spgpuDmnrm2(spgpuHandle_t handle, 
+void spgpuDmnrm2(spgpuHandle_t handle, 
 	double *y, 
 	int n, 
 	__device double *x, 
 	int count, 
-	int pitch)
+	int pitch);
 	
 /* Double precision z = beta * y + alpha * x	
 	z could be exactly x or y (without offset) or another vector

@@ -34,16 +34,35 @@
   <ItemGroup>
     <CudaCompile Include="..\..\src\core\kernels\daxpby.cu">
       <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">compute_13,sm_13;compute_20,sm_20</CodeGeneration>
+      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">compute_13,sm_13;compute_20,sm_20</CodeGeneration>
+    </CudaCompile>
+    <CudaCompile Include="..\..\src\core\kernels\daxy.cu">
+      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">compute_13,sm_13;compute_20,sm_20</CodeGeneration>
+    </CudaCompile>
+    <CudaCompile Include="..\..\src\core\kernels\ddot.cu">
+      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">compute_13,sm_13;compute_20,sm_20</CodeGeneration>
+    </CudaCompile>
+    <CudaCompile Include="..\..\src\core\kernels\dnrm2.cu">
+      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">compute_13,sm_13;compute_20,sm_20</CodeGeneration>
+    </CudaCompile>
+    <CudaCompile Include="..\..\src\core\kernels\dscal.cu">
+      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">compute_13,sm_13;compute_20,sm_20</CodeGeneration>
     </CudaCompile>
     <CudaCompile Include="..\..\src\core\kernels\ell_dspmv.cu">
       <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">compute_13,sm_13;compute_20,sm_20</CodeGeneration>
+      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">compute_13,sm_13;compute_20,sm_20</CodeGeneration>
     </CudaCompile>
     <CudaCompile Include="..\..\src\core\kernels\ell_sspmv.cu" />
     <CudaCompile Include="..\..\src\core\kernels\hell_dspmv.cu">
       <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">compute_13,sm_13;compute_20,sm_20</CodeGeneration>
+      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">compute_13,sm_13;compute_20,sm_20</CodeGeneration>
     </CudaCompile>
     <CudaCompile Include="..\..\src\core\kernels\hell_sspmv.cu" />
     <CudaCompile Include="..\..\src\core\kernels\saxpby.cu" />
+    <CudaCompile Include="..\..\src\core\kernels\saxy.cu" />
+    <CudaCompile Include="..\..\src\core\kernels\sdot.cu" />
+    <CudaCompile Include="..\..\src\core\kernels\snrm2.cu" />
+    <CudaCompile Include="..\..\src\core\kernels\sscal.cu" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{26949257-B53C-44D5-9C98-2EF6B01FDA20}</ProjectGuid>
@@ -63,7 +82,7 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
-    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 4.1.props" />
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 4.2.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -129,6 +148,6 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 4.1.targets" />
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 4.2.targets" />
   </ImportGroup>
 </Project>

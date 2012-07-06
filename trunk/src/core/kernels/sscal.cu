@@ -15,7 +15,15 @@
  */
 
 #include "stdio.h"
-#include "cudaprec.h"
+#include "cudalang.h"
+#include "cudadebug.h"
+
+
+extern "C"
+{
+#include "core.h"
+}
+
 
 #define BLOCK_SIZE 512
 #define MAX_N_FOR_A_CALL (BLOCK_SIZE*65535)
@@ -53,7 +61,6 @@ void spgpuSscal(spgpuHandle_t handle,
 		spgpuSscal_(handle, y, MAX_N_FOR_A_CALL, alpha, x);
 		x = x + MAX_N_FOR_A_CALL;
 		y = y + MAX_N_FOR_A_CALL;
-		z = z + MAX_N_FOR_A_CALL;
 		n -= MAX_N_FOR_A_CALL;
 	}
 	

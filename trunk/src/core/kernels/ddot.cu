@@ -15,7 +15,15 @@
  */
 
 #include "stdio.h"
-#include "cudaprec.h"
+#include "cudalang.h"
+#include "cudadebug.h"
+
+
+extern "C"
+{
+#include "core.h"
+}
+
 
 //#define USE_CUBLAS
 
@@ -98,7 +106,7 @@ double spgpuDdot(spgpuHandle_t handle, int n, __device double* a, __device doubl
 	
 	double tRes[128];
 
-	spgpuDdot_kern<<<blocks, BLOCK_SIZE, 0, handle->currentStream>>>(a, b, n);
+	spgpuDdot_kern<<<blocks, BLOCK_SIZE, 0, handle->currentStream>>>(n, a, b);
 	cudaMemcpyFromSymbol(&tRes,"reductionResult",blocks*sizeof(double));
 
 	for (int i=0; i<blocks; ++i)
