@@ -19,6 +19,14 @@
  
 #include "core.h"
 
+/* Single precision dot(x,y)
+*/
+float spgpuSdot(spgpuHandle_t handle, int n, float* x, float* y);
+
+/* Single precision nrm2(x)
+*/
+float spgpuSnrm2(spgpuHandle_t handle, int n, float* x);
+
 /* Single precision y = alpha * x
 	y could be exactly x (without offset) or another vector
 */
@@ -92,6 +100,14 @@ void spgpuDscal(spgpuHandle_t handle,
 	int n,
 	double alpha,
 	__device double *x);
+
+/* Double precision dot(x,y)
+*/
+double spgpuDdot(spgpuHandle_t handle, int n, double* x, double* y);
+
+/* Double precision nrm2(x)
+*/
+double spgpuDnrm2(spgpuHandle_t handle, int n, double* x);
 	
 /* Double precision z = beta * y + alpha * x	
 	z could be exactly x or y (without offset) or another vector
