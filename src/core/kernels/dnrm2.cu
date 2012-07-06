@@ -15,7 +15,15 @@
  */
 
 #include "stdio.h"
-#include "cudaprec.h"
+#include "cudalang.h"
+#include "cudadebug.h"
+
+
+extern "C"
+{
+#include "core.h"
+}
+
 
 //#define USE_CUBLAS
 
@@ -37,8 +45,8 @@ __global__ void spgpuDnrm2_kern(int n, double* x)
 
 	while (x < lastX)
     {
-		double x = x[0];
-		res = PREC_DADD(res, PREC_DMUL(x, x));
+		double x1 = x[0];
+		res = PREC_DADD(res, PREC_DMUL(x1, x1));
 		
 		x += blockOffset;
 
@@ -97,7 +105,7 @@ double spgpuDnrm2(spgpuHandle_t handle, int n, double* x)
 	
 	double tRes[128];
 
-	dotKernel<<<blocks, BLOCK_SIZE, 0, handle->currentStream>>>(d_x, d_y, n);
+	spgpuDnrm2_kern<<<blocks, BLOCK_SIZE, 0, handle->currentStream>>>(n, x);;
 	cudaMemcpyFromSymbol(&tRes,"reductionResult",blocks*sizeof(double));
 
 	for (int i=0; i<blocks; ++i)
@@ -111,7 +119,7 @@ double spgpuDnrm2(spgpuHandle_t handle, int n, double* x)
 #endif
 }
 
-double spgpuDmnrm2(spgpuHandle_t handle, double *y, int n, __device double *x, int count, int pitch)
+void spgpuDmnrm2(spgpuHandle_t handle, double *y, int n, __device double *x, int count, int pitch)
 {
 	for (int i=0; i < count; ++i)
 	{

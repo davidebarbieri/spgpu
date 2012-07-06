@@ -16,7 +16,14 @@
  */
 
 #include "stdio.h"
-#include "cudaprec.h"
+#include "cudalang.h"
+#include "cudadebug.h"
+#include "vector.h"
+
+extern "C"
+{
+#include "core.h"
+}
 
 #define BLOCK_SIZE 512
 #define MAX_N_FOR_A_CALL (BLOCK_SIZE*65535)
@@ -116,10 +123,10 @@ void spgpuSaxybz(spgpuHandle_t handle,
 	)
 {
 	if (alpha == 0.0) {
-		spgpuSscal(w, n, beta, z);
+		spgpuSscal(handle, w, n, beta, z);
 	}
 	else if (beta == 0.0) {
-		spgpuSaxy(w, n, alpha, x, y);
+		spgpuSaxy(handle, w, n, alpha, x, y);
 	} 
 	else {
 
