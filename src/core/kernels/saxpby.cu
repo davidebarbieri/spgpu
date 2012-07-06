@@ -54,7 +54,7 @@ void spgpuSaxpby_(spgpuHandle_t handle,
 	dim3 block(BLOCK_SIZE);
 	dim3 grid(msize);
 
-	spgpuSaxpby_krn<<<grid, block>>>(z, n, beta, y, alpha, x);
+	spgpuSaxpby_krn<<<grid, block, 0, handle->currentStream>>>(z, n, beta, y, alpha, x);
 }
 
 void spgpuSaxpby(spgpuHandle_t handle,
