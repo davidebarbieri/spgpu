@@ -16,6 +16,7 @@
 
 #include "cudadebug.h"
 #include "cudalang.h"
+#include "vector.h"
 
 extern "C"
 {
@@ -55,7 +56,7 @@ void spgpuDaxpby_(spgpuHandle_t handle,
 	dim3 block(BLOCK_SIZE);
 	dim3 grid(msize);
 
-	spgpuDaxpby_krn<<<grid, block>>>(z, n, beta, y, alpha, x);
+	spgpuDaxpby_krn<<<grid, block, 0, handle->currentStream>>>(z, n, beta, y, alpha, x);
 }
 
 void spgpuDaxpby(spgpuHandle_t handle,
