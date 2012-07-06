@@ -154,21 +154,33 @@ int main(int argc, char** argv)
 
 	spgpuHandle_t spgpuHandle;
 	spgpuCreate(&spgpuHandle, 0);
+
+	cudaDeviceProp deviceProp;
+	cudaGetDeviceProperties(&deviceProp, 0);
+	printf("Computing on %s\n", deviceProp.name);
+	Clock timer;
+
 	printf("Testing ELL format\n");
 
-	Clock timer;
+	
 
 #ifdef TEST_DOUBLE
 	spgpuDellspmv (spgpuHandle, devZ, devY, 2.0, devCm, devRp, ellValuesPitch, ellIndicesPitch, devRs, rowsCount, devX, -3.0, 0);
 #else
 	spgpuSellspmv (spgpuHandle, devZ, devY, 2.0f, devCm, devRp, ellValuesPitch, ellIndicesPitch, devRs, rowsCount, devX, -3.0f, 0);
 #endif
-
+	
 	
 	cublasHandle_t cublasHandle;
 	cublasCreate(&cublasHandle);
 
+	
 	testType dotRes;
+	testType time;
+	testType gflops;
+	testType start;
+
+	
 #ifdef TEST_DOUBLE
 	//cublasDdot(cublasHandle, rowsCount, devZ, 1, devZ, 1, &dotRes);
 	dotRes = spgpuDdot(spgpuHandle, rowsCount, devZ, devZ);
@@ -180,7 +192,7 @@ int main(int argc, char** argv)
 
 	printf("dot res: %e\n", dotRes);
 
-	testType start = timer.getTime();
+	start = timer.getTime();
 
 	for (int i=0; i<NUM_TESTS; ++i)
 	{
@@ -193,12 +205,12 @@ int main(int argc, char** argv)
 	}
 	cudaDeviceSynchronize();
 
-	testType time = (timer.getTime() - start)/NUM_TESTS;
+	time = (timer.getTime() - start)/NUM_TESTS;
 	printf("elapsed time: %f seconds\n", time);
 
-	testType gflops = (((nonZerosCount*2-1)) / time)*0.000000001f;
+	gflops = (((nonZerosCount*2-1)) / time)*0.000000001f;
 	printf("GFlop/s: %f\n", gflops);
-
+	
 	int hackSize = 32;
 	int hellHeight;
 	computeHellAllocSize(&hellHeight, hackSize, rowsCount,ellRowLengths);
