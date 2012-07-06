@@ -38,15 +38,19 @@
     </CudaCompile>
     <CudaCompile Include="..\..\src\core\kernels\daxy.cu">
       <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">compute_13,sm_13;compute_20,sm_20</CodeGeneration>
+      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">compute_13,sm_13;compute_20,sm_20</CodeGeneration>
     </CudaCompile>
     <CudaCompile Include="..\..\src\core\kernels\ddot.cu">
       <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">compute_13,sm_13;compute_20,sm_20</CodeGeneration>
+      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">compute_13,sm_13;compute_20,sm_20</CodeGeneration>
     </CudaCompile>
     <CudaCompile Include="..\..\src\core\kernels\dnrm2.cu">
       <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">compute_13,sm_13;compute_20,sm_20</CodeGeneration>
+      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">compute_13,sm_13;compute_20,sm_20</CodeGeneration>
     </CudaCompile>
     <CudaCompile Include="..\..\src\core\kernels\dscal.cu">
       <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">compute_13,sm_13;compute_20,sm_20</CodeGeneration>
+      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">compute_13,sm_13;compute_20,sm_20</CodeGeneration>
     </CudaCompile>
     <CudaCompile Include="..\..\src\core\kernels\ell_dspmv.cu">
       <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">compute_13,sm_13;compute_20,sm_20</CodeGeneration>
