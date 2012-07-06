@@ -31,6 +31,7 @@
 #include "core/core.h"
 #include "core/ell.h"
 #include "core/hell.h"
+#include "vector.h"
 
 #define NUM_TESTS 2000
 
@@ -169,9 +170,11 @@ int main(int argc, char** argv)
 
 	testType dotRes;
 #ifdef TEST_DOUBLE
-	cublasDdot(cublasHandle, rowsCount, devZ, 0, devZ, 0, &dotRes);
+	//cublasDdot(cublasHandle, rowsCount, devZ, 1, devZ, 1, &dotRes);
+	dotRes = spgpuDdot(spgpuHandle, rowsCount, devZ, devZ);
 #else
-	cublasSdot(cublasHandle, rowsCount, devZ, 0, devZ, 0, &dotRes);
+	//cublasSdot(cublasHandle, rowsCount, devZ, 1, devZ, 1, &dotRes);
+	dotRes = spgpuSdot(spgpuHandle, rowsCount, devZ, devZ);
 #endif
 	cudaDeviceSynchronize();
 
@@ -226,10 +229,12 @@ int main(int argc, char** argv)
 
 #ifdef TEST_DOUBLE
 	spgpuDhellspmv (spgpuHandle, devZ, devY, 2.0, devHellCm, devHellRp, hackSize, devHackOffsets, devRs, NULL, rowsCount, devX, -3.0, 0);
-	cublasDdot(cublasHandle,rowsCount,devZ, 0, devZ, 0, &dotRes);
+	//cublasDdot(cublasHandle,rowsCount,devZ, 1, devZ, 1, &dotRes);
+	dotRes = spgpuDdot(spgpuHandle, rowsCount, devZ, devZ);
 #else
 	spgpuShellspmv (spgpuHandle, devZ, devY, 2.0f, devHellCm, devHellRp, hackSize, devHackOffsets, devRs, NULL, rowsCount, devX, -3.0f, 0);
-	cublasSdot(cublasHandle,rowsCount,devZ, 0, devZ, 0, &dotRes);
+	//cublasSdot(cublasHandle,rowsCount,devZ, 1, devZ, 1, &dotRes);
+	dotRes = spgpuSdot(spgpuHandle, rowsCount, devZ, devZ);
 #endif
 
 	

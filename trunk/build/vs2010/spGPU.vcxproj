@@ -56,12 +56,16 @@
       <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">compute_13,sm_13;compute_20,sm_20</CodeGeneration>
       <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">compute_13,sm_13;compute_20,sm_20</CodeGeneration>
     </CudaCompile>
-    <CudaCompile Include="..\..\src\core\kernels\ell_sspmv.cu" />
+    <CudaCompile Include="..\..\src\core\kernels\ell_sspmv.cu">
+      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">compute_11,sm_11;compute_13,sm_13</CodeGeneration>
+    </CudaCompile>
     <CudaCompile Include="..\..\src\core\kernels\hell_dspmv.cu">
       <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">compute_13,sm_13;compute_20,sm_20</CodeGeneration>
       <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">compute_13,sm_13;compute_20,sm_20</CodeGeneration>
     </CudaCompile>
-    <CudaCompile Include="..\..\src\core\kernels\hell_sspmv.cu" />
+    <CudaCompile Include="..\..\src\core\kernels\hell_sspmv.cu">
+      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">compute_11,sm_11;compute_13,sm_13</CodeGeneration>
+    </CudaCompile>
     <CudaCompile Include="..\..\src\core\kernels\saxpby.cu" />
     <CudaCompile Include="..\..\src\core\kernels\saxy.cu" />
     <CudaCompile Include="..\..\src\core\kernels\sdot.cu" />
