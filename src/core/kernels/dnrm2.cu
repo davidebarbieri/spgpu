@@ -92,7 +92,12 @@ __global__ void spgpuDnrm2_kern(int n, double* x)
 double spgpuDnrm2(spgpuHandle_t handle, int n, double* x)
 {
 #ifdef USE_CUBLAS
-	return cublasDnrm2(n,x,1);
+	double res;
+	cublasDnrm2(n,x,1,&res);
+	cudaDeviceSynchronize();
+	
+	return res;
+
 #else
 	double res = 0;
 

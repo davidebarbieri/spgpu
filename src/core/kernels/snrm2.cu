@@ -102,7 +102,11 @@ __global__ void spgpuSnrm2_kern(int n, float* x)
 float spgpuSnrm2(spgpuHandle_t handle, int n, __device float* x)
 {
 #ifdef USE_CUBLAS
-	return cublasSnrm2(n,x,1);
+	float res;
+	cublasSnrm2(n,x,1,&res);
+	cudaDeviceSynchronize();
+	
+	return res;
 #else
 	float res = 0;
 

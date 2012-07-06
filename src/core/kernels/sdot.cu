@@ -102,7 +102,11 @@ __global__ void spgpuSdot_kern(int n, float* x, float* y)
 float spgpuSdot(spgpuHandle_t handle, int n, __device float* a, __device float* b)
 {
 #ifdef USE_CUBLAS
-	return cublasSdot(n,x,1,y,1);
+	float res;
+	cublasSdot(n,x,1,y,1,&res);
+	cudaDeviceSynchronize();
+	
+	return res;
 #else
 	float res = 0;
 
