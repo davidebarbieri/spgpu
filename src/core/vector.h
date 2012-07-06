@@ -21,11 +21,31 @@
 
 /* Single precision dot(x,y)
 */
-float spgpuSdot(spgpuHandle_t handle, int n, float* x, float* y);
+float spgpuSdot(spgpuHandle_t handle, 
+	int n, 
+	__device float* a, 
+	__device float* b);
+
+void spgpuSmdot(spgpuHandle_t handle, 
+	float* y, 
+	int n, 
+	__device float* a, 
+	__device float* b, 
+	int count, 
+	int pitch);
 
 /* Single precision nrm2(x)
 */
-float spgpuSnrm2(spgpuHandle_t handle, int n, float* x);
+float spgpuSnrm2(spgpuHandle_t handle, 
+	int n, 
+	__device float* x);
+	
+float spgpuSmnrm2(spgpuHandle_t handle, 
+	float *y, 
+	int n, 
+	__device float *x, 
+	int count, 
+	int pitch);
 
 /* Single precision y = alpha * x
 	y could be exactly x (without offset) or another vector
@@ -103,11 +123,24 @@ void spgpuDscal(spgpuHandle_t handle,
 
 /* Double precision dot(x,y)
 */
-double spgpuDdot(spgpuHandle_t handle, int n, double* x, double* y);
+double spgpuDdot(spgpuHandle_t handle, 
+	int n, 
+	__device double* a, 
+	__device double* b);
 
 /* Double precision nrm2(x)
 */
-double spgpuDnrm2(spgpuHandle_t handle, int n, double* x);
+double spgpuDnrm2(spgpuHandle_t handle, 
+	int n, 
+	__device double* x);
+
+	
+double spgpuDmnrm2(spgpuHandle_t handle, 
+	double *y, 
+	int n, 
+	__device double *x, 
+	int count, 
+	int pitch)
 	
 /* Double precision z = beta * y + alpha * x	
 	z could be exactly x or y (without offset) or another vector

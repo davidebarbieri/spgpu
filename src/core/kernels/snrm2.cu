@@ -91,7 +91,7 @@ __global__ void spgpuSnrm2_kern(int n, float* x)
 	}
 }
 
-float spgpuSnrm2(spgpuHandle_t handle, int n, float* x)
+float spgpuSnrm2(spgpuHandle_t handle, int n, __device float* x)
 {
 #ifdef USE_CUBLAS
 	return cublasSnrm2(n,x,1);
@@ -119,4 +119,13 @@ float spgpuSnrm2(spgpuHandle_t handle, int n, float* x)
 	
 	return sqrtf(res);
 #endif
+}
+
+float spgpuSmnrm2(spgpuHandle_t handle, float *y, int n, __device float *x, int count, int pitch)
+{
+	for (int i=0; i < count; ++i)
+	{
+		y[i] = spgpuSnrm2(handle, n, x);
+		x += pitch;
+	}
 }

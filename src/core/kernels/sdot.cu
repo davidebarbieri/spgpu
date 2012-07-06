@@ -93,7 +93,7 @@ __global__ void spgpuSdot_kern(int n, float* x, float* y)
 	}
 }
 
-float spgpuSdot(spgpuHandle_t handle, int n, float* x, float* y)
+float spgpuSdot(spgpuHandle_t handle, int n, __device float* a, __device float* b)
 {
 #ifdef USE_CUBLAS
 	return cublasSdot(n,x,1,y,1);
@@ -109,7 +109,7 @@ float spgpuSdot(spgpuHandle_t handle, int n, float* x, float* y)
 	
 	float tRes[128];
 
-	dotKernel<<<blocks, BLOCK_SIZE, 0, handle->currentStream>>>(d_x, d_y, n);
+	spgpuSdot_kern<<<blocks, BLOCK_SIZE, 0, handle->currentStream>>>(a, b, n);
 	cudaMemcpyFromSymbol(&tRes,"reductionResult",blocks*sizeof(float));
 
 	for (int i=0; i<blocks; ++i)
@@ -121,4 +121,14 @@ float spgpuSdot(spgpuHandle_t handle, int n, float* x, float* y)
 	
 	return res;
 #endif
+}
+
+void spgpuSmdot(spgpuHandle_t handle, float* y, int n, __device float* a, __device float* b, int count, int pitch)
+{
+	for (int i=0; i<count; ++i)
+	{
+		y[i] = spgpuSdot(handle, n, a, b);
+		a += pitch;
+		b += pitch;
+	}
 }
