@@ -111,8 +111,9 @@ cuda_compile(cuda_sm13_objs ${CUDA_SM13_SOURCES} OPTIONS -gencode=arch=compute_1
 cuda_compile(cuda_objs ${CUDA_SOURCES} OPTIONS ${GENCODE})
 cuda_add_library (spgpu STATIC ${cuda_sm13_objs} ${cuda_objs} ${GLOBAL_SOURCES} )
 
-cuda_add_executable(hellperf_s ${CMAKE_CURRENT_SOURCE_DIR}/tests/hellPerf.cpp)
-cuda_add_executable(hellperf_d ${CMAKE_CURRENT_SOURCE_DIR}/tests/hellPerf.cpp OPTIONS -DTEST_DOUBLE)
+add_executable(hellperf_s ${CMAKE_CURRENT_SOURCE_DIR}/tests/hellPerf.cpp)
+add_executable(hellperf_d ${CMAKE_CURRENT_SOURCE_DIR}/tests/hellPerf.cpp)
+set_target_properties(hellperf_d PROPERTIES COMPILE_FLAGS -DTEST_DOUBLE)
 
 CUDA_ADD_CUBLAS_TO_TARGET(hellperf_s)
 CUDA_ADD_CUBLAS_TO_TARGET(hellperf_d)
