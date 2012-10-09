@@ -42,8 +42,7 @@ extern "C" {
  * \param ellIndicesAlignment outputs the indices memory layout alignment
  * \param rowsCount the rows count
 */
-template<typename T>
-void getEllAllocAlignment(
+inline void getEllAllocAlignment(
 	int* ellValuesAlignment,
 	int* ellIndicesAlignment)
 {
