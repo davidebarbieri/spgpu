@@ -102,13 +102,15 @@ cuda_include_directories (${GLOBAL_INCLUDES})
 # library directories
 link_directories (${GLOBAL_LIBRARIES}) 
 
-set(GENCODE -gencode=arch=compute_11,code=sm_11  -gencode=arch=compute_20,code=sm_20)
+set(GENCODE -gencode=arch=compute_11,code=sm_11 -gencode=arch=compute_20,code=sm_20)
+set(GENCODE_DOUBLE -gencode=arch=compute_13,code=sm_13 -gencode=arch=compute_20,code=sm_20)
+# set(ADDITIONAL_OPTIONS -DDEBUG)
 
 message(STATUS "13" ${CUDA_SM13_SOURCES})
 message(STATUS "XX" ${CUDA_SOURCES})
 
-cuda_compile(cuda_sm13_objs ${CUDA_SM13_SOURCES} OPTIONS -gencode=arch=compute_13,code=sm_13 -gencode=arch=compute_20,code=sm_20)
-cuda_compile(cuda_objs ${CUDA_SOURCES} OPTIONS ${GENCODE})
+cuda_compile(cuda_sm13_objs ${CUDA_SM13_SOURCES} OPTIONS ${GENCODE_DOUBLE} ${ADDITIONAL_OPTIONS})
+cuda_compile(cuda_objs ${CUDA_SOURCES} OPTIONS ${GENCODE} ${ADDITIONAL_OPTIONS})
 cuda_add_library (spgpu STATIC ${cuda_sm13_objs} ${cuda_objs} ${GLOBAL_SOURCES} )
 
 add_executable(hellperf_s ${CMAKE_CURRENT_SOURCE_DIR}/tests/hellPerf.cpp)
