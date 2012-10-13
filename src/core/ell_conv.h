@@ -17,10 +17,15 @@
  */
  
 #include "ell.h"
+#include <string.h>
 
 /** \addtogroup conversionRoutines Conversion Routines
  *  @{
  */
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /** 
 * \fn void computeEllRowLenghts(int *ellRowLengths, int *ellMaxRowSize, int rowsCount, int nonZerosCount, const int* cooRowIndices, int cooBaseIndex)
@@ -32,32 +37,14 @@
  * \param cooRowIndices the row indices array for the coo matrix to convert
  * \param cooBaseIndex the input base index (e.g. 0 for C, 1 for Fortran)
  */
-inline void computeEllRowLenghts(
+void computeEllRowLenghts(
 	int *ellRowLengths,
 	int *ellMaxRowSize,
 	int rowsCount,
 	int nonZerosCount,
 	const int* cooRowIndices,
 	int cooBaseIndex
-	)
-{
-	// find the max number of non zero per row
-	int maxRowSize = 0;
-	for (int i=0; i<rowsCount; i++) 
-		ellRowLengths[i] = 0;
-
-	for (int i=0; i<nonZerosCount; i++)
-		++ellRowLengths[cooRowIndices[i] - cooBaseIndex];
-
-	for (int i=0; i<rowsCount; i++)
-	{
-		int currCount = ellRowLengths[i];
-		if (currCount > maxRowSize) 
-			maxRowSize = currCount;
-	}
-
-	*ellMaxRowSize = maxRowSize;
-}
+	);
 
 /** 
 * \fn template<typename T> void computeEllAllocPitch(int* ellValuesPitch, int* ellIndicesPitch, int rowsCount)
@@ -68,16 +55,11 @@ inline void computeEllRowLenghts(
  * \param ellIndicesPitch outputs the indices allocation pitch
  * \param rowsCount the rows count
 */
-template<typename T>
 void computeEllAllocPitch(
 	int* ellValuesPitch,
 	int* ellIndicesPitch,
-	int rowsCount)
-{
-	// Compute ellValues and ellIndices pitch (in bytes)
-	*ellValuesPitch = ((rowsCount*sizeof(T) + ELL_PITCH_ALIGN_BYTE - 1)/ELL_PITCH_ALIGN_BYTE)*ELL_PITCH_ALIGN_BYTE;
-	*ellIndicesPitch = ((rowsCount*sizeof(int) + ELL_PITCH_ALIGN_BYTE - 1)/ELL_PITCH_ALIGN_BYTE)*ELL_PITCH_ALIGN_BYTE;
-}
+	int rowsCount,
+	spgpuType_t ellValuesType);
 
 
 /** 
@@ -97,9 +79,8 @@ void computeEllAllocPitch(
  * \param cooValues input matrix non zeros values pointer
  * \param cooBaseIndex input matrix base index
  */
-template<typename ValueType>
 void cooToEll(
-	ValueType *ellValues,
+	void *ellValues,
 	int *ellIndices,
 	int ellValuesPitch,
 	int ellIndicesPitch,
@@ -109,30 +90,13 @@ void cooToEll(
 	int nonZerosCount,
 	const int* cooRowIndices,
 	const int* cooColsIndices,
-	const ValueType* cooValues,
-	int cooBaseIndex
-	)
-{	
-	// fill values and indices
-	int* currentPos = (int*)malloc(rowsCount*sizeof(int));
+	const void* cooValues,
+	int cooBaseIndex,
+	spgpuType_t valuesType
+	);
 
-	for (int i=0; i<rowsCount; i++)
-		currentPos[i] = 0;
-
-	for (int  i=0; i<nonZerosCount; i++)
-	{
-		int argRow = cooRowIndices[i] - cooBaseIndex;
-
-		void* currentCm = ((char*)&ellValues[argRow]) + currentPos[argRow]*ellValuesPitch;
-		void* currentRp = ((char*)&ellIndices[argRow]) + currentPos[argRow]*ellIndicesPitch;
-
-		*((int*)currentRp) = cooColsIndices[i] - cooBaseIndex + ellBaseIndex;
-		*((ValueType*)currentCm) = cooValues[i];
-
-		currentPos[argRow]++;
-
-	}
-	free(currentPos);
+#ifdef __cplusplus
 }
+#endif
 
 /** @}*/
