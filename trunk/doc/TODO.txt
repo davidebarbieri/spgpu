@@ -3,7 +3,7 @@ Dense Vector :
 	
 Sparse Vector :
 	(int nnz, type* values, int* indices, int baseIndex)
-	sparse(x) -> (int xNnz, type* xValues, int xIndices, int xBaseIndex)
+	sparse(x) -> (int xNnz, type* xValues, int* xIndices, int xBaseIndex)
 	nnz : non zeros count
 	baseIndex: e.g. 0 for C, 1 for Fortran
 	
@@ -11,7 +11,7 @@ Sparse Vector :
 spgpuStatus_t spgpuSasxpy(spgpuHandle_t handle,
 	__device float *y,
 	const __host float *alpha,
-	const __host int *xNnz,
+	const __host int xNnz,
 	const __device float *xValues,
 	const __device int *xIndices,
 	const int xBaseIndex);
@@ -19,7 +19,7 @@ spgpuStatus_t spgpuSasxpy(spgpuHandle_t handle,
 // Single precision gather from y to xValues (using xIndices)
 spgpuStatus_t spgpuSgath(spgpuHandle_t handle,
 	__device float *xValues,
-	const __host int *xNnz,
+	const __host int xNnz,
 	const __device int *xIndices,
 	const int xBaseIndex,
 	const __device float* y);
@@ -27,7 +27,7 @@ spgpuStatus_t spgpuSgath(spgpuHandle_t handle,
 // Single precision scatter from sparse(x) to y
 spgpuStatus_t spgpuSscat(spgpuHandle_t handle,
 	__device float* y,
-	const __host int *xNnz,
+	const __host int xNnz,
 	const __device float *xValues,
 	const __device int *xIndices,
 	const int xBaseIndex,
