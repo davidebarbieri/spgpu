@@ -33,14 +33,12 @@ extern "C" {
 #define ELL_PITCH_ALIGN_BYTE 128
 
 /** 
-* \fn template<typename T> void getEllAllocAlignment(int* ellValuesAlignment, int* ellIndicesAlignment)
+* \fn void getEllAllocAlignment(int* ellValuesAlignment, int* ellIndicesAlignment)
  * This function returns the ELL format alignment to be provided by values array and column indices memory layout.
  * Use these to compute the size of values and indices pitch, respectively, ((rows*sizeof(T) + ellValuesAlignment - 1)/ellValuesAlignment)*ellValuesAlignment
  * and ((rows*sizeof(int) + ellIndicesAlignment - 1)/ellIndicesAlignment)*ellIndicesAlignment.
- * T is the type of every value element (i.e. float or double for real values).
  * \param ellValuesAlignment outputs the values memory layout alignment
  * \param ellIndicesAlignment outputs the indices memory layout alignment
- * \param rowsCount the rows count
 */
 void getEllAllocAlignment(int* ellValuesAlignment, int* ellIndicesAlignment);
 

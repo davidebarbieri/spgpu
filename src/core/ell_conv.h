@@ -47,13 +47,13 @@ void computeEllRowLenghts(
 	);
 
 /** 
-* \fn template<typename T> void computeEllAllocPitch(int* ellValuesPitch, int* ellIndicesPitch, int rowsCount)
+* \fn void computeEllAllocPitch(int* ellValuesPitch, int* ellIndicesPitch, int rowsCount, spgpuType_t ellValuesType)
  * Compute the ELL format pitch for values array and column indices pitch.
  * Use these to compute the size of values and indices allocations (respectively, ellValuesPitch*maxRowSize and ellIndicesPitch*maxRowSize).
- * T is the type of every value element (i.e. float or double for real values).
  * \param ellValuesPitch outputs the values allocation pitch
  * \param ellIndicesPitch outputs the indices allocation pitch
  * \param rowsCount the rows count
+ * \param ellValuesType the type of values elements (i.e. SPGPU_TYPE_FLOAT or SPGPU_TYPE_DOUBLE)
 */
 void computeEllAllocPitch(
 	int* ellValuesPitch,
@@ -63,7 +63,7 @@ void computeEllAllocPitch(
 
 
 /** 
-* \fn void cooToEll(ValueType *ellValues,int *ellIndices,int ellValuesPitch,int ellIndicesPitch,int ellMaxRowSize,int ellBaseIndex,int rowsCount,int nonZerosCount,const int* cooRowIndices,const int* cooColsIndices,const ValueType* cooValues,int cooBaseIndex)
+* \fn void cooToEll(ValueType *ellValues,int *ellIndices,int ellValuesPitch,int ellIndicesPitch,int ellMaxRowSize,int ellBaseIndex,int rowsCount,int nonZerosCount,const int* cooRowIndices,const int* cooColsIndices,const ValueType* cooValues,int cooBaseIndex, spgpuType_t valuesType)
  * Convert a matrix in COO format to a matrix in ELL format.
  * The matrix is stored in column-major format.  The ellValues and ellIndices sizes are ellMaxRowSize * pitch (pitch is in bytes).
  * \param ellValues pointer to the area that will be filled by the non zero coefficients
@@ -78,6 +78,7 @@ void computeEllAllocPitch(
  * \param cooColsIndices input matrix column indices pointer 
  * \param cooValues input matrix non zeros values pointer
  * \param cooBaseIndex input matrix base index
+ * \param valuesType the type for elements in ellValues and cooValues (i.e. SPGPU_TYPE_FLOAT or SPGPU_TYPE_DOUBLE)
  */
 void cooToEll(
 	void *ellValues,
