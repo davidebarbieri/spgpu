@@ -50,7 +50,7 @@ void spgpuDscal_(spgpuHandle_t handle, double *y, int n, double alpha, double* x
 
 }
 
-void spgpuSscal(spgpuHandle_t handle,
+void spgpuDscal(spgpuHandle_t handle,
 	__device double *y,
 	int n,
 	double alpha,
