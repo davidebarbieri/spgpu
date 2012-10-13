@@ -71,6 +71,11 @@ endfunction()
 # adding subtree
 
 file( GLOB_RECURSE CXX_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.c" "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp" )
+
+# exclude tests from library creation
+file( GLOB_RECURSE TESTS_SRCS "${CMAKE_CURRENT_SOURCE_DIR}/tests/*.c" "${CMAKE_CURRENT_SOURCE_DIR}/tests/*.cpp" )
+list (REMOVE_ITEM CXX_SOURCES ${TESTS_SRCS})
+
 add_global_sources(${CXX_SOURCES})
 
 file( GLOB_RECURSE CUDA_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cu" )
@@ -107,6 +112,7 @@ set(GENCODE_DOUBLE -gencode=arch=compute_13,code=sm_13 -gencode=arch=compute_20,
 # set(ADDITIONAL_OPTIONS -DDEBUG)
 
 message(STATUS "13" ${CUDA_SM13_SOURCES})
+message(STATUS "XX" ${CUDA_SOURCES})
 message(STATUS "XX" ${CUDA_SOURCES})
 
 cuda_compile(cuda_sm13_objs ${CUDA_SM13_SOURCES} OPTIONS ${GENCODE_DOUBLE} ${ADDITIONAL_OPTIONS})

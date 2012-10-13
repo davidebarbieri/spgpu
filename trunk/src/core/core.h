@@ -99,7 +99,11 @@ void spgpuStreamDestroy(cudaStream_t stream);
 */
 void spgpuSetStream(spgpuHandle_t pHandle, cudaStream_t stream);
 
-
+/**
+* \fn size_t spgpuSizeOf(spgpuType_t typeCode)
+* Returns the size, in bytes, of the type denoted by typeCode (e.g. 4 for SPGPU_TYPE_FLOAT, 8 for SPGPU_TYPE_DOUBLE).
+* \param typeCode outputs the handle
+*/
 size_t spgpuSizeOf(spgpuType_t typeCode);
 
 /*
