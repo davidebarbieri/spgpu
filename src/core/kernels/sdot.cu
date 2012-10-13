@@ -26,7 +26,12 @@ extern "C"
 
 //#define USE_CUBLAS
 
+#if __CUDA_ARCH__ < 120
+// this function allocates too much registers on pre 1.2
+#define BLOCK_SIZE 320
+#else
 #define BLOCK_SIZE 512
+#endif
 
 __device__ float reductionResult[128];
 
@@ -102,6 +107,7 @@ __global__ void spgpuSdot_kern(int n, float* x, float* y)
 
 float spgpuSdot(spgpuHandle_t handle, int n, __device float* a, __device float* b)
 {
+
 #ifdef USE_CUBLAS
 	float res;
 	cublasSdot(n,x,1,y,1,&res);
@@ -120,7 +126,7 @@ float spgpuSdot(spgpuHandle_t handle, int n, __device float* a, __device float* 
 	
 	float tRes[128];
 
-	spgpuSdot_kern<<<blocks, BLOCK_SIZE, 0, handle->currentStream>>>(n, a, b);
+	spgpuSdot_kern<<<blocks, (BLOCK_SIZE), 0, handle->currentStream>>>(n, a, b);
 	cudaMemcpyFromSymbol(&tRes,"reductionResult",blocks*sizeof(float));
 
 	for (int i=0; i<blocks; ++i)
@@ -128,7 +134,7 @@ float spgpuSdot(spgpuHandle_t handle, int n, __device float* a, __device float* 
 		res += tRes[i];
 	}
 
-	cudaCheckError("CUDA error on sdot");
+	cudaCheckError("CUDA error on sdot (blocks: %i, regs per block: %i)\n", blocks, prop.regsPerBlock);
 	
 	return res;
 #endif

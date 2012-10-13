@@ -1,5 +1,6 @@
 #include "ell.h"
 #include "ell_conv.h"
+#include "stdlib.h"
 
 void getEllAllocAlignment(
 	int* ellValuesAlignment,
