@@ -42,14 +42,7 @@ extern "C" {
  * \param ellIndicesAlignment outputs the indices memory layout alignment
  * \param rowsCount the rows count
 */
-inline void getEllAllocAlignment(
-	int* ellValuesAlignment,
-	int* ellIndicesAlignment)
-{
-	// Compute ellValues and ellIndices pitch (in bytes)
-	*ellValuesAlignment = ELL_PITCH_ALIGN_BYTE;
-	*ellIndicesAlignment = ELL_PITCH_ALIGN_BYTE;
-}
+void getEllAllocAlignment(int* ellValuesAlignment, int* ellIndicesAlignment);
 
 
 /** 
