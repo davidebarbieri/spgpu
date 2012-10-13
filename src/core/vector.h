@@ -114,7 +114,22 @@ void spgpuSmaxypbz(spgpuHandle_t handle,
 	int count,
 	int pitch);	
 	
+
+// Single precision gather from y to xValues (using xIndices)
+void spgpuSgath(spgpuHandle_t handle,
+	__device float *xValues,
+	int xNnz,
+	const __device int *xIndices,
+	int xBaseIndex,
+	const __device float* y);
 	
+// Single precision scatter from sparse(x) to y
+void spgpuSscat(spgpuHandle_t handle,
+	__device float* y,
+	int xNnz,
+	const __device float *xValues,
+	const __device int *xIndices,
+	int xBaseIndex);	
 
 /* Double precision y = alpha * x
 	y could be exactly x (without offset) or another vector
@@ -200,7 +215,23 @@ void spgpuDmaxypbz(spgpuHandle_t handle,
 	__device double *y,
 	int count,
 	int pitch);
+
+// Double precision gather from y to xValues (using xIndices)
+void spgpuDgath(spgpuHandle_t handle,
+	__device double *xValues,
+	int xNnz,
+	const __device int *xIndices,
+	int xBaseIndex,
+	const __device double* y);
 	
+// Double precision scatter from sparse(x) to y
+void spgpuDscat(spgpuHandle_t handle,
+	__device double* y,
+	int xNnz,
+	const __device double *xValues,
+	const __device int *xIndices,
+	int xBaseIndex);
+		
 #ifdef __cplusplus
 }
 #endif

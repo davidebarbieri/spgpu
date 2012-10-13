@@ -88,6 +88,7 @@ list(APPEND SM13_SRCS "${CMAKE_CURRENT_SOURCE_DIR}/core/kernels/daxy.cu")
 list(APPEND SM13_SRCS "${CMAKE_CURRENT_SOURCE_DIR}/core/kernels/ddot.cu")
 list(APPEND SM13_SRCS "${CMAKE_CURRENT_SOURCE_DIR}/core/kernels/dnrm2.cu")
 list(APPEND SM13_SRCS "${CMAKE_CURRENT_SOURCE_DIR}/core/kernels/dscal.cu")
+list(APPEND SM13_SRCS "${CMAKE_CURRENT_SOURCE_DIR}/core/kernels/dscatgath.cu")
 
 
 list (REMOVE_ITEM CUDA_SOURCES ${SM13_SRCS}) # compile just for sm13
