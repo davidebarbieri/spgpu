@@ -76,3 +76,18 @@ void spgpuSetStream(spgpuHandle_t pHandle, cudaStream_t stream)
 	else
 		handle->currentStream = pHandle->defaultStream;
 }
+
+size_t spgpuSizeOf(spgpuType_t typeCode)
+{
+	switch (typeCode)
+	{
+	case SPGPU_TYPE_INT:
+		return sizeof(int);
+	case SPGPU_TYPE_FLOAT:
+		return sizeof(float);
+	case SPGPU_TYPE_DOUBLE:
+		return sizeof(double);
+	default:
+		return 0; // error		
+	}
+}

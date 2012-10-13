@@ -25,8 +25,8 @@
 #include "cublas_v2.h"
 #include "string.h"
 
-#include "core/ell_conv.hpp"
-#include "core/hell_conv.hpp"
+#include "core/ell_conv.h"
+#include "core/hell_conv.h"
 
 #include "core/core.h"
 #include "core/ell.h"
@@ -73,6 +73,12 @@ int main(int argc, char** argv)
 	int  matrixStorage;
 	int matrixType;
 
+#ifdef TEST_DOUBLE
+	spgpuType_t valuesTypeCode = SPGPU_TYPE_DOUBLE;
+#else
+	spgpuType_t valuesTypeCode = SPGPU_TYPE_FLOAT;
+#endif
+
 	bool res = loadMmProperties(&rowsCount, &columnsCount, &nonZerosCount, 
 		&isStoredSparse, &matrixStorage, &matrixType, file);
 
@@ -107,7 +113,7 @@ int main(int argc, char** argv)
 	int *ellRowLengths = (int*)malloc(rowsCount*sizeof(int));
 
 	computeEllRowLenghts(ellRowLengths, &ellMaxRowSize, rowsCount, nonZerosCount, rows, 0);
-	computeEllAllocPitch<testType>(&ellValuesPitch, &ellIndicesPitch, rowsCount);
+	computeEllAllocPitch(&ellValuesPitch, &ellIndicesPitch, rowsCount, valuesTypeCode);
 
 	ellValues = (testType*)malloc(ellMaxRowSize*ellValuesPitch);
 	ellIndices = (int*)malloc(ellMaxRowSize*ellIndicesPitch);
@@ -117,7 +123,7 @@ int main(int argc, char** argv)
 
 	cooToEll(ellValues, ellIndices, ellValuesPitch, 
 		 ellIndicesPitch, ellMaxRowSize, 0,
-		 rowsCount, nonZerosCount, rows, cols, values, 0);
+		 rowsCount, nonZerosCount, rows, cols, values, 0, valuesTypeCode);
 
 	printf("Conversion complete: ELL format is %i Bytes.\n", ellMaxRowSize*(ellValuesPitch + ellIndicesPitch) + rowsCount*sizeof(int));
 
@@ -221,7 +227,7 @@ int main(int argc, char** argv)
 
 	printf("Converting to HELL format..\n");
 	ellToHell(hellValues, hellIndices, hackOffsets, hackSize, ellValues, ellIndices,
-		ellValuesPitch, ellIndicesPitch, ellRowLengths, rowsCount);
+		ellValuesPitch, ellIndicesPitch, ellRowLengths, rowsCount, valuesTypeCode);
 
 	printf("Conversion complete: HELL format is %i Bytes.\n", hackSize*hellHeight*(sizeof(testType) + sizeof(int)) + ((rowsCount+hackSize-1)/hackSize)*sizeof(int) + rowsCount*sizeof(int));
 

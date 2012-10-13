@@ -22,6 +22,7 @@
 extern "C"
 {
 #include "core.h"
+#include "vector.h"
 }
 
 //#define USE_CUBLAS

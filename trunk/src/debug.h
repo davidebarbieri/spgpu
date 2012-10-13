@@ -42,7 +42,7 @@ void printTrace (void)
 }
 #endif
 
-inline void __assert(bool e, const char* w)
+inline void __assert(int e, const char* w)
 {
 	if (!e)
 	{
