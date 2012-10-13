@@ -19,6 +19,10 @@
  
 #include "core.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Single precision dot(x,y)
 */
 float spgpuSdot(spgpuHandle_t handle, 
@@ -196,3 +200,7 @@ void spgpuDmaxypbz(spgpuHandle_t handle,
 	__device double *y,
 	int count,
 	int pitch);
+	
+#ifdef __cplusplus
+}
+#endif

@@ -38,6 +38,12 @@ typedef int spgpuStatus_t;
 #define SPGPU_UNSPECIFIED	2
 #define SPGPU_OUTOFMEMORY	3
 
+#define SPGPU_TYPE_INT		0
+#define SPGPU_TYPE_FLOAT	1
+#define SPGPU_TYPE_DOUBLE	2
+
+typedef int spgpuType_t;
+
 /// this struct should be modified only internally by spgpu
 typedef struct spgpuHandleStruct {
 	/// the current stream used by every calls on spgpu routines (passing this handle)
@@ -92,6 +98,9 @@ void spgpuStreamDestroy(cudaStream_t stream);
 * \param stream the stream to use for next spgpu routines call. Use 0 to reset to the default stream.
 */
 void spgpuSetStream(spgpuHandle_t pHandle, cudaStream_t stream);
+
+
+size_t spgpuSizeOf(spgpuType_t typeCode);
 
 /*
 typedef struct {
