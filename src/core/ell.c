@@ -2,15 +2,6 @@
 #include "ell_conv.h"
 #include "stdlib.h"
 
-void getEllAllocAlignment(
-	int* ellValuesAlignment,
-	int* ellIndicesAlignment)
-{
-	// Compute ellValues and ellIndices pitch (in bytes)
-	*ellValuesAlignment = ELL_PITCH_ALIGN_BYTE;
-	*ellIndicesAlignment = ELL_PITCH_ALIGN_BYTE;
-}
-
 void computeEllRowLenghts(
 	int *ellRowLengths,
 	int *ellMaxRowSize,
@@ -39,15 +30,10 @@ void computeEllRowLenghts(
 	*ellMaxRowSize = maxRowSize;
 }
 
-void computeEllAllocPitch(
-	int* ellValuesPitch,
-	int* ellIndicesPitch,
-	int rowsCount,
-	spgpuType_t ellValuesType)
+int computeEllAllocPitch(int rowsCount)
 {
-	// Compute ellValues and ellIndices pitch (in bytes)
-	*ellValuesPitch = ((rowsCount*spgpuSizeOf(ellValuesType) + ELL_PITCH_ALIGN_BYTE - 1)/ELL_PITCH_ALIGN_BYTE)*ELL_PITCH_ALIGN_BYTE;
-	*ellIndicesPitch = ((rowsCount*sizeof(int) + ELL_PITCH_ALIGN_BYTE - 1)/ELL_PITCH_ALIGN_BYTE)*ELL_PITCH_ALIGN_BYTE;
+	// returns a pitch good for indices and values
+	return ((rowsCount + 31)/32)*32;
 }
 
 void cooToEll(
@@ -80,8 +66,8 @@ void cooToEll(
 	{
 		int argRow = cooRowIndices[i] - cooBaseIndex;
 
-		void* currentCm = ((char*)ellValues + argRow*elementSize) + currentPos[argRow]*ellValuesPitch;
-		void* currentRp = ((char*)&ellIndices[argRow]) + currentPos[argRow]*ellIndicesPitch;
+		void* currentCm = ((char*)ellValues + argRow*elementSize) + currentPos[argRow]*ellValuesPitch*elementSize;
+		void* currentRp = ((char*)&ellIndices[argRow]) + currentPos[argRow]*ellIndicesPitch*sizeof(int);
 
 		*((int*)currentRp) = cooColsIndices[i] - cooBaseIndex + ellBaseIndex;
 		

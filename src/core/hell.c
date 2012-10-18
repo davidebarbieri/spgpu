@@ -85,9 +85,9 @@ void ellToHell(
 			for (k=0; k<rowLen; ++k)
 			{
 				memcpy(currValPos + (j + k*hackSize)*elementSize,
-				 (((char*)ellValues + k*ellValuesPitch) + row*elementSize),
+				 (((char*)ellValues + k*ellValuesPitch*elementSize) + row*elementSize),
 				 elementSize);
-				currIndPos[j + k*hackSize] = *((int*) (((char*)ellIndices) + k*ellIndicesPitch) + row);
+				currIndPos[j + k*hackSize] = *(ellIndices + k*ellIndicesPitch + row);
 			}
 		}
 

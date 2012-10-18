@@ -66,14 +66,14 @@ spgpuSellspmv_krn (float *z, const float *y, float alpha, const float* cM, const
 		float values1, values2, fetches1, fetches2;
 		
 		pointers1 = rP[0] - baseIndex;
-		rP = (int*) (((char*)rP) + rPPitch );  
+		rP += rPPitch;  
 		pointers2 = rP[0] - baseIndex;
-		rP = (int*) (((char*)rP) + rPPitch );  
+		rP += rPPitch;  
 
 		values1 = cM[0];
-		cM = (float*) (((char*)cM) + cMPitch );
+		cM += cMPitch;
 		values2 = cM[0];
-		cM = (float*) (((char*)cM) + cMPitch );
+		cM += cMPitch;
 
 #ifdef ENABLE_CACHE
 		fetches1 = tex1Dfetch (x_tex, pointers1);
