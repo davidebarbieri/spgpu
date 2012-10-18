@@ -32,16 +32,6 @@ extern "C" {
 /// This is the pitch alignment that must be fullfilled by the coefficients and the row pointers allocations.
 #define ELL_PITCH_ALIGN_BYTE 128
 
-/** 
-* \fn void getEllAllocAlignment(int* ellValuesAlignment, int* ellIndicesAlignment)
- * This function returns the ELL format alignment to be provided by values array and column indices memory layout.
- * Use these to compute the size of values and indices pitch, respectively, ((rows*sizeof(T) + ellValuesAlignment - 1)/ellValuesAlignment)*ellValuesAlignment
- * and ((rows*sizeof(int) + ellIndicesAlignment - 1)/ellIndicesAlignment)*ellIndicesAlignment.
- * \param ellValuesAlignment outputs the values memory layout alignment
- * \param ellIndicesAlignment outputs the indices memory layout alignment
-*/
-void getEllAllocAlignment(int* ellValuesAlignment, int* ellIndicesAlignment);
-
 
 /** 
 * \fn void spgpuSellspmv (spgpuHandle_t handle,__device float *z,const __device float *y, float alpha, const __device float* cM, const __device int* rP, int cMPitch, int rPPitch, const __device int* rS, int rows, const __device float *x, float beta,int baseIndex)
@@ -52,8 +42,8 @@ void getEllAllocAlignment(int* ellValuesAlignment, int* ellIndicesAlignment);
  * \param alpha The alpha scalar
  * \param cM The ELL non zero values allocation pointer
  * \param rP The ELL column indices allocation pointer
- * \param cMPitch the pitch of the allocation containing the matrix non zero values
- * \param rPPitch  the pitch of the allocation containing the matrix non zero column indices
+ * \param cMPitch the pitch (in number of elements) of the allocation containing the matrix non zero values
+ * \param rPPitch  the pitch (in number of elements) of the allocation containing the matrix non zero column indices
  * \param rS the array containing the row sized (in non zero elements)
  * \param rows the rows count
  * \param x the x vector
@@ -84,8 +74,8 @@ void spgpuSellspmv (spgpuHandle_t handle,
  * \param alpha The alpha scalar
  * \param cM The ELL non zero values allocation pointer
  * \param rP The ELL column indices allocation pointer
- * \param cMPitch the pitch of the allocation containing the matrix non zero values
- * \param rPPitch  the pitch of the allocation containing the matrix non zero column indices
+ * \param cMPitch the pitch (in number of elements) of the allocation containing the matrix non zero values
+ * \param rPPitch the pitch (in number of elements) of the allocation containing the matrix non zero column indices
  * \param rS the array containing the row sized (in non zero elements)
  * \param rows the rows count
  * \param x the x vector

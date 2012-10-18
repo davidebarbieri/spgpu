@@ -52,8 +52,8 @@ void computeHellAllocSize(
  * \param hackSize the hack size used to allocate hellValues and hellIndices (32 or 64 are good choices)
  * \param ellValues the input matrix coefficients
  * \param ellIndices the input matrix indices
- * \param ellValuesPitch the input values allocation pitch
- * \param ellIndicesPitch the input indices allocation pitch
+ * \param ellValuesPitch the input values allocation pitch (in number of elements)
+ * \param ellIndicesPitch the input indices allocation pitch (in number of elements)
  * \param ellRowLengths the row lengths array of the input matrix
  * \param rowsCount the rows count
  * \param valuesType the type of hellValues and ellValues elements (i.e. SPGPU_TYPE_FLOAT or SPGPU_TYPE_DOUBLE)

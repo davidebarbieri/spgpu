@@ -73,14 +73,14 @@ spgpuDellspmv_krn (double *z, const double *y, double alpha, const double* cM, c
 #endif
 		
 		pointers1 = rP[0] - baseIndex;
-		rP = (int*) (((char*)rP) + rPPitch );  
+		rP += rPPitch;  
 		pointers2 = rP[0] - baseIndex;
-		rP = (int*) (((char*)rP) + rPPitch );  
+		rP += rPPitch;  
 
 		values1 = cM[0];
-		cM = (double*) (((char*)cM) + cMPitch );
+		cM += cMPitch;
 		values2 = cM[0];
-		cM = (double*) (((char*)cM) + cMPitch );
+		cM += cMPitch;
 
 #ifdef ENABLE_CACHE
 

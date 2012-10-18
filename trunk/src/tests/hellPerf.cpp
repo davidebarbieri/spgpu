@@ -106,26 +106,24 @@ int main(int argc, char** argv)
 
 	testType *ellValues;
 	int *ellIndices;
-	int ellValuesPitch;
-	int ellIndicesPitch;
 	int ellMaxRowSize;
 
 	int *ellRowLengths = (int*)malloc(rowsCount*sizeof(int));
 
 	computeEllRowLenghts(ellRowLengths, &ellMaxRowSize, rowsCount, nonZerosCount, rows, 0);
-	computeEllAllocPitch(&ellValuesPitch, &ellIndicesPitch, rowsCount, valuesTypeCode);
 
-	ellValues = (testType*)malloc(ellMaxRowSize*ellValuesPitch);
-	ellIndices = (int*)malloc(ellMaxRowSize*ellIndicesPitch);
+	int ellPitch = computeEllAllocPitch(rowsCount);
 
-	memset((void*)ellValues, 0, ellMaxRowSize*ellValuesPitch);
-	memset((void*)ellIndices, 0, ellMaxRowSize*ellIndicesPitch);
+	ellValues = (testType*)malloc(ellMaxRowSize*ellPitch*sizeof(testType));
+	ellIndices = (int*)malloc(ellMaxRowSize*ellPitch*sizeof(int));
 
-	cooToEll(ellValues, ellIndices, ellValuesPitch, 
-		 ellIndicesPitch, ellMaxRowSize, 0,
+	memset((void*)ellValues, 0, ellMaxRowSize*ellPitch*sizeof(testType));
+	memset((void*)ellIndices, 0, ellMaxRowSize*ellPitch*sizeof(int));
+
+	cooToEll(ellValues, ellIndices, ellPitch, ellPitch, ellMaxRowSize, 0,
 		 rowsCount, nonZerosCount, rows, cols, values, 0, valuesTypeCode);
 
-	printf("Conversion complete: ELL format is %i Bytes.\n", ellMaxRowSize*(ellValuesPitch + ellIndicesPitch) + rowsCount*sizeof(int));
+	printf("Conversion complete: ELL format is %i Bytes.\n", ellMaxRowSize*(ellPitch*sizeof(testType) + ellPitch*sizeof(int)) + rowsCount*sizeof(int));
 
 	printf("Compute on GPU..\n");
 
@@ -152,11 +150,11 @@ int main(int argc, char** argv)
 	cudaMemcpy(devY, y, rowsCount*sizeof(testType), cudaMemcpyHostToDevice);
 	cudaMemcpy(devRs, ellRowLengths, rowsCount*sizeof(int), cudaMemcpyHostToDevice);
 
-	cudaMalloc((void**)&devCm, ellMaxRowSize*ellValuesPitch);
-	cudaMalloc((void**)&devRp, ellMaxRowSize*ellIndicesPitch);
+	cudaMalloc((void**)&devCm, ellMaxRowSize*ellPitch*sizeof(testType));
+	cudaMalloc((void**)&devRp, ellMaxRowSize*ellPitch*sizeof(int));
 
-	cudaMemcpy(devCm, ellValues, ellMaxRowSize*ellValuesPitch, cudaMemcpyHostToDevice);
-	cudaMemcpy(devRp, ellIndices, ellMaxRowSize*ellIndicesPitch, cudaMemcpyHostToDevice);
+	cudaMemcpy(devCm, ellValues, ellMaxRowSize*ellPitch*sizeof(testType), cudaMemcpyHostToDevice);
+	cudaMemcpy(devRp, ellIndices, ellMaxRowSize*ellPitch*sizeof(int), cudaMemcpyHostToDevice);
 
 	spgpuHandle_t spgpuHandle;
 	spgpuCreate(&spgpuHandle, 0);
@@ -171,9 +169,9 @@ int main(int argc, char** argv)
 	
 
 #ifdef TEST_DOUBLE
-	spgpuDellspmv (spgpuHandle, devZ, devY, 2.0, devCm, devRp, ellValuesPitch, ellIndicesPitch, devRs, rowsCount, devX, -3.0, 0);
+	spgpuDellspmv (spgpuHandle, devZ, devY, 2.0, devCm, devRp, ellPitch, ellPitch, devRs, rowsCount, devX, -3.0, 0);
 #else
-	spgpuSellspmv (spgpuHandle, devZ, devY, 2.0f, devCm, devRp, ellValuesPitch, ellIndicesPitch, devRs, rowsCount, devX, -3.0f, 0);
+	spgpuSellspmv (spgpuHandle, devZ, devY, 2.0f, devCm, devRp, ellPitch, ellPitch, devRs, rowsCount, devX, -3.0f, 0);
 #endif
 	
 	
@@ -203,9 +201,9 @@ int main(int argc, char** argv)
 	for (int i=0; i<NUM_TESTS; ++i)
 	{
 #ifdef TEST_DOUBLE
-		spgpuDellspmv (spgpuHandle, devZ, devY, 2.0, devCm, devRp, ellValuesPitch, ellIndicesPitch, devRs, rowsCount, devX, -3.0, 0);
+		spgpuDellspmv (spgpuHandle, devZ, devY, 2.0, devCm, devRp, ellPitch, ellPitch, devRs, rowsCount, devX, -3.0, 0);
 #else
-		spgpuSellspmv (spgpuHandle, devZ, devY, 2.0f, devCm, devRp, ellValuesPitch, ellIndicesPitch, devRs, rowsCount, devX, -3.0f, 0);
+		spgpuSellspmv (spgpuHandle, devZ, devY, 2.0f, devCm, devRp, ellPitch, ellPitch, devRs, rowsCount, devX, -3.0f, 0);
 #endif
 		
 	}
@@ -227,7 +225,7 @@ int main(int argc, char** argv)
 
 	printf("Converting to HELL format..\n");
 	ellToHell(hellValues, hellIndices, hackOffsets, hackSize, ellValues, ellIndices,
-		ellValuesPitch, ellIndicesPitch, ellRowLengths, rowsCount, valuesTypeCode);
+		ellPitch, ellPitch, ellRowLengths, rowsCount, valuesTypeCode);
 
 	printf("Conversion complete: HELL format is %i Bytes.\n", hackSize*hellHeight*(sizeof(testType) + sizeof(int)) + ((rowsCount+hackSize-1)/hackSize)*sizeof(int) + rowsCount*sizeof(int));
 

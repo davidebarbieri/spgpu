@@ -5,13 +5,14 @@
 #define MAX_N_FOR_A_CALL (BLOCK_SIZE*65535)
 
 // Single Precision Indexed Scatter
-__global__ void siscat_gpu_kern(float* vector, int count, const int* indexes, const float* values, int firstIndex)
+__global__ void siscat_gpu_kern(float* vector, int count, const int* indexes, const float* values, int firstIndex, float beta)
 {
 	int id = threadIdx.x + BLOCK_SIZE*blockIdx.x;
 	
 	if (id < count)
 	{	
-		vector[indexes[id]-firstIndex] = values[id];
+		int pos = indexes[id]-firstIndex;
+		vector[pos] = beta*vector[pos]+values[id];
 	}
 }
 
@@ -34,14 +35,15 @@ void spgpuSscat_(spgpuHandle_t handle,
 	int xNnz,
 	const __device float *xValues,
 	const __device int *xIndices,
-	int xBaseIndex)
+	int xBaseIndex,
+	float beta)
 {
 	int msize = (xNnz+BLOCK_SIZE-1)/BLOCK_SIZE;
 
 	dim3 block(BLOCK_SIZE);
 	dim3 grid(msize);
 
-	siscat_gpu_kern<<<grid, block, 0, handle->currentStream>>>(y, xNnz, xIndices, xValues, xBaseIndex);
+	siscat_gpu_kern<<<grid, block, 0, handle->currentStream>>>(y, xNnz, xIndices, xValues, xBaseIndex, beta);
 }
 
 void spgpuSgath_(spgpuHandle_t handle,
@@ -65,18 +67,18 @@ void spgpuSscat(spgpuHandle_t handle,
 	int xNnz,
 	const __device float *xValues,
 	const __device int *xIndices,
-	int xBaseIndex)
+	int xBaseIndex, float beta)
 {
 	while (xNnz > MAX_N_FOR_A_CALL) //managing large vectors
 	{
-		spgpuSscat_(handle, y, MAX_N_FOR_A_CALL, xValues, xIndices, xBaseIndex);
+		spgpuSscat_(handle, y, MAX_N_FOR_A_CALL, xValues, xIndices, xBaseIndex, beta);
 	
 		xIndices += MAX_N_FOR_A_CALL;
 		xValues += MAX_N_FOR_A_CALL;
 		xNnz -= MAX_N_FOR_A_CALL;
 	}
 	
-	spgpuSscat_(handle, y, xNnz, xValues, xIndices, xBaseIndex);
+	spgpuSscat_(handle, y, xNnz, xValues, xIndices, xBaseIndex, beta);
 }	
 	
 void spgpuSgath(spgpuHandle_t handle,
