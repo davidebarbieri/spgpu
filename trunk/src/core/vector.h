@@ -230,7 +230,7 @@ void spgpuDscat(spgpuHandle_t handle,
 	int xNnz,
 	const __device double *xValues,
 	const __device int *xIndices,
-	int xBaseIndex, float beta);
+	int xBaseIndex, double beta);
 		
 #ifdef __cplusplus
 }
