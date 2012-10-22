@@ -50,12 +50,13 @@ void computeEllRowLenghts(
 * \fn int computeEllAllocPitch(int rowsCount)
  * This function returns a pitch (in number of elements) that can be used to allocate both indices and values arrays for ELL matrix format.
  * \param rowsCount the rows count
+ * \return the pitch for an ELL matrix of rowsCount rows.
 */
 int computeEllAllocPitch(int rowsCount);
 
 
 /** 
-* \fn void cooToEll(ValueType *ellValues,int *ellIndices,int ellValuesPitch,int ellIndicesPitch,int ellMaxRowSize,int ellBaseIndex,int rowsCount,int nonZerosCount,const int* cooRowIndices,const int* cooColsIndices,const ValueType* cooValues,int cooBaseIndex, spgpuType_t valuesType)
+* \fn void cooToEll(void *ellValues,int *ellIndices,int ellValuesPitch,int ellIndicesPitch,int ellMaxRowSize,int ellBaseIndex,int rowsCount,int nonZerosCount,const int* cooRowIndices,const int* cooColsIndices,const void* cooValues,int cooBaseIndex, spgpuType_t valuesType)
  * Convert a matrix in COO format to a matrix in ELL format.
  * The matrix is stored in column-major format.  The ellValues and ellIndices sizes are ellMaxRowSize * pitch (pitch is in bytes).
  * \param ellValues pointer to the area that will be filled by the non zero coefficients

@@ -105,6 +105,7 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+<dl class="return"><dt><b>Returns:</b></dt><dd>the pitch for an ELL matrix of rowsCount rows. </dd></dl>
 
 </div>
 </div>
@@ -310,6 +311,25 @@ Functions</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
+<p>Convert a matrix in COO format to a matrix in ELL format. The matrix is stored in column-major format. The ellValues and ellIndices sizes are ellMaxRowSize * pitch (pitch is in bytes). </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ellValues</td><td>pointer to the area that will be filled by the non zero coefficients </td></tr>
+    <tr><td class="paramname">ellIndices</td><td>pointer to the area that will be filled by the non zero indices </td></tr>
+    <tr><td class="paramname">ellValuesPitch</td><td>the column-major allocation's pitch of ellValues (in number of elements) </td></tr>
+    <tr><td class="paramname">ellIndicesPitch</td><td>the column-major allocation's pitch of ellIndices (in number of elements) </td></tr>
+    <tr><td class="paramname">ellMaxRowSize</td><td>the greatest row size </td></tr>
+    <tr><td class="paramname">ellBaseIndex</td><td>the desired base index for the ELL matrix (e.g. 0 for C, 1 for Fortran) </td></tr>
+    <tr><td class="paramname">rowsCount</td><td>input matrix rows count </td></tr>
+    <tr><td class="paramname">nonZerosCount</td><td>input matrix non zeros count </td></tr>
+    <tr><td class="paramname">cooRowIndices</td><td>input matrix row indices pointer </td></tr>
+    <tr><td class="paramname">cooColsIndices</td><td>input matrix column indices pointer </td></tr>
+    <tr><td class="paramname">cooValues</td><td>input matrix non zeros values pointer </td></tr>
+    <tr><td class="paramname">cooBaseIndex</td><td>input matrix base index </td></tr>
+    <tr><td class="paramname">valuesType</td><td>the type for elements in ellValues and cooValues (i.e. SPGPU_TYPE_FLOAT or SPGPU_TYPE_DOUBLE) </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -429,7 +449,7 @@ Functions</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Oct 19 2012 00:43:32 for spGpu library by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Oct 22 2012 22:40:42 for spGpu library by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.5
 </small></address>

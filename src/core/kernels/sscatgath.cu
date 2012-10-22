@@ -34,7 +34,11 @@ __global__ void siscat_gpu_kern(float* vector, int count, const int* indexes, co
 	if (id < count)
 	{	
 		int pos = indexes[id]-firstIndex;
-		vector[pos] = beta*vector[pos]+values[id];
+		
+		if (beta != 0.0f)
+			vector[pos] = beta*vector[pos]+values[id];
+		else
+			vector[pos] = values[id];
 	}
 }
 
