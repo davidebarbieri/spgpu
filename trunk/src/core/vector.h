@@ -129,7 +129,7 @@ void spgpuSscat(spgpuHandle_t handle,
 	int xNnz,
 	const __device float *xValues,
 	const __device int *xIndices,
-	int xBaseIndex);	
+	int xBaseIndex, float beta);	
 
 /* Double precision y = alpha * x
 	y could be exactly x (without offset) or another vector
@@ -230,7 +230,7 @@ void spgpuDscat(spgpuHandle_t handle,
 	int xNnz,
 	const __device double *xValues,
 	const __device int *xIndices,
-	int xBaseIndex);
+	int xBaseIndex, float beta);
 		
 #ifdef __cplusplus
 }
