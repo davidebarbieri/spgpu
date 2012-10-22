@@ -15,6 +15,37 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
+
+
+/*! \mainpage The spGPU library documentation
+ *
+ * \section intro_sec Introduction
+ *
+ * spGPU is a set of custom matrix storages and CUDA kernels for sparse linear algebra computing on GPU. It isn't a replacement for cuBLAS/cuSPARSE that should be used for a full featured linear algebra environment on GPU.\n
+ * The main matrix storage used by spGPU is a GPU-friendly ELLpack format, as well as our HELL (Hacked ELLpack) format, an enhanced version of ELLpack with some interesting memory saving properties.\n
+ * HELL format provides a better memory storage compared to ELL (it avoids allocation inefficency provided by spikes in row sizes), while providing just the 5% of performance loss for sparse matrix-vector multiply routine..
+ *
+ * \section install_sec How to build spgpu
+ * \subsection linuxbuild Linux (and other unix systems)
+ * cd spgpu/build/cmake\n
+ * sh configure.sh\n
+ * make
+ * \section cr_sec Copyright
+ * Copyright (C) 2010 - 2012\n
+ *     Davide Barbieri - University of Rome Tor Vergata\n
+ *     Valeria Cardellini - University of Rome Tor Vergata\n
+ *     Salvatore Filippone - University of Rome Tor Vergata
+ *
+ * This program is free software; you can redistribute it and/or\n
+ * modify it under the terms of the GNU General Public License\n
+ * version 3 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,\n
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of\n
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n
+ * GNU General Public License for more details.
+ */
+
  
 #include "driver_types.h"
  

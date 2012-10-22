@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<title>spGpu library: Main Page</title>
+<title>spGpu library: The spGPU library documentation</title>
 
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
@@ -69,16 +69,41 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 <div class="header">
   <div class="headertitle">
-<div class="title">spGpu library Documentation</div>  </div>
+<div class="title">The spGPU library documentation </div>  </div>
 </div>
 <div class="contents">
-</div>
+<div class="textblock"><h2><a class="anchor" id="intro_sec"></a>
+Introduction</h2>
+<p>spGPU is a set of custom matrix storages and CUDA kernels for sparse linear algebra computing on GPU. It isn't a replacement for cuBLAS/cuSPARSE that should be used for a full featured linear algebra environment on GPU.<br/>
+ The main matrix storage used by spGPU is a GPU-friendly ELLpack format, as well as our HELL (Hacked ELLpack) format, an enhanced version of ELLpack with some interesting memory saving properties.<br/>
+ HELL format provides a better memory storage compared to ELL (it avoids allocation inefficency provided by spikes in row sizes), while providing just the 5% of performance loss for sparse matrix-vector multiply routine..</p>
+<h2><a class="anchor" id="install_sec"></a>
+How to build spgpu</h2>
+<h3><a class="anchor" id="linuxbuild"></a>
+Linux (and other unix systems)</h3>
+<p>cd spgpu/build/cmake<br/>
+ sh configure.sh<br/>
+ make </p>
+<h2><a class="anchor" id="cr_sec"></a>
+Copyright</h2>
+<p>Copyright (C) 2010 - 2012<br/>
+ Davide Barbieri - University of Rome Tor Vergata<br/>
+ Valeria Cardellini - University of Rome Tor Vergata<br/>
+ Salvatore Filippone - University of Rome Tor Vergata</p>
+<p>This program is free software; you can redistribute it and/or<br/>
+ modify it under the terms of the GNU General Public License<br/>
+ version 3 as published by the Free Software Foundation.</p>
+<p>This program is distributed in the hope that it will be useful,<br/>
+ but WITHOUT ANY WARRANTY; without even the implied warranty of<br/>
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the<br/>
+ GNU General Public License for more details. </p>
+</div></div>
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Variables</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Variables</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -90,7 +115,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Oct 22 2012 22:47:18 for spGpu library by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Oct 22 2012 23:09:28 for spGpu library by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.5
 </small></address>
