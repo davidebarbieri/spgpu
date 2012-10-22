@@ -123,6 +123,7 @@ cuda_add_library (spgpu STATIC ${cuda_sm13_objs} ${cuda_objs} ${GLOBAL_SOURCES} 
 add_executable(hellperf_s ${CMAKE_CURRENT_SOURCE_DIR}/tests/hellPerf.cpp)
 add_executable(hellperf_d ${CMAKE_CURRENT_SOURCE_DIR}/tests/hellPerf.cpp)
 add_executable(ctest ${CMAKE_CURRENT_SOURCE_DIR}/tests/ctest.c)
+add_executable(testSpVec ${CMAKE_CURRENT_SOURCE_DIR}/tests/testSparseVector.c)
 set_target_properties(hellperf_d PROPERTIES COMPILE_FLAGS -DTEST_DOUBLE)
 
 CUDA_ADD_CUBLAS_TO_TARGET(hellperf_s)
@@ -130,6 +131,7 @@ CUDA_ADD_CUBLAS_TO_TARGET(hellperf_d)
 target_link_libraries(hellperf_s spgpu)
 target_link_libraries(hellperf_d spgpu)
 target_link_libraries(ctest spgpu)
+target_link_libraries(testSpVec spgpu)
 
 
 
