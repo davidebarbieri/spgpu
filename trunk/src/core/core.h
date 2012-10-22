@@ -31,6 +31,7 @@ extern "C" {
 /// __device pointers reference device allocations (it's just a placeholder)
 #define __device
 
+// The return code for synchronous functions
 typedef int spgpuStatus_t;
 
 #define SPGPU_SUCCESS 		0
@@ -38,11 +39,12 @@ typedef int spgpuStatus_t;
 #define SPGPU_UNSPECIFIED	2
 #define SPGPU_OUTOFMEMORY	3
 
+// Code to identify a primitive type
+typedef int spgpuType_t;
+
 #define SPGPU_TYPE_INT		0
 #define SPGPU_TYPE_FLOAT	1
 #define SPGPU_TYPE_DOUBLE	2
-
-typedef int spgpuType_t;
 
 /// this struct should be modified only internally by spgpu
 typedef struct spgpuHandleStruct {
