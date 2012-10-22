@@ -19,7 +19,7 @@
  
 #include "core.h"
 
-/** \addtogroup vecFun Vectors functions
+/** \addtogroup vecFun Vectors and sparse vectors routines
  *  @{
  */
 
