@@ -62,7 +62,7 @@ extern "C" {
 /// __device pointers reference device allocations (it's just a placeholder)
 #define __device
 
-// The return code for synchronous functions
+/// The return code for synchronous functions
 typedef int spgpuStatus_t;
 
 #define SPGPU_SUCCESS 		0
@@ -70,7 +70,7 @@ typedef int spgpuStatus_t;
 #define SPGPU_UNSPECIFIED	2
 #define SPGPU_OUTOFMEMORY	3
 
-// Code to identify a primitive type
+/// Code to identify a primitive type
 typedef int spgpuType_t;
 
 #define SPGPU_TYPE_INT		0
@@ -91,6 +91,7 @@ typedef struct spgpuHandleStruct {
 	int maxThreadsPerBlock;
 } SpgpuHandleStruct;
 
+/// A spGPU handle represents a single CUDA device on your platform.
 typedef const SpgpuHandleStruct* spgpuHandle_t;
 
 /**
