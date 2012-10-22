@@ -27,6 +27,7 @@
 
 #include <time.h>
 
+/// @cond
 
 class Clock
 {
@@ -77,3 +78,4 @@ public:
 	}
 
 };
+/// @endcond
