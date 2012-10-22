@@ -1,5 +1,10 @@
-#include "vector.h"
 #include "stdio.h"
+
+extern "C"
+{
+#include "core.h"
+#include "vector.h"
+}
 
 #define BLOCK_SIZE 512
 #define MAX_N_FOR_A_CALL (BLOCK_SIZE*65535)
