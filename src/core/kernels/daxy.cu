@@ -18,7 +18,6 @@
 #include "stdio.h"
 #include "cudalang.h"
 #include "cudadebug.h"
-#include "vector.h"
 
 extern "C"
 {

@@ -16,7 +16,6 @@
 
 #include "cudadebug.h"
 #include "cudalang.h"
-#include "vector.h"
 
 extern "C"
 {
