@@ -158,6 +158,19 @@ int main(int argc, char** argv)
 	cudaDeviceSynchronize();
 	printf("dot res: %e\n", dotRes);
 
+/*
+	printf("Testing Vector functions..\n");
+	spgpuSdot(spgpuHandle, rowsCount, devZ, devZ);
+	spgpuSmdot(spgpuHandle, devZ,1,devZ,devZ,1,1);
+	spgpuSnrm2(spgpuHandle, rowsCount, devZ);
+	spgpuSmnrm2(spgpuHandle, devZ, 1, devZ, 1, 1);
+	spgpuSscal(spgpuHandle, devZ, 1, 2.0f, devZ);
+	spgpuSaxpby(spgpuHandle, devZ, 1, 2.0f, devZ, 1.0f, devZ);
+	spgpuSaxy(spgpuHandle, devZ, 1, 3.0f, devZ, devZ);
+	spgpuSaxypbz(spgpuHandle, devZ, 1, 4.0f, devZ, 1.0f, devZ, devZ);
+	spgpuSmaxy(spgpuHandle, devZ, 1, 2.0f, devZ, devZ, 1, 1);
+	spgpuSmaxypbz(spgpuHandle, devZ,1,1.0f,devZ,1.0f,devZ,devZ,1,1);
+*/	
 
 	cudaDeviceSynchronize();
 	spgpuDestroy(spgpuHandle);
