@@ -90,7 +90,7 @@ void spgpuSmaxy(spgpuHandle_t handle,
     }
 }
 
-__global__ void spgpuSaxybz_kern(float *w, int n, float beta, float* z, float alpha, float* x, float* y)
+__global__ void spgpuSaxypbz_kern(float *w, int n, float beta, float* z, float alpha, float* x, float* y)
 {
 	int id = threadIdx.x + BLOCK_SIZE*blockIdx.x;
 	
@@ -101,18 +101,18 @@ __global__ void spgpuSaxybz_kern(float *w, int n, float beta, float* z, float al
 }
 
 
-void spgpuSaxybz_(spgpuHandle_t handle, float *w, int n, float beta, float* z, float alpha, float* x, float* y)
+void spgpuSaxypbz_(spgpuHandle_t handle, float *w, int n, float beta, float* z, float alpha, float* x, float* y)
 {
   int msize = (n+BLOCK_SIZE-1)/BLOCK_SIZE;
 
   dim3 block(BLOCK_SIZE);
   dim3 grid(msize);
 
-  spgpuSaxybz_kern<<<grid, block, 0, handle->currentStream>>>(w, n, beta, z, alpha, x, y);
+  spgpuSaxypbz_kern<<<grid, block, 0, handle->currentStream>>>(w, n, beta, z, alpha, x, y);
 
 }
 
-void spgpuSaxybz(spgpuHandle_t handle,
+void spgpuSaxypbz(spgpuHandle_t handle,
 	__device float *w,
 	int n,
 	float beta,
@@ -132,7 +132,7 @@ void spgpuSaxybz(spgpuHandle_t handle,
 
 		while (n > MAX_N_FOR_A_CALL) //managing large vectors
 		{
-			spgpuSaxybz_(handle, w, MAX_N_FOR_A_CALL, beta, z, alpha, x, y);
+			spgpuSaxypbz_(handle, w, MAX_N_FOR_A_CALL, beta, z, alpha, x, y);
 	
 			x = x + MAX_N_FOR_A_CALL;
 			y = y + MAX_N_FOR_A_CALL;
@@ -140,15 +140,15 @@ void spgpuSaxybz(spgpuHandle_t handle,
 			n -= MAX_N_FOR_A_CALL;
 		}
     
-		spgpuSaxybz_(handle, w, MAX_N_FOR_A_CALL, beta, z, alpha, x, y);
+		spgpuSaxypbz_(handle, w, MAX_N_FOR_A_CALL, beta, z, alpha, x, y);
     }	
   
-	cudaCheckError("CUDA error on saxybz");
+	cudaCheckError("CUDA error on saxypbz");
 }
 
 
 
-void spgpuSmaxybz(spgpuHandle_t handle,
+void spgpuSmaxypbz(spgpuHandle_t handle,
 	__device float *w,
 	int n,
 	float beta,
@@ -161,7 +161,7 @@ void spgpuSmaxybz(spgpuHandle_t handle,
 {
   for (int i=0; i<count; i++)
     {
-      spgpuSaxybz(handle, w, n, beta, z, alpha, x, y);
+      spgpuSaxypbz(handle, w, n, beta, z, alpha, x, y);
 		
       x += pitch;
       y += pitch;
