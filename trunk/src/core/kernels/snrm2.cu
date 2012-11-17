@@ -30,7 +30,7 @@ extern "C"
 
 #define BLOCK_SIZE 512
 
-__device__ float reductionResult[128];
+__device__ float snrm2ReductionResult[128];
 
 __global__ void spgpuSnrm2_kern(int n, float* x)
 {
@@ -96,7 +96,7 @@ __global__ void spgpuSnrm2_kern(int n, float* x)
 		if (threadIdx.x < 2) vsSum[threadIdx.x] += vsSum[threadIdx.x + 2];
 	
 		if (threadIdx.x == 0)
-			reductionResult[blockIdx.x] = vsSum[0] + vsSum[1];
+			snrm2ReductionResult[blockIdx.x] = vsSum[0] + vsSum[1];
 	}
 }
 
@@ -121,7 +121,7 @@ float spgpuSnrm2(spgpuHandle_t handle, int n, __device float* x)
 	float tRes[128];
 
 	spgpuSnrm2_kern<<<blocks, BLOCK_SIZE, 0, handle->currentStream>>>(n, x);
-	cudaMemcpyFromSymbol(&tRes,"reductionResult",blocks*sizeof(float));
+	cudaMemcpyFromSymbol(tRes, snrm2ReductionResult,blocks*sizeof(float));
 
 	for (int i=0; i<blocks; ++i)
 	{

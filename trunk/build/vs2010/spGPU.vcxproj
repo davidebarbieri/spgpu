@@ -12,17 +12,17 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\core\core.c" />
+    <ClCompile Include="..\..\src\core\ell.c" />
+    <ClCompile Include="..\..\src\core\hell.c" />
     <ClCompile Include="..\..\src\external\mmio.c" />
-    <ClCompile Include="..\..\src\utils\mmread.cpp">
-      <CallingConvention Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Cdecl</CallingConvention>
-    </ClCompile>
+    <ClCompile Include="..\..\src\utils\mmread.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\core\core.h" />
     <ClInclude Include="..\..\src\core\ell.h" />
-    <ClInclude Include="..\..\src\core\ell_conv.hpp" />
+    <ClInclude Include="..\..\src\core\ell_conv.h" />
     <ClInclude Include="..\..\src\core\hell.h" />
-    <ClInclude Include="..\..\src\core\hell_conv.hpp" />
+    <ClInclude Include="..\..\src\core\hell_conv.h" />
     <ClInclude Include="..\..\src\core\kernels\cudadebug.h" />
     <ClInclude Include="..\..\src\core\kernels\cudalang.h" />
     <ClInclude Include="..\..\src\core\vector.h" />
@@ -33,44 +33,69 @@
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="..\..\src\core\kernels\daxpby.cu">
-      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">compute_13,sm_13;compute_20,sm_20</CodeGeneration>
-      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">compute_13,sm_13;compute_20,sm_20</CodeGeneration>
+      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">compute_13,sm_13;compute_20,sm_20;compute_30,sm_30</CodeGeneration>
+      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">compute_13,sm_13;compute_20,sm_20;compute_30,sm_30</CodeGeneration>
     </CudaCompile>
     <CudaCompile Include="..\..\src\core\kernels\daxy.cu">
-      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">compute_13,sm_13;compute_20,sm_20</CodeGeneration>
-      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">compute_13,sm_13;compute_20,sm_20</CodeGeneration>
+      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">compute_13,sm_13;compute_20,sm_20;compute_30,sm_30</CodeGeneration>
+      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">compute_13,sm_13;compute_20,sm_20;compute_30,sm_30</CodeGeneration>
     </CudaCompile>
     <CudaCompile Include="..\..\src\core\kernels\ddot.cu">
-      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">compute_13,sm_13;compute_20,sm_20</CodeGeneration>
-      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">compute_13,sm_13;compute_20,sm_20</CodeGeneration>
+      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">compute_13,sm_13;compute_20,sm_20;compute_30,sm_30</CodeGeneration>
+      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">compute_13,sm_13;compute_20,sm_20;compute_30,sm_30</CodeGeneration>
     </CudaCompile>
     <CudaCompile Include="..\..\src\core\kernels\dnrm2.cu">
-      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">compute_13,sm_13;compute_20,sm_20</CodeGeneration>
-      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">compute_13,sm_13;compute_20,sm_20</CodeGeneration>
+      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">compute_13,sm_13;compute_20,sm_20;compute_30,sm_30</CodeGeneration>
+      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">compute_13,sm_13;compute_20,sm_20;compute_30,sm_30</CodeGeneration>
     </CudaCompile>
     <CudaCompile Include="..\..\src\core\kernels\dscal.cu">
-      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">compute_13,sm_13;compute_20,sm_20</CodeGeneration>
-      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">compute_13,sm_13;compute_20,sm_20</CodeGeneration>
+      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">compute_13,sm_13;compute_20,sm_20;compute_30,sm_30</CodeGeneration>
+      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">compute_13,sm_13;compute_20,sm_20;compute_30,sm_30</CodeGeneration>
+    </CudaCompile>
+    <CudaCompile Include="..\..\src\core\kernels\dscatgath.cu">
+      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">compute_13,sm_13;compute_20,sm_20;compute_30,sm_30</CodeGeneration>
+      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">compute_13,sm_13;compute_20,sm_20;compute_30,sm_30</CodeGeneration>
     </CudaCompile>
     <CudaCompile Include="..\..\src\core\kernels\ell_dspmv.cu">
-      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">compute_13,sm_13;compute_20,sm_20</CodeGeneration>
-      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">compute_13,sm_13;compute_20,sm_20</CodeGeneration>
+      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">compute_13,sm_13;compute_20,sm_20;compute_30,sm_30</CodeGeneration>
+      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">compute_13,sm_13;compute_20,sm_20;compute_30,sm_30</CodeGeneration>
     </CudaCompile>
     <CudaCompile Include="..\..\src\core\kernels\ell_sspmv.cu">
-      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">compute_11,sm_11;compute_13,sm_13</CodeGeneration>
+      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">compute_10,sm_10;compute_20,sm_20;compute_30,sm_30</CodeGeneration>
+      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">compute_11,sm_11; compute_20,sm_20; compute_30,sm_30</CodeGeneration>
     </CudaCompile>
     <CudaCompile Include="..\..\src\core\kernels\hell_dspmv.cu">
-      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">compute_13,sm_13;compute_20,sm_20</CodeGeneration>
-      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">compute_13,sm_13;compute_20,sm_20</CodeGeneration>
+      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">compute_13,sm_13;compute_20,sm_20;compute_30,sm_30</CodeGeneration>
+      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">compute_13,sm_13;compute_20,sm_20;compute_30,sm_30</CodeGeneration>
     </CudaCompile>
     <CudaCompile Include="..\..\src\core\kernels\hell_sspmv.cu">
-      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">compute_11,sm_11;compute_13,sm_13</CodeGeneration>
+      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">compute_10,sm_10;compute_20,sm_20;compute_30,sm_30</CodeGeneration>
+      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">compute_11,sm_11; compute_20,sm_20; compute_30,sm_30</CodeGeneration>
     </CudaCompile>
-    <CudaCompile Include="..\..\src\core\kernels\saxpby.cu" />
-    <CudaCompile Include="..\..\src\core\kernels\saxy.cu" />
-    <CudaCompile Include="..\..\src\core\kernels\sdot.cu" />
-    <CudaCompile Include="..\..\src\core\kernels\snrm2.cu" />
-    <CudaCompile Include="..\..\src\core\kernels\sscal.cu" />
+    <CudaCompile Include="..\..\src\core\kernels\saxpby.cu">
+      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">compute_10,sm_10;compute_20,sm_20;compute_30,sm_30</CodeGeneration>
+      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">compute_11,sm_11; compute_20,sm_20; compute_30,sm_30</CodeGeneration>
+    </CudaCompile>
+    <CudaCompile Include="..\..\src\core\kernels\saxy.cu">
+      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">compute_10,sm_10;compute_20,sm_20;compute_30,sm_30</CodeGeneration>
+      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">compute_11,sm_11; compute_20,sm_20; compute_30,sm_30</CodeGeneration>
+    </CudaCompile>
+    <CudaCompile Include="..\..\src\core\kernels\sdot.cu">
+      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">compute_10,sm_10;compute_20,sm_20;compute_30,sm_30</CodeGeneration>
+      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">compute_11,sm_11; compute_20,sm_20; compute_30,sm_30</CodeGeneration>
+    </CudaCompile>
+    <CudaCompile Include="..\..\src\core\kernels\snrm2.cu">
+      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">compute_10,sm_10;compute_20,sm_20;compute_30,sm_30</CodeGeneration>
+      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">compute_11,sm_11; compute_20,sm_20; compute_30,sm_30</CodeGeneration>
+    </CudaCompile>
+    <CudaCompile Include="..\..\src\core\kernels\sscal.cu">
+      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">compute_10,sm_10;compute_20,sm_20;compute_30,sm_30</CodeGeneration>
+      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">compute_11,sm_11; compute_20,sm_20; compute_30,sm_30</CodeGeneration>
+    </CudaCompile>
+    <CudaCompile Include="..\..\src\core\kernels\sscatgath.cu">
+      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">compute_10,sm_10;compute_20,sm_20;compute_30,sm_30</CodeGeneration>
+      <CodeGeneration Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">compute_11,sm_11; compute_20,sm_20; compute_30,sm_30</CodeGeneration>
+    </CudaCompile>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{26949257-B53C-44D5-9C98-2EF6B01FDA20}</ProjectGuid>
@@ -90,7 +115,7 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
-    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 4.2.props" />
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 5.0.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -149,13 +174,13 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
 copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
     <CudaCompile>
-      <CodeGeneration>compute_11,sm_11</CodeGeneration>
+      <CodeGeneration>compute_20,sm_20</CodeGeneration>
       <Include>../../src; ../../src/core</Include>
       <Optimization>O3</Optimization>
     </CudaCompile>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 4.2.targets" />
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 5.0.targets" />
   </ImportGroup>
 </Project>
