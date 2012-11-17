@@ -30,7 +30,7 @@ extern "C"
 
 #define BLOCK_SIZE 512
 
-__device__ double reductionResult[128];
+__device__ double ddotReductionResult[128];
 
 __global__ void spgpuDdot_kern(int n, double* x, double* y)
 {
@@ -70,13 +70,13 @@ __global__ void spgpuDdot_kern(int n, double* x, double* y)
 		}
 
 	//useless (because inter-warp)
-	/*
+	
 	}
 	__syncthreads(); 
 
 	if (threadIdx.x < 32) 
 	{
-	*/
+	
 
 		volatile double* vsSum = sSum;
 		vsSum[threadIdx.x] = res;
@@ -87,7 +87,7 @@ __global__ void spgpuDdot_kern(int n, double* x, double* y)
 		if (threadIdx.x < 2) vsSum[threadIdx.x] += vsSum[threadIdx.x + 2];
 	
 		if (threadIdx.x == 0)
-			reductionResult[blockIdx.x] = vsSum[0] + vsSum[1];
+			ddotReductionResult[blockIdx.x] = vsSum[0] + vsSum[1];
 	}
 }
 
@@ -112,7 +112,7 @@ double spgpuDdot(spgpuHandle_t handle, int n, __device double* a, __device doubl
 	double tRes[128];
 
 	spgpuDdot_kern<<<blocks, BLOCK_SIZE, 0, handle->currentStream>>>(n, a, b);
-	cudaMemcpyFromSymbol(&tRes,"reductionResult",blocks*sizeof(double));
+	cudaMemcpyFromSymbol(tRes, ddotReductionResult,blocks*sizeof(double));
 
 	for (int i=0; i<blocks; ++i)
 	{

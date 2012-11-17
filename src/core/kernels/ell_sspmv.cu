@@ -26,9 +26,6 @@ extern "C"
 
 #include "debug.h"
 
-#if __CUDA_ARCH__ < 200
-#define ENABLE_CACHE
-#endif
 
 #ifdef ENABLE_CACHE
 // Texture cache management

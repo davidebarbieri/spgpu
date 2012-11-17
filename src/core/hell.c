@@ -10,6 +10,10 @@ void computeHellAllocSize(
 {
 	int totalLen = 0;
 	int i;
+	int remainings;
+	int done;
+	int maxLen;
+
 	for (i=0; i<rowsCount/hackSize; ++i)
 	{
 		int maxLen = 0;
@@ -24,9 +28,9 @@ void computeHellAllocSize(
 		totalLen += maxLen;
 	}
 
-	int remainings = rowsCount % hackSize;
-	int done = (rowsCount/hackSize)*hackSize;
-	int maxLen = 0;
+	remainings = rowsCount % hackSize;
+	done = (rowsCount/hackSize)*hackSize;
+	maxLen = 0;
 	
 	for (i=0; i<remainings; ++i)
 	{
@@ -67,21 +71,23 @@ void ellToHell(
 	for (i=0; i<hacks; ++i)
 	{
 		int maxLen = 0;
+		int j;
 		hackOffsets[i] = hackOffset;
 
-		int j;
 		for (j=0; j<hackSize; ++j)
 		{
 			int row = i*hackSize + j;
+			int rowLen;
+			int k;
+
 			if (row >= rowsCount)
 				break;
 
-			int rowLen = ellRowLengths[row];
+			rowLen = ellRowLengths[row];
 
 			if (rowLen > maxLen)
 				maxLen = rowLen;
 
-			int k;
 			for (k=0; k<rowLen; ++k)
 			{
 				memcpy(currValPos + (j + k*hackSize)*elementSize,

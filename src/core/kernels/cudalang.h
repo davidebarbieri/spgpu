@@ -29,3 +29,5 @@
 #define PREC_DMUL(a,b) __dmul_rn((a),(b))
 #endif
 
+
+#define ENABLE_CACHE
