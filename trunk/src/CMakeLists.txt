@@ -110,7 +110,8 @@ link_directories (${GLOBAL_LIBRARIES})
 
 set(GENCODE -gencode=arch=compute_11,code=sm_11 -gencode=arch=compute_20,code=sm_20)
 set(GENCODE_DOUBLE -gencode=arch=compute_13,code=sm_13 -gencode=arch=compute_20,code=sm_20)
-# set(ADDITIONAL_OPTIONS -DDEBUG)
+#set(ADDITIONAL_OPTIONS -DDEBUG -DASSUME_LOCK_SYNC_PARALLELISM)
+set(ADDITIONAL_OPTIONS -DASSUME_LOCK_SYNC_PARALLELISM)
 
 message(STATUS "13" ${CUDA_SM13_SOURCES})
 message(STATUS "XX" ${CUDA_SOURCES})
@@ -125,17 +126,19 @@ add_executable(hellperf_d ${CMAKE_CURRENT_SOURCE_DIR}/tests/hellPerf.cpp)
 add_executable(ctest ${CMAKE_CURRENT_SOURCE_DIR}/tests/ctest.c)
 add_executable(testSpVec_s ${CMAKE_CURRENT_SOURCE_DIR}/tests/testSparseVector.c)
 add_executable(testSpVec_d ${CMAKE_CURRENT_SOURCE_DIR}/tests/testSparseVector.c)
+add_executable(testDeVec_s ${CMAKE_CURRENT_SOURCE_DIR}/tests/testDenseVector.c)
 set_target_properties(hellperf_d PROPERTIES COMPILE_FLAGS -DTEST_DOUBLE)
 set_target_properties(testSpVec_d PROPERTIES COMPILE_FLAGS -DTEST_DOUBLE)
 
 CUDA_ADD_CUBLAS_TO_TARGET(hellperf_s)
 CUDA_ADD_CUBLAS_TO_TARGET(hellperf_d)
+CUDA_ADD_CUBLAS_TO_TARGET(testDeVec_s)
 target_link_libraries(hellperf_s spgpu)
 target_link_libraries(hellperf_d spgpu)
 target_link_libraries(ctest spgpu)
 target_link_libraries(testSpVec_s spgpu)
 target_link_libraries(testSpVec_d spgpu)
-
+target_link_libraries(testDeVec_s spgpu)
 
 
 

@@ -27,8 +27,10 @@ extern "C"
 
 //#define USE_CUBLAS
 
+#define BLOCK_SIZE 320
+//#define BLOCK_SIZE 512
 
-#define BLOCK_SIZE 512
+//#define ASSUME_LOCK_SYNC_PARALLELISM
 
 __device__ float snrm2ReductionResult[128];
 
@@ -79,14 +81,15 @@ __global__ void spgpuSnrm2_kern(int n, float* x)
 		}
 
 	//useless (because inter-warp)
-	/*
+#ifndef	ASSUME_LOCK_SYNC_PARALLELISM
 	}
 	__syncthreads(); 
 
 	if (threadIdx.x < 32) 
 	{
-	*/
+#endif	
 
+#ifdef ASSUME_LOCK_SYNC_PARALLELISM
 		volatile float* vsSum = sSum;
 		vsSum[threadIdx.x] = res;
 
@@ -94,9 +97,24 @@ __global__ void spgpuSnrm2_kern(int n, float* x)
 		if (threadIdx.x < 8) vsSum[threadIdx.x] += vsSum[threadIdx.x + 8];
 		if (threadIdx.x < 4) vsSum[threadIdx.x] += vsSum[threadIdx.x + 4];
 		if (threadIdx.x < 2) vsSum[threadIdx.x] += vsSum[threadIdx.x + 2];
-	
 		if (threadIdx.x == 0)
 			snrm2ReductionResult[blockIdx.x] = vsSum[0] + vsSum[1];
+
+#else
+		float* vsSum = sSum;
+		vsSum[threadIdx.x] = res;
+
+		if (threadIdx.x < 16) vsSum[threadIdx.x] += vsSum[threadIdx.x + 16];
+		__syncthreads();
+		if (threadIdx.x < 8) vsSum[threadIdx.x] += vsSum[threadIdx.x + 8];
+		__syncthreads();
+		if (threadIdx.x < 4) vsSum[threadIdx.x] += vsSum[threadIdx.x + 4];
+		__syncthreads();
+		if (threadIdx.x < 2) vsSum[threadIdx.x] += vsSum[threadIdx.x + 2];
+		__syncthreads();
+		if (threadIdx.x == 0)
+		snrm2ReductionResult[blockIdx.x] = vsSum[0] + vsSum[1];
+#endif
 	}
 }
 

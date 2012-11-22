@@ -140,7 +140,7 @@ _spgpuDellspmv (spgpuHandle_t handle, double* z, const double *y, double alpha, 
   	unbind_tex_x ((const int2 *) x);
 #endif
 
-	cudaCheckError("ERRORE (SSPVM)!");
+	cudaCheckError("ERRORE (DSPVM)!");
 }
 
 
