@@ -36,9 +36,9 @@ __global__ void spgpuDaxpby_krn(double *z, int n, double beta, double *y, double
 	if (id < n)
 	{
 		if (beta == 0.0)
-			z[id] = PREC_FMUL(alpha,x[id]);
+			z[id] = PREC_DMUL(alpha,x[id]);
 		else
-			z[id] = PREC_FADD(PREC_FMUL(alpha, x[id]), PREC_FMUL(beta,y[id]));
+			z[id] = PREC_DADD(PREC_DMUL(alpha, x[id]), PREC_DMUL(beta,y[id]));
 	}
 }
 

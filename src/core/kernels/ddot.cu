@@ -30,6 +30,8 @@ extern "C"
 
 #define BLOCK_SIZE 512
 
+//#define ASSUME_LOCK_SYNC_PARALLELISM
+
 __device__ double ddotReductionResult[128];
 
 __global__ void spgpuDdot_kern(int n, double* x, double* y)
@@ -70,14 +72,15 @@ __global__ void spgpuDdot_kern(int n, double* x, double* y)
 		}
 
 	//useless (because inter-warp)
-	
+#ifndef	ASSUME_LOCK_SYNC_PARALLELISM
 	}
 	__syncthreads(); 
 
 	if (threadIdx.x < 32) 
 	{
-	
+#endif	
 
+#ifdef ASSUME_LOCK_SYNC_PARALLELISM
 		volatile double* vsSum = sSum;
 		vsSum[threadIdx.x] = res;
 
@@ -85,9 +88,24 @@ __global__ void spgpuDdot_kern(int n, double* x, double* y)
 		if (threadIdx.x < 8) vsSum[threadIdx.x] += vsSum[threadIdx.x + 8];
 		if (threadIdx.x < 4) vsSum[threadIdx.x] += vsSum[threadIdx.x + 4];
 		if (threadIdx.x < 2) vsSum[threadIdx.x] += vsSum[threadIdx.x + 2];
-	
 		if (threadIdx.x == 0)
 			ddotReductionResult[blockIdx.x] = vsSum[0] + vsSum[1];
+
+#else
+		double* vsSum = sSum;
+		vsSum[threadIdx.x] = res;
+
+		if (threadIdx.x < 16) vsSum[threadIdx.x] += vsSum[threadIdx.x + 16];
+		__syncthreads();
+		if (threadIdx.x < 8) vsSum[threadIdx.x] += vsSum[threadIdx.x + 8];
+		__syncthreads();
+		if (threadIdx.x < 4) vsSum[threadIdx.x] += vsSum[threadIdx.x + 4];
+		__syncthreads();
+		if (threadIdx.x < 2) vsSum[threadIdx.x] += vsSum[threadIdx.x + 2];
+		__syncthreads();
+		if (threadIdx.x == 0)
+		ddotReductionResult[blockIdx.x] = vsSum[0] + vsSum[1];
+#endif
 	}
 }
 

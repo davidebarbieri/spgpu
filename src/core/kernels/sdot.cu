@@ -26,12 +26,11 @@ extern "C"
 
 //#define USE_CUBLAS
 
-#if __CUDA_ARCH__ < 120
-// this function allocates too much registers on pre 1.2
 #define BLOCK_SIZE 320
-#else
-#define BLOCK_SIZE 512
-#endif
+//#define BLOCK_SIZE 512
+
+//#define ASSUME_LOCK_SYNC_PARALLELISM
+
 
 __device__ float sdotReductionResult[128];
 
@@ -84,14 +83,16 @@ __global__ void spgpuSdot_kern(int n, float* x, float* y)
 		}
 
 	//useless (because inter-warp)
-	
+#ifndef	ASSUME_LOCK_SYNC_PARALLELISM
 	}
 	__syncthreads(); 
 
 	if (threadIdx.x < 32) 
 	{
-	
+#endif	
 
+
+#ifdef ASSUME_LOCK_SYNC_PARALLELISM
 		volatile float* vsSum = sSum;
 		vsSum[threadIdx.x] = res;
 
@@ -99,9 +100,24 @@ __global__ void spgpuSdot_kern(int n, float* x, float* y)
 		if (threadIdx.x < 8) vsSum[threadIdx.x] += vsSum[threadIdx.x + 8];
 		if (threadIdx.x < 4) vsSum[threadIdx.x] += vsSum[threadIdx.x + 4];
 		if (threadIdx.x < 2) vsSum[threadIdx.x] += vsSum[threadIdx.x + 2];
-	
 		if (threadIdx.x == 0)
 			sdotReductionResult[blockIdx.x] = vsSum[0] + vsSum[1];
+
+#else
+		float* vsSum = sSum;
+		vsSum[threadIdx.x] = res;
+
+		if (threadIdx.x < 16) vsSum[threadIdx.x] += vsSum[threadIdx.x + 16];
+		__syncthreads();
+		if (threadIdx.x < 8) vsSum[threadIdx.x] += vsSum[threadIdx.x + 8];
+		__syncthreads();
+		if (threadIdx.x < 4) vsSum[threadIdx.x] += vsSum[threadIdx.x + 4];
+		__syncthreads();
+		if (threadIdx.x < 2) vsSum[threadIdx.x] += vsSum[threadIdx.x + 2];
+		__syncthreads();
+		if (threadIdx.x == 0)
+		sdotReductionResult[blockIdx.x] = vsSum[0] + vsSum[1];
+#endif
 	}
 }
 
