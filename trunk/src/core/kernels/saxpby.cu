@@ -79,3 +79,18 @@ void spgpuSaxpby(spgpuHandle_t handle,
 
 	cudaCheckError("CUDA error on saxpby");
 }
+
+void spgpuSmaxpby(spgpuHandle_t handle,
+		  __device float *z,
+		  int n,
+		  float beta,
+		  __device float *y,
+		  float alpha,
+		  __device float* x, 
+		  int count, int pitch)
+{
+
+  for (int i=0; i<count; i++)
+    spgpuSaxpby(handle, z+pitch*i, n, beta, y+pitch*i, alpha, x+pitch*i);
+  
+}
