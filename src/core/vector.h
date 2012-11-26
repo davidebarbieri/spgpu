@@ -125,7 +125,30 @@ void spgpuSaxpby(spgpuHandle_t handle,
 	__device float *y,
 	float alpha,
 	__device float* x);
-	
+
+/** 
+* \fn void spgpuSmaxpby(spgpuHandle_t handle, __device float *z, int n, float beta, __device float *y, float alpha, __device float* x)
+ * Computes the single precision z = beta * y + alpha * x of x and y multivectors. z could be exactly x or y (without offset) or another vector.
+ * \param handle the spgpu handle used to call this routine
+ * \param z the resulting vector
+ * \param n the vectors' length
+ * \param beta the beta value
+ * \param y the first input vector
+ * \param alpha the alpha value
+ * \param x the second input vector
+ * \param count the number of vectors in z,x and y multivectors
+ * \param pitch the multivectors pitch
+ */
+
+void spgpuSmaxpby(spgpuHandle_t handle,
+		  __device float *z,
+		  int n,
+		  float beta,
+		  __device float *y,
+		  float alpha,
+		  __device float* x, 
+		  int count, int pitch);
+
 /** 
 * \fn void spgpuSaxy(spgpuHandle_t handle, __device float *z, int n, float alpha, __device float *x, __device float* y)
  * Computes the single precision z = alpha * x * y. z could be exactly x or y (without offset) or another vector.
@@ -346,6 +369,28 @@ void spgpuDaxpby(spgpuHandle_t handle,
 	double alpha,
 	__device double* x);
 	
+/** 
+* \fn void spgpuDmaxpby(spgpuHandle_t handle, __device double *z, int n, double beta, __device double *y, double alpha, __device double* x, int size, int count, int pitch)
+ * Computes the double precision z = beta * y + alpha * x of x and y multivectors. z could be exactly x or y (without offset) or another vector.
+ * \param handle the spgpu handle used to call this routine
+ * \param z the resulting vector
+ * \param n the vectors' length
+ * \param beta the beta value
+ * \param y the first input vector
+ * \param alpha the alpha value
+ * \param x the second input vector
+ * \param count the number of vectors in z,x and y multivectors
+ * \param pitch the multivector's pitch
+ */
+
+  void spgpuDmaxpby(spgpuHandle_t handle,
+		    __device double *z,
+		    int n,
+		    double beta,
+		    __device double *y,
+		    double alpha,
+		    __device double* x,
+		    int count, int pitch);
 
 /** 
 * \fn void spgpuDaxy(spgpuHandle_t handle, __device double *z, int n, double alpha, __device double *x, __device double* y)

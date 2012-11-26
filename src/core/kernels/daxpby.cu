@@ -80,3 +80,18 @@ void spgpuDaxpby(spgpuHandle_t handle,
 
 	cudaCheckError("CUDA error on daxpby");
 }
+
+void spgpuDmaxpby(spgpuHandle_t handle,
+		  __device double *z,
+		  int n,
+		  double beta,
+		  __device double *y,
+		  double alpha,
+		  __device double* x, 
+		  int count, int pitch)
+{
+
+  for (int i=0; i<count; i++)
+    spgpuDaxpby(handle, z+pitch*i, n, beta, y+pitch*i, alpha, x+pitch*i);
+  
+}
