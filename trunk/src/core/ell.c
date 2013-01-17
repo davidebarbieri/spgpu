@@ -78,3 +78,60 @@ void cooToEll(
 	}
 	free(currentPos);
 }
+
+void ellToOell(
+	int *rIdx,
+	void *dstEllValues,
+	int *dstEllIndices,
+	int *dstRs,
+	const void *srcEllValues,
+	const int *srcEllIndices,
+	const int *srcRs,
+	int ellValuesPitch,
+	int ellIndicesPitch,
+	int rowsCount,
+	spgpuType_t valuesType
+	)
+{
+	size_t elementSize = spgpuSizeOf(valuesType);
+
+	int i,j;
+	for (i=0; i<rowsCount; ++i)
+	{
+		rIdx[i] = i;
+		dstRs[i] = srcRs[i];
+	}
+	// simple bubble sort..
+	for(i=1;i<rowsCount;i++) 
+	{ 
+		for(j=0;j<rowsCount-i;j++) 
+		{ 
+			if(dstRs[j] > dstRs[j+1]) 
+			{ 
+				int temp=dstRs[j]; 
+				dstRs[j]=dstRs[j+1]; 
+				dstRs[j+1]=temp; 
+
+				temp=rIdx[j]; 
+				rIdx[j]=rIdx[j+1]; 
+				rIdx[j+1]=temp; 
+			} 
+		} 
+	} 
+	for(i=0;i<rowsCount;i++) 
+	{ 
+		//Copy a row
+		int srcId = rIdx[i];
+		int srcLen = srcRs[srcId];
+
+		int k;
+		for (k=0; k<srcLen; ++k)
+		{
+			void* dstCm = ((char*)dstEllValues + i*elementSize) + k*ellValuesPitch*elementSize;
+			void* srcCm = ((char*)srcEllValues + srcId*elementSize) + k*ellValuesPitch*elementSize;
+			memcpy(dstCm, srcCm, elementSize);
+
+			dstEllIndices[i + k*ellIndicesPitch] = srcEllIndices[srcId + k*ellIndicesPitch];
+		}
+	}
+}

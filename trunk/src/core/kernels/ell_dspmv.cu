@@ -39,19 +39,10 @@ texture < int2, 1, cudaReadModeElementType > x_tex;
 #define THREAD_BLOCK 128
 #define MAX_N_FOR_A_CALL (THREAD_BLOCK*65535)
 
-__global__ void
-spgpuDellspmv_krn (double *z, const double *y, double alpha, const double* cM, const int* rP, int cMPitch, int rPPitch, const int* rS, int rows, const double *x, double beta, int baseIndex)
+__device__ void
+spgpuDellspmv_ridx (int i, float yVal, int outRow,
+	double *z, const double *y, double alpha, const double* cM, const int* rP, int cMPitch, int rPPitch, const int* rS, int rows, const double *x, double beta, int baseIndex)
 {
-	int i = threadIdx.x + blockIdx.x * (THREAD_BLOCK);
-
-	if (i >= rows)
-		return;
-
-	double yVal;
-	
-	if (beta != 0.0)
-		yVal = y[i];
-
 	double zProd = 0.0;
 
 	rS += i; rP += i; cM += i;
@@ -118,14 +109,61 @@ spgpuDellspmv_krn (double *z, const double *y, double alpha, const double* cM, c
     }
 
 	if (beta == 0.0)
-		z[i] = PREC_DMUL(alpha, zProd);
+		z[outRow] = PREC_DMUL(alpha, zProd);
 	else
-		z[i] = PREC_DADD(PREC_DMUL (beta, yVal), PREC_DMUL (alpha, zProd));
+		z[outRow] = PREC_DADD(PREC_DMUL (beta, yVal), PREC_DMUL (alpha, zProd));
 }	
 
 
+__global__ void
+spgpuDellspmv_krn_ridx (double *z, const double *y, double alpha, const double* cM, const int* rP, int cMPitch, int rPPitch, const int* rS, const int* rIdx, int rows, const double *x, double beta, int baseIndex)
+{
+	int i = threadIdx.x + blockIdx.x * (THREAD_BLOCK);
+	if (i >= rows)
+		return;
+
+	int outRow = rIdx[i];
+	double yVal;
+	if (beta != 0.0)
+		yVal = y[outRow];
+
+	spgpuDellspmv_ridx (i, yVal, outRow,
+		z, y, alpha, cM, rP, cMPitch, rPPitch, rS, rows, x, beta, baseIndex);
+}
+
+
+__device__ void
+spgpuDellspmv_ (double *z, const double *y, double alpha, const double* cM, const int* rP, int cMPitch, int rPPitch, const int* rS, int rows, const double *x, double beta, int baseIndex)
+{
+	int i = threadIdx.x + blockIdx.x * (THREAD_BLOCK);
+	if (i >= rows)
+		return;
+
+	double yVal;
+
+	if (beta != 0.0)
+		yVal = y[i];
+
+	spgpuDellspmv_ridx (i, yVal, i,
+		z, y, alpha, cM, rP, cMPitch, rPPitch, rS, rows, x, beta, baseIndex);
+}
+
+// Force to recompile and optimize with llvm
+__global__ void
+spgpuDellspmv_krn_b0 (double *z, const double *y, double alpha, const double* cM, const int* rP, int cMPitch, int rPPitch, const int* rS, int rows, const double *x, int baseIndex)
+{
+	spgpuDellspmv_ (z, y, alpha, cM, rP, cMPitch, rPPitch, rS, rows, x, 0.0f, baseIndex);
+}
+
+__global__ void
+spgpuDellspmv_krn (double *z, const double *y, double alpha, const double* cM, const int* rP, int cMPitch, int rPPitch, const int* rS, int rows, const double *x, double beta, int baseIndex)
+{
+	spgpuDellspmv_ (z, y, alpha, cM, rP, cMPitch, rPPitch, rS, rows, x, beta, baseIndex);
+}
+
 void
-_spgpuDellspmv (spgpuHandle_t handle, double* z, const double *y, double alpha, const double* cM, const int* rP, int cMPitch, int rPPitch, const int* rS, int rows, const double *x, double beta, int baseIndex)
+_spgpuDellspmv (spgpuHandle_t handle, double* z, const double *y, double alpha, const double* cM, const int* rP, int cMPitch, int rPPitch, const int* rS,  
+	const __device int* rIdx, int rows, const double *x, double beta, int baseIndex)
 {
 	dim3 block (THREAD_BLOCK);
 	dim3 grid ((rows + THREAD_BLOCK - 1) / THREAD_BLOCK);
@@ -134,8 +172,16 @@ _spgpuDellspmv (spgpuHandle_t handle, double* z, const double *y, double alpha, 
 	bind_tex_x ((const int2 *) x);
 #endif
 
-	spgpuDellspmv_krn <<< grid, block, 0, handle->currentStream >>> (z, y, alpha, cM, rP, cMPitch, rPPitch, rS, rows, x, beta, baseIndex);
-	
+	if (rIdx)
+		spgpuDellspmv_krn_ridx <<< grid, block, 0, handle->currentStream >>> (z, y, alpha, cM, rP, cMPitch, rPPitch, rS, rIdx, rows, x, beta, baseIndex);
+	else
+	{
+		if (beta != 0.0)
+			spgpuDellspmv_krn <<< grid, block, 0, handle->currentStream >>> (z, y, alpha, cM, rP, cMPitch, rPPitch, rS, rows, x, beta, baseIndex);
+		else
+			spgpuDellspmv_krn_b0 <<< grid, block, 0, handle->currentStream >>> (z, y, alpha, cM, rP, cMPitch, rPPitch, rS, rows, x, baseIndex);
+	}
+
 #ifdef ENABLE_CACHE
   	unbind_tex_x ((const int2 *) x);
 #endif
@@ -145,11 +191,24 @@ _spgpuDellspmv (spgpuHandle_t handle, double* z, const double *y, double alpha, 
 
 
 void 
-spgpuDellspmv (spgpuHandle_t handle, double* z, const double *y, double alpha, const  double* cM, const  int* rP, int cMPitch, int rPPitch, const  int* rS, int rows, const double *x, double beta, int baseIndex)
+spgpuDellspmv (spgpuHandle_t handle, 
+	double* z, 
+	const double *y, 
+	double alpha, 
+	const double* cM, 
+	const int* rP, 
+	int cMPitch, 
+	int rPPitch, 
+	const int* rS, 
+	const __device int* rIdx, 
+	int rows, 
+	const double *x, 
+	double beta, 
+	int baseIndex)
 {
 	while (rows > MAX_N_FOR_A_CALL) //managing large vectors
 	{
-		_spgpuDellspmv (handle, z, y, alpha, cM, rP, cMPitch, rPPitch, rS, MAX_N_FOR_A_CALL, x, beta, baseIndex);
+		_spgpuDellspmv (handle, z, y, alpha, cM, rP, cMPitch, rPPitch, rS, rIdx, MAX_N_FOR_A_CALL, x, beta, baseIndex);
 
 		y = y + MAX_N_FOR_A_CALL;
 		cM = cM + MAX_N_FOR_A_CALL;
@@ -159,6 +218,6 @@ spgpuDellspmv (spgpuHandle_t handle, double* z, const double *y, double alpha, c
 		rows -= MAX_N_FOR_A_CALL;
 	}
 	
-	_spgpuDellspmv (handle, z, y, alpha, cM, rP, cMPitch, rPPitch, rS, rows, x, beta, baseIndex);
+	_spgpuDellspmv (handle, z, y, alpha, cM, rP, cMPitch, rPPitch, rS, rIdx, rows, x, beta, baseIndex);
 }
 

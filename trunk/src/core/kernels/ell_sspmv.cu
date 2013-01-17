@@ -38,19 +38,10 @@ texture < float, 1, cudaReadModeElementType > x_tex;
 #define THREAD_BLOCK 128
 #define MAX_N_FOR_A_CALL (THREAD_BLOCK*65535)
 
-__global__ void
-spgpuSellspmv_krn (float *z, const float *y, float alpha, const float* cM, const int* rP, int cMPitch, int rPPitch, const int* rS, int rows, const float *x, float beta, int baseIndex)
+__device__ void
+spgpuSellspmv_ridx (int i, float yVal, int outRow,
+	float *z, const float *y, float alpha, const float* cM, const int* rP, int cMPitch, int rPPitch, const int* rS, int rows, const float *x, float beta, int baseIndex)
 {
-	int i = threadIdx.x + blockIdx.x * (THREAD_BLOCK);
-
-	if (i >= rows)
-		return;
-
-	float yVal;
-	
-	if (beta != 0.0f)
-		yVal = y[i];
-
 	float zProd = 0.0f;
 
 	rS += i; rP += i; cM += i;
@@ -102,14 +93,60 @@ spgpuSellspmv_krn (float *z, const float *y, float alpha, const float* cM, const
     }
 
 	if (beta == 0.0f)
-		z[i] = PREC_FMUL(alpha, zProd);
+		z[outRow] = PREC_FMUL(alpha, zProd);
 	else
-		z[i] = PREC_FADD(PREC_FMUL (beta, yVal), PREC_FMUL (alpha, zProd));
+		z[outRow] = PREC_FADD(PREC_FMUL (beta, yVal), PREC_FMUL (alpha, zProd));
 }	
 
+__global__ void
+spgpuSellspmv_krn_ridx (float *z, const float *y, float alpha, const float* cM, const int* rP, int cMPitch, int rPPitch, const int* rS, const int* rIdx, int rows, const float *x, float beta, int baseIndex)
+{
+	int i = threadIdx.x + blockIdx.x * (THREAD_BLOCK);
+	if (i >= rows)
+		return;
+
+	int outRow = rIdx[i];
+	float yVal;
+	if (beta != 0.0f)
+		yVal = y[outRow];
+
+	spgpuSellspmv_ridx (i, yVal, outRow,
+		z, y, alpha, cM, rP, cMPitch, rPPitch, rS, rows, x, beta, baseIndex);
+}
+
+
+__device__ void
+spgpuSellspmv_ (float *z, const float *y, float alpha, const float* cM, const int* rP, int cMPitch, int rPPitch, const int* rS, int rows, const float *x, float beta, int baseIndex)
+{
+	int i = threadIdx.x + blockIdx.x * (THREAD_BLOCK);
+	if (i >= rows)
+		return;
+
+	float yVal;
+
+	if (beta != 0.0f)
+		yVal = y[i];
+
+	spgpuSellspmv_ridx (i, yVal, i,
+		z, y, alpha, cM, rP, cMPitch, rPPitch, rS, rows, x, beta, baseIndex);
+}
+
+// Force to recompile and optimize with llvm
+__global__ void
+spgpuSellspmv_krn_b0 (float *z, const float *y, float alpha, const float* cM, const int* rP, int cMPitch, int rPPitch, const int* rS, int rows, const float *x, int baseIndex)
+{
+	spgpuSellspmv_ (z, y, alpha, cM, rP, cMPitch, rPPitch, rS, rows, x, 0.0f, baseIndex);
+}
+
+__global__ void
+spgpuSellspmv_krn (float *z, const float *y, float alpha, const float* cM, const int* rP, int cMPitch, int rPPitch, const int* rS, int rows, const float *x, float beta, int baseIndex)
+{
+	spgpuSellspmv_ (z, y, alpha, cM, rP, cMPitch, rPPitch, rS, rows, x, beta, baseIndex);
+}
 
 void
-_spgpuSellspmv (spgpuHandle_t handle, float* z, const float *y, float alpha, const float* cM, const int* rP, int cMPitch, int rPPitch, const int* rS, int rows, const float *x, float beta, int baseIndex)
+_spgpuSellspmv (spgpuHandle_t handle, float* z, const float *y, float alpha, const float* cM, const int* rP, int cMPitch, int rPPitch, const int* rS, 
+	const __device int* rIdx, int rows, const float *x, float beta, int baseIndex)
 {
 	dim3 block (THREAD_BLOCK);
 	dim3 grid ((rows + THREAD_BLOCK - 1) / THREAD_BLOCK);
@@ -118,8 +155,16 @@ _spgpuSellspmv (spgpuHandle_t handle, float* z, const float *y, float alpha, con
 	bind_tex_x (x);
 #endif
 
-	spgpuSellspmv_krn <<< grid, block, 0, handle->currentStream >>> (z, y, alpha, cM, rP, cMPitch, rPPitch, rS, rows, x, beta, baseIndex);
-	
+	if (rIdx)
+		spgpuSellspmv_krn_ridx <<< grid, block, 0, handle->currentStream >>> (z, y, alpha, cM, rP, cMPitch, rPPitch, rS, rIdx, rows, x, beta, baseIndex);
+	else
+	{
+		if (beta != 0.0f)
+			spgpuSellspmv_krn <<< grid, block, 0, handle->currentStream >>> (z, y, alpha, cM, rP, cMPitch, rPPitch, rS, rows, x, beta, baseIndex);
+		else
+			spgpuSellspmv_krn_b0 <<< grid, block, 0, handle->currentStream >>> (z, y, alpha, cM, rP, cMPitch, rPPitch, rS, rows, x, baseIndex);
+	}
+
 #ifdef ENABLE_CACHE
   	unbind_tex_x (x);
 #endif
@@ -128,11 +173,24 @@ _spgpuSellspmv (spgpuHandle_t handle, float* z, const float *y, float alpha, con
 }
 
 void 
-spgpuSellspmv (spgpuHandle_t handle, float* z, const float *y, float alpha, const  float* cM, const  int* rP, int cMPitch, int rPPitch, const  int* rS, int rows, const float *x, float beta, int baseIndex)
+spgpuSellspmv (spgpuHandle_t handle, 
+	float* z, 
+	const float *y, 
+	float alpha, 
+	const float* cM, 
+	const int* rP, 
+	int cMPitch, 
+	int rPPitch, 
+	const int* rS, 
+	const __device int* rIdx, 
+	int rows, 
+	const float *x, 
+	float beta, 
+	int baseIndex)
 {
 	while (rows > MAX_N_FOR_A_CALL) //managing large vectors
 	{
-		_spgpuSellspmv (handle, z, y, alpha, cM, rP, cMPitch, rPPitch, rS, MAX_N_FOR_A_CALL, x, beta, baseIndex);
+		_spgpuSellspmv (handle, z, y, alpha, cM, rP, cMPitch, rPPitch, rS, rIdx, MAX_N_FOR_A_CALL, x, beta, baseIndex);
 
 		y = y + MAX_N_FOR_A_CALL;
 		cM = cM + MAX_N_FOR_A_CALL;
@@ -142,7 +200,5 @@ spgpuSellspmv (spgpuHandle_t handle, float* z, const float *y, float alpha, cons
 		rows -= MAX_N_FOR_A_CALL;
 	}
 	
-	_spgpuSellspmv (handle, z, y, alpha, cM, rP, cMPitch, rPPitch, rS, rows, x, beta, baseIndex);
+	_spgpuSellspmv (handle, z, y, alpha, cM, rP, cMPitch, rPPitch, rS, rIdx, rows, x, beta, baseIndex);
 }
-
-

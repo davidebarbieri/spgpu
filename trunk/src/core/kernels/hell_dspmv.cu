@@ -40,27 +40,11 @@ texture < int2, 1, cudaReadModeElementType > x_tex;
 
 extern __shared__ int dynShrMem[]; 
 
-__global__ void
-spgpuDhellspmv_krn (double *z, const double *y, double alpha, const double* cM, const int* rP, int hackSize, const int* hackOffsets, const int* rS, const int* rIdx, int rows, const double *x, double beta, int baseIndex)
+__device__ void
+spgpuDhellspmv_ridx (int i, double yVal, int outRow,
+	double *z, const double *y, double alpha, const double* cM, const int* rP, int hackSize, const int* hackOffsets, const int* rS, const int* rIdx, int rows, const double *x, double beta, int baseIndex)
 {
-	int i = threadIdx.x + blockIdx.x * (THREAD_BLOCK);
-
-	if (i >= rows)
-		return;
-
-	double yVal;
 	
-	int outRow;
-
-	if (rIdx)
-		outRow = rIdx[i];
-	else
-		outRow = i;
-
-	if (beta != 0.0)
-	{
-		yVal = y[outRow];
-	}
 
 	double zProd = 0.0;
 
@@ -150,6 +134,51 @@ spgpuDhellspmv_krn (double *z, const double *y, double alpha, const double* cM, 
 }
 
 
+__global__ void
+spgpuDhellspmv_krn_ridx (double *z, const double *y, double alpha, const double* cM, const int* rP, int hackSize, const int* hackOffsets, const int* rS, const int* rIdx, int rows, const double *x, double beta, int baseIndex)
+{
+	int i = threadIdx.x + blockIdx.x * (THREAD_BLOCK);
+	if (i >= rows)
+		return;
+
+	int outRow = rIdx[i];
+	double yVal;
+	if (beta != 0.0)
+		yVal = y[outRow];
+
+	spgpuDhellspmv_ridx (i, yVal, outRow,
+		z, y, alpha, cM, rP, hackSize, hackOffsets, rS, rIdx, rows, x, beta, baseIndex);
+}
+
+__device__ void
+spgpuDhellspmv_ (double *z, const double *y, double alpha, const double* cM, const int* rP, int hackSize, const int* hackOffsets, const int* rS, int rows, const double *x, double beta, int baseIndex)
+{
+	int i = threadIdx.x + blockIdx.x * (THREAD_BLOCK);
+	if (i >= rows)
+		return;
+
+	double yVal;
+
+	if (beta != 0.0)
+		yVal = y[i];
+
+	spgpuDhellspmv_ridx (i, yVal, i,
+		z, y, alpha, cM, rP, hackSize, hackOffsets, rS, NULL, rows, x, beta, baseIndex);
+}
+
+// Force to recompile and optimize with llvm
+__global__ void
+spgpuDhellspmv_krn_b0 (double *z, const double *y, double alpha, const double* cM, const int* rP, int hackSize, const int* hackOffsets, const int* rS, int rows, const double *x, int baseIndex)
+{
+	spgpuDhellspmv_ (z, y, alpha, cM, rP, hackSize, hackOffsets, rS, rows, x, 0.0f, baseIndex);
+}
+
+__global__ void
+spgpuDhellspmv_krn (double *z, const double *y, double alpha, const double* cM, const int* rP, int hackSize, const int* hackOffsets, const int* rS, int rows, const double *x, double beta, int baseIndex)
+{
+	spgpuDhellspmv_ (z, y, alpha, cM, rP, hackSize, hackOffsets, rS, rows, x, beta, baseIndex);
+}
+
 void
 _spgpuDhellspmv (spgpuHandle_t handle, double* z, const double *y, double alpha, const double* cM, const int* rP, int hackSize, const int* hackOffsets, const int* rS, const int* rIdx, int rows, const double *x, double beta, int baseIndex)
 {
@@ -162,7 +191,17 @@ _spgpuDhellspmv (spgpuHandle_t handle, double* z, const double *y, double alpha,
 	bind_tex_x ((const int2 *) x);
 #endif
 
-	spgpuDhellspmv_krn <<< grid, block, warpsPerBlock*sizeof(int), handle->currentStream >>> (z, y, alpha, cM, rP, hackSize, hackOffsets, rS, rIdx, rows, x, beta, baseIndex);
+	if (rIdx)
+		spgpuDhellspmv_krn_ridx <<< grid, block, warpsPerBlock*sizeof(int), handle->currentStream >>> (z, y, alpha, cM, rP, hackSize, hackOffsets, rS, rIdx, rows, x, beta, baseIndex);
+	else
+	{
+		if (beta != 0.0)
+			spgpuDhellspmv_krn <<< grid, block, warpsPerBlock*sizeof(int), handle->currentStream >>> (z, y, alpha, cM, rP, hackSize, hackOffsets, rS, rows, x, beta, baseIndex);
+		else
+			spgpuDhellspmv_krn_b0 <<< grid, block, warpsPerBlock*sizeof(int), handle->currentStream >>> (z, y, alpha, cM, rP, hackSize, hackOffsets, rS, rows, x, baseIndex);
+	}
+
+	
 	
 #ifdef ENABLE_CACHE
   	unbind_tex_x ((const int2 *) x);
