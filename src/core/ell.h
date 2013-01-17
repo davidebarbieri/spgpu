@@ -32,7 +32,6 @@ extern "C" {
 /// This is the pitch alignment that must be fullfilled by the coefficients and the row pointers allocations.
 #define ELL_PITCH_ALIGN_BYTE 128
 
-
 /** 
 * \fn void spgpuSellspmv (spgpuHandle_t handle,__device float *z,const __device float *y, float alpha, const __device float* cM, const __device int* rP, int cMPitch, int rPPitch, const __device int* rS, int rows, const __device float *x, float beta,int baseIndex)
  * Computes single precision z = alpha*A*x + beta*y, with A stored in ELLpack Format on GPU.
@@ -45,6 +44,7 @@ extern "C" {
  * \param cMPitch the pitch (in number of elements) of the allocation containing the matrix non zero values
  * \param rPPitch  the pitch (in number of elements) of the allocation containing the matrix non zero column indices
  * \param rS the array containing the row sized (in non zero elements)
+ * \param rIdx (optional) An array containing the row index per every row (i.e. the reorder array) of the Ell matrix. Pass NULL if you don't use a reorder array (i.e. the k-th row is stored in the k-th position in the ELL format).
  * \param rows the rows count
  * \param x the x vector
  * \param beta the beta scalar
@@ -59,11 +59,11 @@ void spgpuSellspmv (spgpuHandle_t handle,
 	int cMPitch, 
 	int rPPitch, 
 	const __device int* rS, 
+	const __device int* rIdx, 
 	int rows, 
 	const __device float *x, 
 	float beta,
 	int baseIndex);
-
 
 /** 
 * \fn void spgpuDellspmv (spgpuHandle_t handle,__device double *z,const __device double *y, double alpha, const __device double* cM, const __device int* rP, int cMPitch, int rPPitch, const __device int* rS, int rows, const __device double *x, double beta,int baseIndex)
@@ -77,6 +77,7 @@ void spgpuSellspmv (spgpuHandle_t handle,
  * \param cMPitch the pitch (in number of elements) of the allocation containing the matrix non zero values
  * \param rPPitch the pitch (in number of elements) of the allocation containing the matrix non zero column indices
  * \param rS the array containing the row sized (in non zero elements)
+ * \param rIdx (optional) An array containing the row index per every row (i.e. the reorder array) of the Ell matrix. Pass NULL if you don't use a reorder array (i.e. the k-th row is stored in the k-th position in the ELL format).
  * \param rows the rows count
  * \param x the x vector
  * \param beta the beta scalar
@@ -91,6 +92,7 @@ void spgpuDellspmv (spgpuHandle_t handle,
 	int cMPitch, 
 	int rPPitch, 
 	const __device int* rS, 
+	const __device int* rIdx, 
 	int rows, 
 	const __device double *x, 
 	double beta,

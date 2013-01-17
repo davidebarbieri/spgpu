@@ -89,6 +89,20 @@ void cooToEll(
 	spgpuType_t valuesType
 	);
 
+void ellToOell(
+	int *rIdx,
+	void *dstEllValues,
+	int *dstEllIndices,
+	int *dstRs,
+	const void *srcEllValues,
+	const int *srcEllIndices,
+	int *srcRs,
+	int ellValuesPitch,
+	int ellIndicesPitch,
+	int rowsCount,
+	spgpuType_t valuesType
+	);
+
 #ifdef __cplusplus
 }
 #endif
