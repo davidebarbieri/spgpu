@@ -96,7 +96,7 @@ void ellToOell(
 	int *dstRs,
 	const void *srcEllValues,
 	const int *srcEllIndices,
-	int *srcRs,
+	const int *srcRs,
 	int ellValuesPitch,
 	int ellIndicesPitch,
 	int rowsCount,

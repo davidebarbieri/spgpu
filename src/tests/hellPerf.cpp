@@ -36,7 +36,7 @@
 #define NUM_TESTS 2000
 
 
-#define TEST_DOUBLE
+//#define TEST_DOUBLE
 
 #ifdef TEST_DOUBLE
 #define testType double
