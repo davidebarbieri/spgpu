@@ -108,6 +108,8 @@ spgpuDellspmv_ridx (int i, float yVal, int outRow,
 
     }
 
+	// Since z and y are accessed with the same offset by the same thread,
+	// and the write to z follows the y read, y and z can share the same base address (in-place computing).
 	if (beta == 0.0)
 		z[outRow] = PREC_DMUL(alpha, zProd);
 	else

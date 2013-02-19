@@ -32,7 +32,9 @@ extern "C"
 __global__ void spgpuDscal_kern(double *y, int n, double alpha, double* x)
 {
 	int id = threadIdx.x + BLOCK_SIZE*blockIdx.x;
-	
+
+	// Since x and y are accessed with the same offset by the same thread,
+	// and the write to y follows the x read, x and y can share the same base address (in-place computing).		
 	if (id < n)
 	{
 		y[id] = alpha*x[id];
