@@ -35,6 +35,9 @@ __global__ void spgpuDaxpby_krn(double *z, int n, double beta, double *y, double
 	
 	if (id < n)
 	{
+		// Since z, x and y are accessed with the same offset by the same thread,
+		// and the write to z follows the x and y read, x, y and z can share the same base address (in-place computing).
+
 		if (beta == 0.0)
 			z[id] = PREC_DMUL(alpha,x[id]);
 		else

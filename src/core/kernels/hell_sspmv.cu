@@ -113,6 +113,8 @@ spgpuShellspmv_ridx (int i, float yVal, int outRow,
       zProd = PREC_FADD(zProd, PREC_FMUL (value, fetch));
     }
 
+	// Since z and y are accessed with the same offset by the same thread,
+	// and the write to z follows the y read, y and z can share the same base address (in-place computing).
 	if (beta == 0.0f)
 		z[outRow] = PREC_FMUL(alpha, zProd);
 	else

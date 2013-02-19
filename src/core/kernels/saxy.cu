@@ -34,6 +34,9 @@ __global__ void spgpuSaxy_kern(float *z, int n, float alpha, float* x, float* y)
 	
 	if (id < n)
 	{
+		// Since z, x and y are accessed with the same offset by the same thread,
+		// and the write to z follows the x and y reads, x, y and z can share the same base address (in-place computing).
+
 		z[id] = alpha*x[id]*y[id];
 	}
 }
@@ -96,6 +99,8 @@ __global__ void spgpuSaxypbz_kern(float *w, int n, float beta, float* z, float a
 	
 	if (id < n)
 	{
+		// Since w, x and y and z are accessed with the same offset by the same thread,
+		// and the write to z follows the x, y and z reads, x, y, z and w can share the same base address (in-place computing).
 		w[id] = PREC_FADD(PREC_FMUL(beta,z[id]), PREC_FMUL(alpha,PREC_FMUL(x[id],y[id])));
 	}
 }
