@@ -3,7 +3,7 @@
 /*
  * spGPU - Sparse matrices on GPU library.
  * 
- * Copyright (C) 2010 - 2012 
+ * Copyright (C) 2010 - 2013
  *     Davide Barbieri - University of Rome Tor Vergata
  *
  * This program is free software; you can redistribute it and/or
@@ -31,7 +31,7 @@
  * sh configure.sh\n
  * make
  * \section cr_sec Copyright
- * Copyright (C) 2010 - 2012\n
+ * Copyright (C) 2010 - 2013\n
  *     Davide Barbieri - University of Rome Tor Vergata\n
  *     Valeria Cardellini - University of Rome Tor Vergata\n
  *     Salvatore Filippone - University of Rome Tor Vergata
