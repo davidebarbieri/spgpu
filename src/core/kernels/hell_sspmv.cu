@@ -193,7 +193,6 @@ _spgpuShellspmv (spgpuHandle_t handle, float* z, const float *y, float alpha, co
   	unbind_tex_x (x);
 #endif
 
-	cudaCheckError("ERRORE (SSPVM)!");
 }
 
 
@@ -230,5 +229,5 @@ spgpuShellspmv (spgpuHandle_t handle,
 	
 	_spgpuShellspmv (handle, z, y, alpha, cM, rP, hackSize, hackOffsets, rS, rIdx, rows, x, beta, baseIndex);
 	
-	cudaCheckError("CUDA error on sspmv");
+	cudaCheckError("CUDA error on hell_sspmv");
 }

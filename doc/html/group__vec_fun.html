@@ -27,7 +27,7 @@
   
   <td style="padding-left: 0.5em;">
    <div id="projectname">spGpu library
-   &#160;<span id="projectnumber">1.0.1</span>
+   &#160;<span id="projectnumber">1.0.2</span>
    </div>
    <div id="projectbrief">spgpu</div>
   </td>
@@ -83,6 +83,7 @@ Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__vec_fun.html#gaf95813bec602a34fc0a5f9d8575dd94c">spgpuSmnrm2</a> (<a class="el" href="group__core_fun.html#ga5d4825ac610d6524df843758da392dec">spgpuHandle_t</a> handle, float *y, int n, __device float *x, int count, int pitch)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__vec_fun.html#ga7ccba52ca5c2d171291f2ebe450bae3d">spgpuSscal</a> (<a class="el" href="group__core_fun.html#ga5d4825ac610d6524df843758da392dec">spgpuHandle_t</a> handle, __device float *y, int n, float alpha, __device float *x)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__vec_fun.html#gacf729c9119e0b25bf40103af77046316">spgpuSaxpby</a> (<a class="el" href="group__core_fun.html#ga5d4825ac610d6524df843758da392dec">spgpuHandle_t</a> handle, __device float *z, int n, float beta, __device float *y, float alpha, __device float *x)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__vec_fun.html#gab584c993c409face5dbb76b11d16d69e">spgpuSmaxpby</a> (<a class="el" href="group__core_fun.html#ga5d4825ac610d6524df843758da392dec">spgpuHandle_t</a> handle, __device float *z, int n, float beta, __device float *y, float alpha, __device float *x, int count, int pitch)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__vec_fun.html#gac6bc93853063609ffabf0a521a97c0ba">spgpuSaxy</a> (<a class="el" href="group__core_fun.html#ga5d4825ac610d6524df843758da392dec">spgpuHandle_t</a> handle, __device float *z, int n, float alpha, __device float *x, __device float *y)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__vec_fun.html#gaf1208a4cece9f3f2fbc4d62a20e48552">spgpuSaxypbz</a> (<a class="el" href="group__core_fun.html#ga5d4825ac610d6524df843758da392dec">spgpuHandle_t</a> handle, __device float *w, int n, float beta, __device float *z, float alpha, __device float *x, __device float *y)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__vec_fun.html#ga284e8fe18c89cc4d3824f898d6fe2df8">spgpuSmaxy</a> (<a class="el" href="group__core_fun.html#ga5d4825ac610d6524df843758da392dec">spgpuHandle_t</a> handle, __device float *z, int n, float alpha, __device float *x, __device float *y, int count, int pitch)</td></tr>
@@ -95,6 +96,7 @@ Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__vec_fun.html#ga85a1476a1a0325401ab00d90f3bee198">spgpuDnrm2</a> (<a class="el" href="group__core_fun.html#ga5d4825ac610d6524df843758da392dec">spgpuHandle_t</a> handle, int n, __device double *x)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__vec_fun.html#ga281973e8a0a840b969fef51d156040c9">spgpuDmnrm2</a> (<a class="el" href="group__core_fun.html#ga5d4825ac610d6524df843758da392dec">spgpuHandle_t</a> handle, double *y, int n, __device double *x, int count, int pitch)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__vec_fun.html#ga0a656c5d33ee1fc188e541fd6e7e705d">spgpuDaxpby</a> (<a class="el" href="group__core_fun.html#ga5d4825ac610d6524df843758da392dec">spgpuHandle_t</a> handle, __device double *z, int n, double beta, __device double *y, double alpha, __device double *x)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__vec_fun.html#gaa1b549cb299ce134c6b9e36b7c0bb886">spgpuDmaxpby</a> (<a class="el" href="group__core_fun.html#ga5d4825ac610d6524df843758da392dec">spgpuHandle_t</a> handle, __device double *z, int n, double beta, __device double *y, double alpha, __device double *x, int count, int pitch)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__vec_fun.html#ga08c0ca04f96db238486762caa11e71d5">spgpuDaxy</a> (<a class="el" href="group__core_fun.html#ga5d4825ac610d6524df843758da392dec">spgpuHandle_t</a> handle, __device double *z, int n, double alpha, __device double *x, __device double *y)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__vec_fun.html#gaef1d8dfbb24d2a8f6fa14ee489ef53df">spgpuDaxypbz</a> (<a class="el" href="group__core_fun.html#ga5d4825ac610d6524df843758da392dec">spgpuHandle_t</a> handle, __device double *w, int n, double beta, __device double *z, double alpha, __device double *x, __device double *y)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__vec_fun.html#ga20e8944ad2c75071fb33dcbe626301c2">spgpuDmaxy</a> (<a class="el" href="group__core_fun.html#ga5d4825ac610d6524df843758da392dec">spgpuHandle_t</a> handle, __device double *z, int n, double alpha, __device double *x, __device double *y, int count, int pitch)</td></tr>
@@ -420,6 +422,90 @@ Functions</h2></td></tr>
     <tr><td class="paramname">xIndices</td><td>the array of indices for the elements to be gathered </td></tr>
     <tr><td class="paramname">xBaseIndex</td><td>the base index used in xIndices (i.e. 0 for C, 1 for Fortran). </td></tr>
     <tr><td class="paramname">y</td><td>the source vector (from which the elements will be gathered) </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="gaa1b549cb299ce134c6b9e36b7c0bb886"></a><!-- doxytag: member="vector.h::spgpuDmaxpby" ref="gaa1b549cb299ce134c6b9e36b7c0bb886" args="(spgpuHandle_t handle, __device double *z, int n, double beta, __device double *y, double alpha, __device double *x, int count, int pitch)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void spgpuDmaxpby </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__core_fun.html#ga5d4825ac610d6524df843758da392dec">spgpuHandle_t</a>&#160;</td>
+          <td class="paramname"><em>handle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">__device double *&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>beta</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">__device double *&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>alpha</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">__device double *&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>count</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>pitch</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Computes the double precision z = beta * y + alpha * x of x and y multivectors. z could be exactly x or y (without offset) or another vector. </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">handle</td><td>the spgpu handle used to call this routine </td></tr>
+    <tr><td class="paramname">z</td><td>the resulting vector </td></tr>
+    <tr><td class="paramname">n</td><td>the vectors' length </td></tr>
+    <tr><td class="paramname">beta</td><td>the beta value </td></tr>
+    <tr><td class="paramname">y</td><td>the first input vector </td></tr>
+    <tr><td class="paramname">alpha</td><td>the alpha value </td></tr>
+    <tr><td class="paramname">x</td><td>the second input vector </td></tr>
+    <tr><td class="paramname">count</td><td>the number of vectors in z,x and y multivectors </td></tr>
+    <tr><td class="paramname">pitch</td><td>the multivector's pitch </td></tr>
   </table>
   </dd>
 </dl>
@@ -1219,6 +1305,90 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="gab584c993c409face5dbb76b11d16d69e"></a><!-- doxytag: member="vector.h::spgpuSmaxpby" ref="gab584c993c409face5dbb76b11d16d69e" args="(spgpuHandle_t handle, __device float *z, int n, float beta, __device float *y, float alpha, __device float *x, int count, int pitch)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void spgpuSmaxpby </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__core_fun.html#ga5d4825ac610d6524df843758da392dec">spgpuHandle_t</a>&#160;</td>
+          <td class="paramname"><em>handle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">__device float *&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>beta</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">__device float *&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>alpha</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">__device float *&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>count</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>pitch</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Computes the single precision z = beta * y + alpha * x of x and y multivectors. z could be exactly x or y (without offset) or another vector. </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">handle</td><td>the spgpu handle used to call this routine </td></tr>
+    <tr><td class="paramname">z</td><td>the resulting vector </td></tr>
+    <tr><td class="paramname">n</td><td>the vectors' length </td></tr>
+    <tr><td class="paramname">beta</td><td>the beta value </td></tr>
+    <tr><td class="paramname">y</td><td>the first input vector </td></tr>
+    <tr><td class="paramname">alpha</td><td>the alpha value </td></tr>
+    <tr><td class="paramname">x</td><td>the second input vector </td></tr>
+    <tr><td class="paramname">count</td><td>the number of vectors in z,x and y multivectors </td></tr>
+    <tr><td class="paramname">pitch</td><td>the multivectors pitch </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a class="anchor" id="ga284e8fe18c89cc4d3824f898d6fe2df8"></a><!-- doxytag: member="vector.h::spgpuSmaxy" ref="ga284e8fe18c89cc4d3824f898d6fe2df8" args="(spgpuHandle_t handle, __device float *z, int n, float alpha, __device float *x, __device float *y, int count, int pitch)" -->
 <div class="memitem">
 <div class="memproto">
@@ -1707,7 +1877,7 @@ Functions</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Oct 22 2012 23:15:10 for spGpu library by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sun Apr 14 2013 17:35:51 for spGpu library by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.5
 </small></address>

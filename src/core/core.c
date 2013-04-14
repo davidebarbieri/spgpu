@@ -87,6 +87,10 @@ size_t spgpuSizeOf(spgpuType_t typeCode)
 		return sizeof(float);
 	case SPGPU_TYPE_DOUBLE:
 		return sizeof(double);
+	case SPGPU_TYPE_COMPLEX_FLOAT:
+		return sizeof(cuFloatComplex);
+	case SPGPU_TYPE_COMPLEX_DOUBLE:
+		return sizeof(cuDoubleComplex);
 	default:
 		return 0; // error		
 	}

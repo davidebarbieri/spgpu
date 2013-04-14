@@ -172,7 +172,6 @@ _spgpuSellspmv (spgpuHandle_t handle, float* z, const float *y, float alpha, con
   	unbind_tex_x (x);
 #endif
 
-	cudaCheckError("ERRORE (SSPVM)!");
 }
 
 void 
@@ -204,4 +203,6 @@ spgpuSellspmv (spgpuHandle_t handle,
 	}
 	
 	_spgpuSellspmv (handle, z, y, alpha, cM, rP, cMPitch, rPPitch, rS, rIdx, rows, x, beta, baseIndex);
+	
+	cudaCheckError("CUDA error on ell_sspmv");
 }
