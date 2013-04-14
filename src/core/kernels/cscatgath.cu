@@ -14,7 +14,10 @@
  * GNU General Public License for more details.
  */
 
+
 #include "stdio.h"
+#include "cuComplex.h"
+
 
 extern "C"
 {
@@ -26,19 +29,23 @@ extern "C"
 #define MAX_N_FOR_A_CALL (BLOCK_SIZE*65535)
 
 // Single Precision Indexed Scatter
-__global__ void discat_gpu_kern(double* vector, int count, const int* indexes, const double* values, int firstIndex, double beta)
+__global__ void siscat_gpu_kern(cuFloatComplex* vector, int count, const int* indexes, const cuFloatComplex* values, int firstIndex, cuFloatComplex beta)
 {
 	int id = threadIdx.x + BLOCK_SIZE*blockIdx.x;
 	
 	if (id < count)
 	{	
 		int pos = indexes[id]-firstIndex;
-		vector[pos] = beta*vector[pos]+values[id];
+		
+		if (cuFloatComplex_isNotZero(beta))
+			vector[pos] = cuCfmaf(beta, vector[pos], values[id]);
+		else
+			vector[pos] = values[id];
 	}
 }
 
 // Single Precision Indexed Gather
-__global__ void digath_gpu_kern(const double* vector, int count, const int* indexes, double* values, int firstIndex)
+__global__ void sigath_gpu_kern(const cuFloatComplex* vector, int count, const int* indexes, cuFloatComplex* values, int firstIndex)
 {
 	int id = threadIdx.x + BLOCK_SIZE*blockIdx.x;
 	
@@ -51,73 +58,72 @@ __global__ void digath_gpu_kern(const double* vector, int count, const int* inde
 
 
 
-void spgpuDscat_(spgpuHandle_t handle,
-	__device double* y,
+void spgpuCscat_(spgpuHandle_t handle,
+	__device cuFloatComplex* y,
 	int xNnz,
-	const __device double *xValues,
+	const __device cuFloatComplex *xValues,
 	const __device int *xIndices,
 	int xBaseIndex,
-	double beta)
+	cuFloatComplex beta)
 {
 	int msize = (xNnz+BLOCK_SIZE-1)/BLOCK_SIZE;
 
 	dim3 block(BLOCK_SIZE);
 	dim3 grid(msize);
 
-	discat_gpu_kern<<<grid, block, 0, handle->currentStream>>>(y, xNnz, xIndices, xValues, xBaseIndex, beta);
+	siscat_gpu_kern<<<grid, block, 0, handle->currentStream>>>(y, xNnz, xIndices, xValues, xBaseIndex, beta);
 }
 
-void spgpuDgath_(spgpuHandle_t handle,
-	__device double *xValues,
+void spgpuCgath_(spgpuHandle_t handle,
+	__device cuFloatComplex *xValues,
 	int xNnz,
 	const __device int *xIndices,
 	int xBaseIndex,
-	const __device double* y)
+	const __device cuFloatComplex* y)
 {
 	int msize = (xNnz+BLOCK_SIZE-1)/BLOCK_SIZE;
 
 	dim3 block(BLOCK_SIZE);
 	dim3 grid(msize);
 
-	digath_gpu_kern<<<grid, block, 0, handle->currentStream>>>(y, xNnz, xIndices, xValues, xBaseIndex);
+	sigath_gpu_kern<<<grid, block, 0, handle->currentStream>>>(y, xNnz, xIndices, xValues, xBaseIndex);
 }
 
 
-void spgpuDscat(spgpuHandle_t handle,
-	__device double* y,
+void spgpuCscat(spgpuHandle_t handle,
+	__device cuFloatComplex* y,
 	int xNnz,
-	const __device double *xValues,
+	const __device cuFloatComplex *xValues,
 	const __device int *xIndices,
-	int xBaseIndex,
-	double beta)
+	int xBaseIndex, cuFloatComplex beta)
 {
 	while (xNnz > MAX_N_FOR_A_CALL) //managing large vectors
 	{
-		spgpuDscat_(handle, y, MAX_N_FOR_A_CALL, xValues, xIndices, xBaseIndex, beta);
+		spgpuCscat_(handle, y, MAX_N_FOR_A_CALL, xValues, xIndices, xBaseIndex, beta);
 	
 		xIndices += MAX_N_FOR_A_CALL;
 		xValues += MAX_N_FOR_A_CALL;
 		xNnz -= MAX_N_FOR_A_CALL;
 	}
 	
-	spgpuDscat_(handle, y, xNnz, xValues, xIndices, xBaseIndex, beta);
+	spgpuCscat_(handle, y, xNnz, xValues, xIndices, xBaseIndex, beta);
 }	
 	
-void spgpuDgath(spgpuHandle_t handle,
-	__device double *xValues,
+void spgpuCgath(spgpuHandle_t handle,
+	__device cuFloatComplex *xValues,
 	int xNnz,
 	const __device int *xIndices,
 	int xBaseIndex,
-	const __device double* y)	
+	const __device cuFloatComplex* y)	
 {
 	while (xNnz > MAX_N_FOR_A_CALL) //managing large vectors
 	{
-		spgpuDgath_(handle, xValues, MAX_N_FOR_A_CALL, xIndices, xBaseIndex, y);
+		spgpuCgath_(handle, xValues, MAX_N_FOR_A_CALL, xIndices, xBaseIndex, y);
 	
 		xIndices += MAX_N_FOR_A_CALL;
 		xValues += MAX_N_FOR_A_CALL;
 		xNnz -= MAX_N_FOR_A_CALL;
 	}
 	
-	spgpuDgath_(handle, xValues, xNnz, xIndices, xBaseIndex, y);
+	spgpuCgath_(handle, xValues, xNnz, xIndices, xBaseIndex, y);
 }

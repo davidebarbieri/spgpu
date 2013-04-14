@@ -15,6 +15,8 @@
  */
 
 #include "stdio.h"
+#include "cuComplex.h"
+
 
 extern "C"
 {
@@ -26,19 +28,23 @@ extern "C"
 #define MAX_N_FOR_A_CALL (BLOCK_SIZE*65535)
 
 // Single Precision Indexed Scatter
-__global__ void discat_gpu_kern(double* vector, int count, const int* indexes, const double* values, int firstIndex, double beta)
+__global__ void discat_gpu_kern(cuDoubleComplex* vector, int count, const int* indexes, const cuDoubleComplex* values, int firstIndex, cuDoubleComplex beta)
 {
 	int id = threadIdx.x + BLOCK_SIZE*blockIdx.x;
 	
 	if (id < count)
 	{	
 		int pos = indexes[id]-firstIndex;
-		vector[pos] = beta*vector[pos]+values[id];
+		
+		if (cuDoubleComplex_isNotZero(beta))
+			vector[pos] = cuCfma(beta, vector[pos], values[id]);
+		else
+			vector[pos] = values[id];
 	}
 }
 
 // Single Precision Indexed Gather
-__global__ void digath_gpu_kern(const double* vector, int count, const int* indexes, double* values, int firstIndex)
+__global__ void digath_gpu_kern(const cuDoubleComplex* vector, int count, const int* indexes, cuDoubleComplex* values, int firstIndex)
 {
 	int id = threadIdx.x + BLOCK_SIZE*blockIdx.x;
 	
@@ -51,13 +57,13 @@ __global__ void digath_gpu_kern(const double* vector, int count, const int* inde
 
 
 
-void spgpuDscat_(spgpuHandle_t handle,
-	__device double* y,
+void spgpuZscat_(spgpuHandle_t handle,
+	__device cuDoubleComplex* y,
 	int xNnz,
-	const __device double *xValues,
+	const __device cuDoubleComplex *xValues,
 	const __device int *xIndices,
 	int xBaseIndex,
-	double beta)
+	cuDoubleComplex beta)
 {
 	int msize = (xNnz+BLOCK_SIZE-1)/BLOCK_SIZE;
 
@@ -67,12 +73,12 @@ void spgpuDscat_(spgpuHandle_t handle,
 	discat_gpu_kern<<<grid, block, 0, handle->currentStream>>>(y, xNnz, xIndices, xValues, xBaseIndex, beta);
 }
 
-void spgpuDgath_(spgpuHandle_t handle,
-	__device double *xValues,
+void spgpuZgath_(spgpuHandle_t handle,
+	__device cuDoubleComplex *xValues,
 	int xNnz,
 	const __device int *xIndices,
 	int xBaseIndex,
-	const __device double* y)
+	const __device cuDoubleComplex* y)
 {
 	int msize = (xNnz+BLOCK_SIZE-1)/BLOCK_SIZE;
 
@@ -83,41 +89,41 @@ void spgpuDgath_(spgpuHandle_t handle,
 }
 
 
-void spgpuDscat(spgpuHandle_t handle,
-	__device double* y,
+void spgpuZscat(spgpuHandle_t handle,
+	__device cuDoubleComplex* y,
 	int xNnz,
-	const __device double *xValues,
+	const __device cuDoubleComplex *xValues,
 	const __device int *xIndices,
 	int xBaseIndex,
-	double beta)
+	cuDoubleComplex beta)
 {
 	while (xNnz > MAX_N_FOR_A_CALL) //managing large vectors
 	{
-		spgpuDscat_(handle, y, MAX_N_FOR_A_CALL, xValues, xIndices, xBaseIndex, beta);
+		spgpuZscat_(handle, y, MAX_N_FOR_A_CALL, xValues, xIndices, xBaseIndex, beta);
 	
 		xIndices += MAX_N_FOR_A_CALL;
 		xValues += MAX_N_FOR_A_CALL;
 		xNnz -= MAX_N_FOR_A_CALL;
 	}
 	
-	spgpuDscat_(handle, y, xNnz, xValues, xIndices, xBaseIndex, beta);
+	spgpuZscat_(handle, y, xNnz, xValues, xIndices, xBaseIndex, beta);
 }	
 	
-void spgpuDgath(spgpuHandle_t handle,
-	__device double *xValues,
+void spgpuZgath(spgpuHandle_t handle,
+	__device cuDoubleComplex *xValues,
 	int xNnz,
 	const __device int *xIndices,
 	int xBaseIndex,
-	const __device double* y)	
+	const __device cuDoubleComplex* y)	
 {
 	while (xNnz > MAX_N_FOR_A_CALL) //managing large vectors
 	{
-		spgpuDgath_(handle, xValues, MAX_N_FOR_A_CALL, xIndices, xBaseIndex, y);
+		spgpuZgath_(handle, xValues, MAX_N_FOR_A_CALL, xIndices, xBaseIndex, y);
 	
 		xIndices += MAX_N_FOR_A_CALL;
 		xValues += MAX_N_FOR_A_CALL;
 		xNnz -= MAX_N_FOR_A_CALL;
 	}
 	
-	spgpuDgath_(handle, xValues, xNnz, xIndices, xBaseIndex, y);
+	spgpuZgath_(handle, xValues, xNnz, xIndices, xBaseIndex, y);
 }

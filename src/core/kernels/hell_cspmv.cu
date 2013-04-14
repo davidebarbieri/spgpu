@@ -44,7 +44,7 @@ __device__ void
 spgpuChellspmv_ridx (int i, cuFloatComplex yVal, int outRow,
 	cuFloatComplex *z, const cuFloatComplex *y, cuFloatComplex alpha, const cuFloatComplex* cM, const int* rP, int hackSize, const int* hackOffsets, const int* rS, const int* rIdx, int rows, const cuFloatComplex *x, cuFloatComplex beta, int baseIndex)
 {
-	cuFloatComplex zProd = make_cuFloatComplex(0.0, 0.0);
+	cuFloatComplex zProd = make_cuFloatComplex(0.0f, 0.0f);
 
 	rS += i; 
 	
@@ -115,7 +115,7 @@ spgpuChellspmv_ridx (int i, cuFloatComplex yVal, int outRow,
 	// Since z and y are accessed with the same offset by the same thread,
 	// and the write to z follows the y read, y and z can share the same base address (in-place computing).
 	if (cuFloatComplex_isNotZero(beta))
-		z[outRow] = cuCaddf(cuCmulf(beta, yVal), cuCmulf(alpha, zProd));
+		z[outRow] = cuCfmaf(beta, yVal, cuCmulf(alpha, zProd));
 	else
 		z[outRow] = cuCmulf(alpha, zProd);
 }

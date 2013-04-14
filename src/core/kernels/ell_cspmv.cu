@@ -96,7 +96,7 @@ spgpuCellspmv_ridx (int i, cuFloatComplex yVal, int outRow,
 	// and the write to z follows the y read, y and z can share the same base address (in-place computing).
 	
 	if (cuFloatComplex_isNotZero(beta))
-		z[outRow] = cuCaddf(cuCmulf (beta, yVal), cuCmulf(alpha, zProd));
+		z[outRow] = cuCfmaf(beta, yVal, cuCmulf(alpha, zProd));
 	else
 		z[outRow] = cuCmulf(alpha, zProd);
 }	
