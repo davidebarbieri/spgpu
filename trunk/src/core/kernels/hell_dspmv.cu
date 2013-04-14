@@ -204,12 +204,10 @@ _spgpuDhellspmv (spgpuHandle_t handle, double* z, const double *y, double alpha,
 	}
 
 	
-	
 #ifdef ENABLE_CACHE
   	unbind_tex_x ((const int2 *) x);
 #endif
 
-	cudaCheckError("ERRORE (DSPVM)!");
 }
 
 
@@ -246,5 +244,5 @@ spgpuDhellspmv (spgpuHandle_t handle,
 	
 	_spgpuDhellspmv (handle, z, y, alpha, cM, rP, hackSize, hackOffsets, rS, rIdx, rows, x, beta, baseIndex);
 	
-	cudaCheckError("CUDA error on sspmv");
+	cudaCheckError("CUDA error on hell_dspmv");
 }

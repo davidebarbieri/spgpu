@@ -27,7 +27,7 @@
   
   <td style="padding-left: 0.5em;">
    <div id="projectname">spGpu library
-   &#160;<span id="projectnumber">1.0.1</span>
+   &#160;<span id="projectnumber">1.0.2</span>
    </div>
    <div id="projectbrief">spgpu</div>
   </td>
@@ -80,6 +80,7 @@ Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__conversion_routines.html#gadc87180655ae54f2036967afc3c42266">computeEllRowLenghts</a> (int *ellRowLengths, int *ellMaxRowSize, int rowsCount, int nonZerosCount, const int *cooRowIndices, int cooBaseIndex)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__conversion_routines.html#ga1d08f06885a41b6c875cc029441dfc74">computeEllAllocPitch</a> (int rowsCount)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__conversion_routines.html#ga138847d14b7a67dded82657d249dfe3d">cooToEll</a> (void *ellValues, int *ellIndices, int ellValuesPitch, int ellIndicesPitch, int ellMaxRowSize, int ellBaseIndex, int rowsCount, int nonZerosCount, const int *cooRowIndices, const int *cooColsIndices, const void *cooValues, int cooBaseIndex, <a class="el" href="group__core_fun.html#ga6403dea459dde9675081ba6a27577fc8">spgpuType_t</a> valuesType)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__conversion_routines.html#gabb82647b3eb9ac6807047c9313de1c03">ellToOell</a> (int *rIdx, void *dstEllValues, int *dstEllIndices, int *dstRs, const void *srcEllValues, const int *srcEllIndices, const int *srcRs, int ellValuesPitch, int ellIndicesPitch, int rowsCount, <a class="el" href="group__core_fun.html#ga6403dea459dde9675081ba6a27577fc8">spgpuType_t</a> valuesType)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__conversion_routines.html#gad75d73598fe033399536c0e6276d352d">computeHellAllocSize</a> (int *allocationHeight, int hackSize, int rowsCount, const int *ellRowLengths)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__conversion_routines.html#gadf83002fecc8094a319381adb5f6cf76">ellToHell</a> (void *hellValues, int *hellIndices, int *hackOffsets, int hackSize, const void *ellValues, const int *ellIndices, int ellValuesPitch, int ellIndicesPitch, int *ellRowLengths, int rowsCount, <a class="el" href="group__core_fun.html#ga6403dea459dde9675081ba6a27577fc8">spgpuType_t</a> valuesType)</td></tr>
 </table>
@@ -431,6 +432,87 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="gabb82647b3eb9ac6807047c9313de1c03"></a><!-- doxytag: member="ell_conv.h::ellToOell" ref="gabb82647b3eb9ac6807047c9313de1c03" args="(int *rIdx, void *dstEllValues, int *dstEllIndices, int *dstRs, const void *srcEllValues, const int *srcEllIndices, const int *srcRs, int ellValuesPitch, int ellIndicesPitch, int rowsCount, spgpuType_t valuesType)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ellToOell </td>
+          <td>(</td>
+          <td class="paramtype">int *&#160;</td>
+          <td class="paramname"><em>rIdx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>dstEllValues</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *&#160;</td>
+          <td class="paramname"><em>dstEllIndices</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *&#160;</td>
+          <td class="paramname"><em>dstRs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const void *&#160;</td>
+          <td class="paramname"><em>srcEllValues</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int *&#160;</td>
+          <td class="paramname"><em>srcEllIndices</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int *&#160;</td>
+          <td class="paramname"><em>srcRs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>ellValuesPitch</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>ellIndicesPitch</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>rowsCount</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__core_fun.html#ga6403dea459dde9675081ba6a27577fc8">spgpuType_t</a>&#160;</td>
+          <td class="paramname"><em>valuesType</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
 </div>
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
@@ -449,7 +531,7 @@ Functions</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Oct 22 2012 23:15:10 for spGpu library by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sun Apr 14 2013 17:35:51 for spGpu library by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.5
 </small></address>

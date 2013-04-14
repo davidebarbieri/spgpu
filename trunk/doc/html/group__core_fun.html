@@ -27,7 +27,7 @@
   
   <td style="padding-left: 0.5em;">
    <div id="projectname">spGpu library
-   &#160;<span id="projectnumber">1.0.1</span>
+   &#160;<span id="projectnumber">1.0.2</span>
    </div>
    <div id="projectbrief">spgpu</div>
   </td>
@@ -95,6 +95,12 @@ Defines</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__core_fun.html#ga387e4a139242aa4eac70604cb9575e75">SPGPU_TYPE_INT</a>&#160;&#160;&#160;0</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__core_fun.html#gabba2587348d636e5f8778b4d746a53b5">SPGPU_TYPE_FLOAT</a>&#160;&#160;&#160;1</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__core_fun.html#ga5edcbde8d535e04f2692ef990224e179">SPGPU_TYPE_DOUBLE</a>&#160;&#160;&#160;2</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__core_fun.html#ga3f2c326f3b40b15efe7b7eebee65b74a">SPGPU_TYPE_COMPLEX_FLOAT</a>&#160;&#160;&#160;3</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__core_fun.html#ga872d3de18347fb15856c6991d23a1145">SPGPU_TYPE_COMPLEX_DOUBLE</a>&#160;&#160;&#160;4</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__core_fun.html#gabc4e5bdeb8bba07f8ee5714f4b469104">cuFloatComplex_isZero</a>(a)&#160;&#160;&#160;(a.x == 0.0f &amp;&amp; a.y == 0.0f)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__core_fun.html#gaa6d0f03d203be83dfdebdcd5e55f6585">cuDoubleComplex_isZero</a>(a)&#160;&#160;&#160;(a.x == 0.0 &amp;&amp; a.y == 0.0)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__core_fun.html#gae8cd262e7cae13dce26878b1eeaaf97e">cuFloatComplex_isNotZero</a>(a)&#160;&#160;&#160;(a.x != 0.0f || a.y != 0.0f)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__core_fun.html#gabe811dd595c97b86791e4e07ae518328">cuDoubleComplex_isNotZero</a>(a)&#160;&#160;&#160;(a.x != 0.0 || a.y != 0.0)</td></tr>
 <tr><td colspan="2"><h2><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">typedef int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__core_fun.html#ga499c53ab7ac159a3ab6636ef11ddcb1a">spgpuStatus_t</a></td></tr>
@@ -145,6 +151,74 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="gabe811dd595c97b86791e4e07ae518328"></a><!-- doxytag: member="core.h::cuDoubleComplex_isNotZero" ref="gabe811dd595c97b86791e4e07ae518328" args="(a)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define cuDoubleComplex_isNotZero</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">a</td><td>)</td>
+          <td>&#160;&#160;&#160;(a.x != 0.0 || a.y != 0.0)</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="gaa6d0f03d203be83dfdebdcd5e55f6585"></a><!-- doxytag: member="core.h::cuDoubleComplex_isZero" ref="gaa6d0f03d203be83dfdebdcd5e55f6585" args="(a)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define cuDoubleComplex_isZero</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">a</td><td>)</td>
+          <td>&#160;&#160;&#160;(a.x == 0.0 &amp;&amp; a.y == 0.0)</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="gae8cd262e7cae13dce26878b1eeaaf97e"></a><!-- doxytag: member="core.h::cuFloatComplex_isNotZero" ref="gae8cd262e7cae13dce26878b1eeaaf97e" args="(a)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define cuFloatComplex_isNotZero</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">a</td><td>)</td>
+          <td>&#160;&#160;&#160;(a.x != 0.0f || a.y != 0.0f)</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="gabc4e5bdeb8bba07f8ee5714f4b469104"></a><!-- doxytag: member="core.h::cuFloatComplex_isZero" ref="gabc4e5bdeb8bba07f8ee5714f4b469104" args="(a)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define cuFloatComplex_isZero</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">a</td><td>)</td>
+          <td>&#160;&#160;&#160;(a.x == 0.0f &amp;&amp; a.y == 0.0f)</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
 <a class="anchor" id="ga804344b9a14244b699ac3d900674b38b"></a><!-- doxytag: member="core.h::SPGPU_OUTOFMEMORY" ref="ga804344b9a14244b699ac3d900674b38b" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -164,6 +238,32 @@ Functions</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">#define SPGPU_SUCCESS&#160;&#160;&#160;0</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="ga872d3de18347fb15856c6991d23a1145"></a><!-- doxytag: member="core.h::SPGPU_TYPE_COMPLEX_DOUBLE" ref="ga872d3de18347fb15856c6991d23a1145" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define SPGPU_TYPE_COMPLEX_DOUBLE&#160;&#160;&#160;4</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="ga3f2c326f3b40b15efe7b7eebee65b74a"></a><!-- doxytag: member="core.h::SPGPU_TYPE_COMPLEX_FLOAT" ref="ga3f2c326f3b40b15efe7b7eebee65b74a" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define SPGPU_TYPE_COMPLEX_FLOAT&#160;&#160;&#160;3</td>
         </tr>
       </table>
 </div>
@@ -493,7 +593,7 @@ Functions</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Oct 22 2012 23:15:10 for spGpu library by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sun Apr 14 2013 17:35:51 for spGpu library by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.5
 </small></address>

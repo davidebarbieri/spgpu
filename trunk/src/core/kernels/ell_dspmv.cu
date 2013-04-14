@@ -40,7 +40,7 @@ texture < int2, 1, cudaReadModeElementType > x_tex;
 #define MAX_N_FOR_A_CALL (THREAD_BLOCK*65535)
 
 __device__ void
-spgpuDellspmv_ridx (int i, float yVal, int outRow,
+spgpuDellspmv_ridx (int i, double yVal, int outRow,
 	double *z, const double *y, double alpha, const double* cM, const int* rP, int cMPitch, int rPPitch, const int* rS, int rows, const double *x, double beta, int baseIndex)
 {
 	double zProd = 0.0;
@@ -154,7 +154,7 @@ spgpuDellspmv_ (double *z, const double *y, double alpha, const double* cM, cons
 __global__ void
 spgpuDellspmv_krn_b0 (double *z, const double *y, double alpha, const double* cM, const int* rP, int cMPitch, int rPPitch, const int* rS, int rows, const double *x, int baseIndex)
 {
-	spgpuDellspmv_ (z, y, alpha, cM, rP, cMPitch, rPPitch, rS, rows, x, 0.0f, baseIndex);
+	spgpuDellspmv_ (z, y, alpha, cM, rP, cMPitch, rPPitch, rS, rows, x, 0.0, baseIndex);
 }
 
 __global__ void
@@ -188,7 +188,6 @@ _spgpuDellspmv (spgpuHandle_t handle, double* z, const double *y, double alpha, 
   	unbind_tex_x ((const int2 *) x);
 #endif
 
-	cudaCheckError("ERRORE (DSPVM)!");
 }
 
 
@@ -221,5 +220,7 @@ spgpuDellspmv (spgpuHandle_t handle,
 	}
 	
 	_spgpuDellspmv (handle, z, y, alpha, cM, rP, cMPitch, rPPitch, rS, rIdx, rows, x, beta, baseIndex);
+	
+	cudaCheckError("CUDA error on ell_dspmv");
 }
 

@@ -23,7 +23,7 @@
  *
  * spGPU is a set of custom matrix storages and CUDA kernels for sparse linear algebra computing on GPU. It isn't a replacement for cuBLAS/cuSPARSE that should be used for a full featured linear algebra environment on GPU.\n
  * The main matrix storage used by spGPU is a GPU-friendly ELLpack format, as well as our HELL (Hacked ELLpack) format, an enhanced version of ELLpack with some interesting memory saving properties.\n
- * HELL format provides a better memory storage compared to ELL (it avoids allocation inefficency provided by spikes in row sizes), while providing just the 5% of performance loss for sparse matrix-vector multiply routine..
+ * HELL format provides a better memory storage compared to ELL (it avoids allocation inefficency provided by spikes in row sizes), while providing quite the same performances for sparse matrix-vector multiply routine..
  *
  * \section install_sec How to build spgpu
  * \subsection linuxbuild Linux (and other unix systems)
@@ -48,6 +48,7 @@
 
  
 #include "driver_types.h"
+#include "cuComplex.h"
  
 /** \addtogroup coreFun Core Routines
  *  @{
@@ -73,9 +74,11 @@ typedef int spgpuStatus_t;
 /// Code to identify a primitive type
 typedef int spgpuType_t;
 
-#define SPGPU_TYPE_INT		0
-#define SPGPU_TYPE_FLOAT	1
-#define SPGPU_TYPE_DOUBLE	2
+#define SPGPU_TYPE_INT			0
+#define SPGPU_TYPE_FLOAT		1
+#define SPGPU_TYPE_DOUBLE		2
+#define SPGPU_TYPE_COMPLEX_FLOAT	3
+#define SPGPU_TYPE_COMPLEX_DOUBLE	4
 
 /// this struct should be modified only internally by spgpu
 typedef struct spgpuHandleStruct {
@@ -150,6 +153,11 @@ spgpuDiagType_t DiagType;
 int baseIndex;
 } spgpuMatrixDesc_t
 */
+
+#define cuFloatComplex_isZero(a) (a.x == 0.0f && a.y == 0.0f)
+#define cuDoubleComplex_isZero(a) (a.x == 0.0 && a.y == 0.0)
+#define cuFloatComplex_isNotZero(a) (a.x != 0.0f || a.y != 0.0f)
+#define cuDoubleComplex_isNotZero(a) (a.x != 0.0 || a.y != 0.0)
 
 #ifdef __cplusplus
 }
