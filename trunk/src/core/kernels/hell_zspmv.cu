@@ -122,7 +122,7 @@ spgpuZhellspmv_ridx (int i, cuDoubleComplex yVal, int outRow,
 	// Since z and y are accessed with the same offset by the same thread,
 	// and the write to z follows the y read, y and z can share the same base address (in-place computing).
 	if (cuDoubleComplex_isNotZero(beta))
-		z[outRow] = cuCadd(cuCmul (beta, yVal), cuCmul (alpha, zProd));
+		z[outRow] = cuCfma(beta, yVal, cuCmul (alpha, zProd));
 	else
 		z[outRow] = cuCmul(alpha, zProd);
 }

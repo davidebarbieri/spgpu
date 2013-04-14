@@ -512,7 +512,491 @@ void spgpuDscat(spgpuHandle_t handle,
 	const __device double *xValues,
 	const __device int *xIndices,
 	int xBaseIndex, double beta);
+
+/** 
+* \fn cuFloatComplex spgpuCdot (spgpuHandle_t handle, int n, __device cuFloatComplex* a, __device cuFloatComplex* b)
+ * Computes single precision complex dot product of a and b vectors.
+ * \param handle The spgpu handle used to call this routine
+ * \param n the vectors length
+ * \param a the first input vector
+ * \param b the second input vector
+ * \return the dot product
+ */
+cuFloatComplex spgpuCdot(spgpuHandle_t handle, 
+	int n, 
+	__device cuFloatComplex* a, 
+	__device cuFloatComplex* b);
+
+/** 
+* \fn cuFloatComplex spgpuCmdot (spgpuHandle_t handle, cuFloatComplex* y, int n, __device cuFloatComplex* a, __device cuFloatComplex* b, int count, int pitch)
+ * Computes single precision complex dot product of a and b multivectors.
+ * \param handle the spgpu handle used to call this routine
+ * \param y the result, made by dot products of every vector couples from the multivectors a and b
+ * \param n the vectors' length
+ * \param a the first input multivector
+ * \param b the second input multivector
+ * \param count the number of vectors in every multivector
+ * \param pitch the pitch, in number of elements, of every multivectors (so the second element of the first vector in a will be a[pitch], the third a[2*pitch], etc.).
+ */
+void spgpuCmdot(spgpuHandle_t handle, 
+	cuFloatComplex* y, 
+	int n, 
+	__device cuFloatComplex* a, 
+	__device cuFloatComplex* b, 
+	int count, 
+	int pitch);
+
+
+/** 
+* \fn float spgpuCnrm2(spgpuHandle_t handle, int n, __device cuFloatComplex* x)
+ * Computes the single precision complex Euclidean vector norm of x. 
+ * \param handle the spgpu handle used to call this routine
+ * \param n the vector's length
+ * \param x the input vector
+ * \return the euclidean vector norm
+ */
+float spgpuCnrm2(spgpuHandle_t handle, 
+	int n, 
+	__device cuFloatComplex* x);
+
+/** 
+* \fn void spgpuCmnrm2(spgpuHandle_t handle, float *y, int n, __device cuFloatComplex *x, int count, int pitch)
+ * Computes the single precision complex Euclidean vector norm for every vector in the multivector x. 
+ * \param handle the spgpu handle used to call this routine
+ * \param y the array of results
+ * \param n the vectors' length in the x multivector
+ * \param x the input multivector
+ * \param count the number of vectors in x
+ * \param pitch the multivector's pitch
+ */	
+void spgpuCmnrm2(spgpuHandle_t handle, 
+	float *y, 
+	int n, 
+	__device cuFloatComplex *x, 
+	int count, 
+	int pitch);
+
+
+/** 
+* \fn void spgpuCscal(spgpuHandle_t handle, __device cuFloatComplex *y, int n, cuFloatComplex alpha, __device cuFloatComplex *x)
+ * Computes the single precision complex y = alpha * x. y could be exactly x (without offset) or another vector.
+ * \param handle the spgpu handle used to call this routine
+ * \param y the resulting vector
+ * \param n the vectors' length
+ * \param alpha the alpha value
+ * \param x the input vector
+ */	
+void spgpuCscal(spgpuHandle_t handle,
+	__device cuFloatComplex *y,
+	int n,
+	cuFloatComplex alpha,
+	__device cuFloatComplex *x);
+
+/** 
+* \fn void spgpuCaxpby(spgpuHandle_t handle, __device cuFloatComplex *z, int n, cuFloatComplex beta, __device cuFloatComplex *y, cuFloatComplex alpha, __device cuFloatComplex* x)
+ * Computes the single precision complex z = beta * y + alpha * x. z could be exactly x or y (without offset) or another vector.
+ * \param handle the spgpu handle used to call this routine
+ * \param z the resulting vector
+ * \param n the vectors' length
+ * \param beta the beta value
+ * \param y the first input vector
+ * \param alpha the alpha value
+ * \param x the second input vector
+ */
+void spgpuCaxpby(spgpuHandle_t handle,
+	__device cuFloatComplex *z,
+	int n,
+	cuFloatComplex beta,
+	__device cuFloatComplex *y,
+	cuFloatComplex alpha,
+	__device cuFloatComplex* x);
+
+/** 
+* \fn void spgpuCmaxpby(spgpuHandle_t handle, __device cuFloatComplex *z, int n, cuFloatComplex beta, __device cuFloatComplex *y, cuFloatComplex alpha, __device cuFloatComplex* x, int count, int pitch)
+ * Computes the single precision complex z = beta * y + alpha * x of x and y multivectors. z could be exactly x or y (without offset) or another vector.
+ * \param handle the spgpu handle used to call this routine
+ * \param z the resulting vector
+ * \param n the vectors' length
+ * \param beta the beta value
+ * \param y the first input vector
+ * \param alpha the alpha value
+ * \param x the second input vector
+ * \param count the number of vectors in z,x and y multivectors
+ * \param pitch the multivectors pitch
+ */
+
+void spgpuCmaxpby(spgpuHandle_t handle,
+		  __device cuFloatComplex *z,
+		  int n,
+		  cuFloatComplex beta,
+		  __device cuFloatComplex *y,
+		  cuFloatComplex alpha,
+		  __device cuFloatComplex* x, 
+		  int count, int pitch);
+
+/** 
+* \fn void spgpuCaxy(spgpuHandle_t handle, __device cuFloatComplex *z, int n, cuFloatComplex alpha, __device cuFloatComplex *x, __device cuFloatComplex* y)
+ * Computes the single precision complex z = alpha * x * y. z could be exactly x or y (without offset) or another vector.
+ * \param handle the spgpu handle used to call this routine
+ * \param z the resulting vector
+ * \param n the vectors' length
+ * \param alpha the alpha value
+ * \param x the first input vector
+ * \param y the second input vector
+ */
+void spgpuCaxy(spgpuHandle_t handle,
+	__device cuFloatComplex *z,
+	int n,
+	cuFloatComplex alpha,
+	__device cuFloatComplex *x,
+	__device cuFloatComplex *y);
+
+/** 
+* \fn void spgpuCaxypbz(spgpuHandle_t handle, __device cuFloatComplex *w, int n, cuFloatComplex beta, __device cuFloatComplex *z, cuFloatComplex alpha, __device cuFloatComplex* x, __device cuFloatComplex *y)
+ * Computes the single precision complex w = beta * z + alpha * x * y. w could be exactly x, y or z (without offset) or another vector.
+ * \param handle the spgpu handle used to call this routine
+ * \param w the resulting vector
+ * \param n the vectors' length
+ * \param beta the beta value
+ * \param z the first input vector
+ * \param alpha the alpha value
+ * \param x the second input vector
+ * \param y the third input vector
+ */
+void spgpuCaxypbz(spgpuHandle_t handle,
+	__device cuFloatComplex *w,
+	int n,
+	cuFloatComplex beta,
+	__device cuFloatComplex *z,
+	cuFloatComplex alpha,
+	__device cuFloatComplex* x,
+	__device cuFloatComplex *y);
+
+/** 
+* \fn void spgpuCmaxy(spgpuHandle_t handle, __device cuFloatComplex *z, int n, cuFloatComplex alpha, __device cuFloatComplex *x, __device cuFloatComplex* y, int count, int pitch)
+ * Computes the single precision complex z = alpha * x * y for z,x and y multivectors. z could be exactly x or y (without offset) or another vector.
+ * \param handle the spgpu handle used to call this routine
+ * \param z the resulting multivector
+ * \param n the vectors' length in the multivectors
+ * \param alpha the alpha value
+ * \param x the first input multivector
+ * \param y the second input multivector
+ * \param count the number of vectors in z,x and y multivectors
+ * \param pitch the multivectors pitch
+ */
+void spgpuCmaxy(spgpuHandle_t handle,
+	__device cuFloatComplex *z,
+	int n,
+	cuFloatComplex alpha,
+	__device cuFloatComplex* x,
+	__device cuFloatComplex *y,
+	int count,
+	int pitch);
 	
+/** 
+* \fn void spgpuCmaxypbz(spgpuHandle_t handle, __device cuFloatComplex *w, int n, cuFloatComplex beta, __device cuFloatComplex *z, cuFloatComplex alpha, __device cuFloatComplex* x, __device cuFloatComplex *y, int count, int pitch)
+ * Computes the single precision complex w = beta * z + alpha * x * y. w could be exactly x, y or z (without offset) or another vector.
+ * \param handle the spgpu handle used to call this routine
+ * \param w the resulting vector
+ * \param n the vectors' length
+ * \param beta the beta value
+ * \param z the first input vector
+ * \param alpha the alpha value
+ * \param x the second input vector
+ * \param y the third input vector
+ * \param count the number of vectors in w,z,x and y multivectors
+ * \param pitch the multivectors' pitch
+ */
+	
+void spgpuCmaxypbz(spgpuHandle_t handle,
+	__device cuFloatComplex *w,
+	int n,
+	cuFloatComplex beta,
+	__device cuFloatComplex *z,
+	cuFloatComplex alpha,
+	__device cuFloatComplex* x,
+	__device cuFloatComplex *y,
+	int count,
+	int pitch);	
+	
+/** 
+* \fn void spgpuCgath(spgpuHandle_t handle, __device cuFloatComplex *xValues, int xNnz, const __device int *xIndices, int xBaseIndex, const __device cuFloatComplex* y)
+ * Single precision complex gather from y to sparse(x). Computes the single precision complex gather from y to xValues (using xIndices).
+ * \param handle the spgpu handle used to call this routine
+ * \param xValues the destination array for gathered values
+ * \param xNnz the number of elements to gather
+ * \param xIndices the array of indices for the elements to be gathered
+ * \param xBaseIndex the base index used in xIndices (i.e. 0 for C, 1 for Fortran).
+ * \param y the source vector (from which the elements will be gathered)
+ */
+void spgpuCgath(spgpuHandle_t handle,
+	__device cuFloatComplex *xValues,
+	int xNnz,
+	const __device int *xIndices,
+	int xBaseIndex,
+	const __device cuFloatComplex* y);
+	
+/** 
+* \fn void spgpuCscat(spgpuHandle_t handle, __device cuFloatComplex* y, int xNnz, const __device cuFloatComplex *xValues, const __device int *xIndices, int xBaseIndex, cuFloatComplex beta)
+ * Single precision complex scatter from sparse(x) to y. Computes the single precision complex scatter from xValues to y (using xIndices).
+ * The scattered element will be, for i in [0,xNnz), y[xIndices[i]] = beta*y[xIndices[i]] + xValues[i] (to be noted that
+ * y values will be multiplied with beta just for scattered values).
+ * \param handle the spgpu handle used to call this routine
+ * \param y the destination vector (to which the elements will be scattered)
+ * \param xNnz the number of elements to scatter
+ * \param xValues the source array from which the values will be read
+ * \param xIndices the array of indices for the elements to be scattered
+ * \param xBaseIndex the base index used in xIndices (i.e. 0 for C, 1 for Fortran).
+ * \param beta the beta value
+ */
+void spgpuCscat(spgpuHandle_t handle,
+	__device cuFloatComplex* y,
+	int xNnz,
+	const __device cuFloatComplex *xValues,
+	const __device int *xIndices,
+	int xBaseIndex, cuFloatComplex beta);	
+
+/** 
+* \fn void spgpuZscal(spgpuHandle_t handle, __device cuDoubleComplex *y, int n, cuDoubleComplex alpha, __device cuDoubleComplex *x)
+ * Computes the double precision complex y = alpha * x. y could be exactly x (without offset) or another vector.
+ * \param handle the spgpu handle used to call this routine
+ * \param y the resulting vector
+ * \param n the vectors' length
+ * \param alpha the alpha value
+ * \param x the input vector
+ */
+void spgpuZscal(spgpuHandle_t handle,
+	__device cuDoubleComplex *y,
+	int n,
+	cuDoubleComplex alpha,
+	__device cuDoubleComplex *x);
+
+/** 
+* \fn cuFloatComplex spgpuZdot (spgpuHandle_t handle, int n, __device cuDoubleComplex* a, __device cuDoubleComplex* b)
+ * Computes double precision complex dot product of a and b vectors.
+ * \param handle The spgpu handle used to call this routine
+ * \param n the vectors length
+ * \param a the first input vector
+ * \param b the second input vector
+ * \return the dot product
+ */
+ cuDoubleComplex spgpuZdot(spgpuHandle_t handle, 
+	int n, 
+	__device cuDoubleComplex* a, 
+	__device cuDoubleComplex* b);
+
+/** 
+* \fn cuFloatComplex spgpuZmdot (spgpuHandle_t handle, cuDoubleComplex* y, int n, __device cuDoubleComplex* a, __device cuDoubleComplex* b, int count, int pitch)
+ * Computes double precision complex dot product of a and b multivectors.
+ * \param handle the spgpu handle used to call this routine
+ * \param y the result, made by dot products of every vector couples from the multivectors a and b
+ * \param n the vectors' length
+ * \param a the first input multivector
+ * \param b the second input multivector
+ * \param count the number of vectors in every multivector
+ * \param pitch the pitch, in number of elements, of every multivectors (so the second element of the first vector in a will be a[pitch], the third a[2*pitch], etc.).
+ */
+void spgpuZmdot(spgpuHandle_t handle, 
+	cuDoubleComplex* y, 
+	int n, 
+	__device cuDoubleComplex* a, 
+	__device cuDoubleComplex* b, 
+	int count, 
+	int pitch);
+
+
+/** 
+* \fn double spgpuZnrm2(spgpuHandle_t handle, int n, __device cuDoubleComplex* x)
+ * Computes the double precision complex Euclidean vector norm of x. 
+ * \param handle the spgpu handle used to call this routine
+ * \param n the vector's length
+ * \param x the input vector
+ * \return the euclidean vector norm
+ */
+ double spgpuZnrm2(spgpuHandle_t handle, 
+	int n, 
+	__device cuDoubleComplex* x);
+
+/** 
+* \fn void spgpuZmnrm2(spgpuHandle_t handle, double *y, int n, __device cuDoubleComplex *x, int count, int pitch)
+ * Computes the double precision complex Euclidean vector norm for every vector in the multivector x. 
+ * \param handle the spgpu handle used to call this routine
+ * \param y the array of results
+ * \param n the vectors' length in the x multivector
+ * \param x the input multivector
+ * \param count the number of vectors in x
+ * \param pitch the multivector's pitch
+ */	
+	
+void spgpuZmnrm2(spgpuHandle_t handle, 
+	double *y, 
+	int n, 
+	__device cuDoubleComplex *x, 
+	int count, 
+	int pitch);
+	
+/** 
+* \fn void spgpuZaxpby(spgpuHandle_t handle, __device cuDoubleComplex *z, int n, cuDoubleComplex beta, __device cuDoubleComplex *y, cuDoubleComplex alpha, __device cuDoubleComplex* x)
+ * Computes the double precision complex z = beta * y + alpha * x. z could be exactly x or y (without offset) or another vector.
+ * \param handle the spgpu handle used to call this routine
+ * \param z the resulting vector
+ * \param n the vectors' length
+ * \param beta the beta value
+ * \param y the first input vector
+ * \param alpha the alpha value
+ * \param x the second input vector
+ */
+void spgpuZaxpby(spgpuHandle_t handle,
+	__device cuDoubleComplex *z,
+	int n,
+	cuDoubleComplex beta,
+	__device cuDoubleComplex *y,
+	cuDoubleComplex alpha,
+	__device cuDoubleComplex* x);
+	
+/** 
+* \fn void spgpuZmaxpby(spgpuHandle_t handle, __device cuDoubleComplex *z, int n, cuDoubleComplex beta, __device cuDoubleComplex *y, cuDoubleComplex alpha, __device cuDoubleComplex* x, int count, int pitch)
+ * Computes the double precision complex z = beta * y + alpha * x of x and y multivectors. z could be exactly x or y (without offset) or another vector.
+ * \param handle the spgpu handle used to call this routine
+ * \param z the resulting vector
+ * \param n the vectors' length
+ * \param beta the beta value
+ * \param y the first input vector
+ * \param alpha the alpha value
+ * \param x the second input vector
+ * \param count the number of vectors in z,x and y multivectors
+ * \param pitch the multivector's pitch
+ */
+
+  void spgpuZmaxpby(spgpuHandle_t handle,
+		    __device cuDoubleComplex *z,
+		    int n,
+		    cuDoubleComplex beta,
+		    __device cuDoubleComplex *y,
+		    cuDoubleComplex alpha,
+		    __device cuDoubleComplex* x,
+		    int count, int pitch);
+
+/** 
+* \fn void spgpuZaxy(spgpuHandle_t handle, __device cuDoubleComplex *z, int n, cuDoubleComplex alpha, __device cuDoubleComplex *x, __device cuDoubleComplex* y)
+ * Computes the double precision complex z = alpha * x * y. z could be exactly x or y (without offset) or another vector.
+ * \param handle the spgpu handle used to call this routine
+ * \param z the resulting vector
+ * \param n the vectors' length in the x multivector
+ * \param alpha the alpha value
+ * \param x the second input vector
+ * \param y the first input vector
+ */
+void spgpuZaxy(spgpuHandle_t handle,
+	__device cuDoubleComplex *z,
+	int n,
+	cuDoubleComplex alpha,
+	__device cuDoubleComplex *x,
+	__device cuDoubleComplex *y);
+
+/** 
+* \fn void spgpuZaxypbz(spgpuHandle_t handle, __device cuDoubleComplex *w, int n, cuDoubleComplex beta, __device cuDoubleComplex *z, cuDoubleComplex alpha, __device cuDoubleComplex* x, __device cuDoubleComplex *y)
+ * Computes the double precision complex w = beta * z + alpha * x * y. w could be exactly x, y or z (without offset) or another vector.
+ * \param handle the spgpu handle used to call this routine
+ * \param w the resulting vector
+ * \param n the vectors' length
+ * \param beta the beta value
+ * \param z the first input vector
+ * \param alpha the alpha value
+ * \param x the second input vector
+ * \param y the third input vector
+ */void spgpuZaxypbz(spgpuHandle_t handle,
+	__device cuDoubleComplex *w,
+	int n,
+	cuDoubleComplex beta,
+	__device cuDoubleComplex *z,
+	cuDoubleComplex alpha,
+	__device cuDoubleComplex* x,
+	__device cuDoubleComplex *y);
+
+/** 
+* \fn void spgpuZmaxy(spgpuHandle_t handle, __device cuDoubleComplex *z, int n, cuDoubleComplex alpha, __device cuDoubleComplex *x, __device cuDoubleComplex* y, int count, int pitch)
+ * Computes the double precision complex z = alpha * x * y for z,x and y multivectors. z could be exactly x or y (without offset) or another vector.
+ * \param handle the spgpu handle used to call this routine
+ * \param z the resulting multivector
+ * \param n the vectors' length in the multivectors
+ * \param alpha the alpha value
+ * \param x the first input multivector
+ * \param y the second input multivector
+ * \param count the number of vectors in z,x and y multivectors
+ * \param pitch the multivectors pitch
+ */	
+void spgpuZmaxy(spgpuHandle_t handle,
+	__device cuDoubleComplex *z,
+	int n,
+	cuDoubleComplex alpha,
+	__device cuDoubleComplex* x,
+	__device cuDoubleComplex *y,
+	int count,
+	int pitch);
+	
+/** 
+* \fn void spgpuZmaxypbz(spgpuHandle_t handle, __device cuDoubleComplex *w, int n, cuDoubleComplex beta, __device cuDoubleComplex *z, cuDoubleComplex alpha, __device cuDoubleComplex* x, __device cuDoubleComplex *y, int count, int pitch)
+ * Computes the double precision complex w = beta * z + alpha * x * y. w could be exactly x, y or z (without offset) or another vector.
+ * \param handle the spgpu handle used to call this routine
+ * \param w the resulting vector
+ * \param n the vectors' length
+ * \param beta the beta value
+ * \param z the first input vector
+ * \param alpha the alpha value
+ * \param x the second input vector
+ * \param y the third input vector
+ * \param count the number of vectors in w,z,x and y multivectors
+ * \param pitch the multivectors' pitch
+ */
+	
+void spgpuZmaxypbz(spgpuHandle_t handle,
+	__device cuDoubleComplex *w,
+	int n,
+	cuDoubleComplex beta,
+	__device cuDoubleComplex *z,
+	cuDoubleComplex alpha,
+	__device cuDoubleComplex* x,
+	__device cuDoubleComplex *y,
+	int count,
+	int pitch);
+
+/** 
+* \fn void spgpuZgath(spgpuHandle_t handle, __device cuDoubleComplex *xValues, int xNnz, const __device int *xIndices, int xBaseIndex, const __device cuDoubleComplex* y)
+ * Computes the double precision complex gather from y to xValues (using xIndices).
+ * \param handle the spgpu handle used to call this routine
+ * \param xValues the destination array for gathered values
+ * \param xNnz the number of elements to gather
+ * \param xIndices the array of indices for the elements to be gathered
+ * \param xBaseIndex the base index used in xIndices (i.e. 0 for C, 1 for Fortran).
+ * \param y the source vector (from which the elements will be gathered)
+ */
+void spgpuZgath(spgpuHandle_t handle,
+	__device cuDoubleComplex *xValues,
+	int xNnz,
+	const __device int *xIndices,
+	int xBaseIndex,
+	const __device cuDoubleComplex* y);
+	
+/** 
+* \fn void spgpuZscat(spgpuHandle_t handle, __device cuDoubleComplex* y, int xNnz, const __device cuDoubleComplex *xValues, const __device int *xIndices, int xBaseIndex, cuDoubleComplex beta)
+ * Computes the double precision complex scatter from xValues to y (using xIndices).
+ * The scattered element will be, for i in [0,xNnz), y[xIndices[i]] = beta*y[xIndices[i]] + xValues[i] (to be noted that
+ * y values will be multiplied with beta just for scattered values).
+ * \param handle the spgpu handle used to call this routine
+ * \param y the destination vector (to which the elements will be scattered)
+ * \param xNnz the number of elements to scatter
+ * \param xValues the source array from which the values will be read
+ * \param xIndices the array of indices for the elements to be scattered
+ * \param xBaseIndex the base index used in xIndices (i.e. 0 for C, 1 for Fortran).
+ * \param beta the beta value
+ */
+void spgpuZscat(spgpuHandle_t handle,
+	__device cuDoubleComplex* y,
+	int xNnz,
+	const __device cuDoubleComplex *xValues,
+	const __device int *xIndices,
+	int xBaseIndex, cuDoubleComplex beta);	
 /** @}*/
 		
 #ifdef __cplusplus
