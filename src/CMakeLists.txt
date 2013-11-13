@@ -116,10 +116,10 @@ cuda_include_directories (${GLOBAL_INCLUDES})
 # library directories
 link_directories (${GLOBAL_LIBRARIES}) 
 
-set(GENCODE -gencode=arch=compute_11,code=sm_11 -gencode=arch=compute_20,code=sm_20)
-set(GENCODE_DOUBLE -gencode=arch=compute_13,code=sm_13 -gencode=arch=compute_20,code=sm_20)
+set(GENCODE -gencode=arch=compute_11,code=sm_11 -gencode=arch=compute_20,code=sm_20 -gencode=arch=compute_30,code=sm_30)
+set(GENCODE_DOUBLE -gencode=arch=compute_13,code=sm_13 -gencode=arch=compute_20,code=sm_20 -gencode=arch=compute_30,code=sm_30)
 #set(ADDITIONAL_OPTIONS -DDEBUG -DASSUME_LOCK_SYNC_PARALLELISM)
-set(ADDITIONAL_OPTIONS -DASSUME_LOCK_SYNC_PARALLELISM)
+#set(ADDITIONAL_OPTIONS -DASSUME_LOCK_SYNC_PARALLELISM)
 
 message(STATUS "13" ${CUDA_SM13_SOURCES})
 message(STATUS "XX" ${CUDA_SOURCES})

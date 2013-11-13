@@ -34,7 +34,7 @@ extern "C"
 //#define ASSUME_LOCK_SYNC_PARALLELISM
 
 
-__device__ cuFloatComplex sdotReductionResult[128];
+static __device__ cuFloatComplex sdotReductionResult[128];
 
 __global__ void spgpuCdot_kern(int n, cuFloatComplex* x, cuFloatComplex* y)
 {

@@ -33,7 +33,7 @@ extern "C"
 
 #define BLOCK_SIZE 512
 
-__device__ double dnrm2ReductionResult[128];
+static __device__ double dnrm2ReductionResult[128];
 
 __global__ void spgpuDnrm2_kern(int n, double* x)
 {
