@@ -26,13 +26,18 @@ extern "C"
 
 //#define USE_CUBLAS
 
+#ifdef USE_CUBLAS
+#include "cublas.h"
+#endif
+
 #define BLOCK_SIZE 320
 //#define BLOCK_SIZE 512
 
 //#define ASSUME_LOCK_SYNC_PARALLELISM
 
-
-__device__ float sdotReductionResult[128];
+#ifndef USE_CUBLAS
+static __device__ float sdotReductionResult[128];
+#endif
 
 __global__ void spgpuSdot_kern(int n, float* x, float* y)
 {
@@ -126,7 +131,7 @@ float spgpuSdot(spgpuHandle_t handle, int n, __device float* a, __device float* 
 
 #ifdef USE_CUBLAS
 	float res;
-	cublasSdot(n,x,1,y,1,&res);
+	cublasSdot(n,a,1,b,1,&res);
 	cudaDeviceSynchronize();
 	
 	return res;
@@ -141,7 +146,6 @@ float spgpuSdot(spgpuHandle_t handle, int n, __device float* a, __device float* 
 	int blocks = min(128, min(prop.multiProcessorCount, (n+BLOCK_SIZE-1)/BLOCK_SIZE));
 	
 	float tRes[128];
-
 	spgpuSdot_kern<<<blocks, (BLOCK_SIZE), 0, handle->currentStream>>>(n, a, b);
 	cudaMemcpyFromSymbol(tRes, sdotReductionResult, blocks*sizeof(float));
 

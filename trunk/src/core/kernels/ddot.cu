@@ -32,7 +32,7 @@ extern "C"
 
 //#define ASSUME_LOCK_SYNC_PARALLELISM
 
-__device__ double ddotReductionResult[128];
+static __device__ double ddotReductionResult[128];
 
 __global__ void spgpuDdot_kern(int n, double* x, double* y)
 {

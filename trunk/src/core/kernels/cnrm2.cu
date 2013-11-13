@@ -33,7 +33,7 @@ extern "C"
 
 //#define ASSUME_LOCK_SYNC_PARALLELISM
 
-__device__ float snrm2ReductionResult[128];
+static __device__ float snrm2ReductionResult[128];
 
 __global__ void spgpuCnrm2_kern(int n, cuFloatComplex* x)
 {
