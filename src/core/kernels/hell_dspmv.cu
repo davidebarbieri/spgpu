@@ -38,7 +38,9 @@ texture < int2, 1, cudaReadModeElementType > x_tex;
 #define THREAD_BLOCK 128
 #define MAX_N_FOR_A_CALL (THREAD_BLOCK*65535)
 
+#if __CUDA_ARCH__ < 300
 extern __shared__ int dynShrMem[]; 
+#endif
 
 __device__ void
 spgpuDhellspmv_ridx (int i, double yVal, int outRow,
@@ -53,18 +55,24 @@ spgpuDhellspmv_ridx (int i, double yVal, int outRow,
 	int hackId = i / hackSize;
 	int hackLaneId = i % hackSize;
 
-	// "volatile" used to avoid __syncthreads()
-	volatile int* warpHackOffset = dynShrMem;
-
 	int hackOffset;
-
 	unsigned int laneId = threadIdx.x % 32;
-	unsigned int warpId = threadIdx.x / 32;
+#if __CUDA_ARCH__ < 300
+        // "volatile" used to avoid __syncthreads()
+        volatile int* warpHackOffset = dynShrMem;
 
-	if (laneId == 0)
-		warpHackOffset[warpId] = hackOffsets[hackId];
-	
-	hackOffset = warpHackOffset[warpId] + hackLaneId;
+        unsigned int warpId = threadIdx.x / 32;
+
+        if (laneId == 0)
+                warpHackOffset[warpId] = hackOffsets[hackId];
+
+        hackOffset = warpHackOffset[warpId] + hackLaneId;
+#else
+     	if (laneId == 0)
+                hackOffset = hackOffsets[hackId];
+        hackOffset = __shfl(hackOffset, 0) + hackLaneId;
+
+#endif
 
 	rP += hackOffset; 
 	cM += hackOffset; 
@@ -187,20 +195,26 @@ _spgpuDhellspmv (spgpuHandle_t handle, double* z, const double *y, double alpha,
 	dim3 block (THREAD_BLOCK);
 	dim3 grid ((rows + THREAD_BLOCK - 1) / THREAD_BLOCK);
 
-	int warpsPerBlock = THREAD_BLOCK/handle->warpSize;
+        int shrMemSize;
+#if __CUDA_ARCH__ < 300
+       	int warpsPerBlock = THREAD_BLOCK/handle->warpSize;
+        shrMemSize = warpsPerBlock*sizeof(int);
+#else
+       	shrMemSize = 0;
+#endif
 
 #ifdef ENABLE_CACHE
 	bind_tex_x ((const int2 *) x);
 #endif
 
 	if (rIdx)
-		spgpuDhellspmv_krn_ridx <<< grid, block, warpsPerBlock*sizeof(int), handle->currentStream >>> (z, y, alpha, cM, rP, hackSize, hackOffsets, rS, rIdx, rows, x, beta, baseIndex);
+		spgpuDhellspmv_krn_ridx <<< grid, block, shrMemSize, handle->currentStream >>> (z, y, alpha, cM, rP, hackSize, hackOffsets, rS, rIdx, rows, x, beta, baseIndex);
 	else
 	{
 		if (beta != 0.0)
-			spgpuDhellspmv_krn <<< grid, block, warpsPerBlock*sizeof(int), handle->currentStream >>> (z, y, alpha, cM, rP, hackSize, hackOffsets, rS, rows, x, beta, baseIndex);
+			spgpuDhellspmv_krn <<< grid, block, shrMemSize, handle->currentStream >>> (z, y, alpha, cM, rP, hackSize, hackOffsets, rS, rows, x, beta, baseIndex);
 		else
-			spgpuDhellspmv_krn_b0 <<< grid, block, warpsPerBlock*sizeof(int), handle->currentStream >>> (z, y, alpha, cM, rP, hackSize, hackOffsets, rS, rows, x, baseIndex);
+			spgpuDhellspmv_krn_b0 <<< grid, block, shrMemSize, handle->currentStream >>> (z, y, alpha, cM, rP, hackSize, hackOffsets, rS, rows, x, baseIndex);
 	}
 
 	
