@@ -26,7 +26,6 @@ extern "C"
 
 #include "debug.h"
 
-
 #ifdef ENABLE_CACHE
 // Texture cache management
 texture < float, 1, cudaReadModeElementType > x_tex;
@@ -154,10 +153,12 @@ _spgpuSellspmv (spgpuHandle_t handle, float* z, const float *y, float alpha, con
 	dim3 block (THREAD_BLOCK);
 	dim3 grid ((rows + THREAD_BLOCK - 1) / THREAD_BLOCK);
 
+	cudaDeviceSynchronize();
+	cudaCheckError("sdfsf");
 #ifdef ENABLE_CACHE
 	bind_tex_x (x);
 #endif
-
+	cudaCheckError("Before");
 	if (rIdx)
 		spgpuSellspmv_krn_ridx <<< grid, block, 0, handle->currentStream >>> (z, y, alpha, cM, rP, cMPitch, rPPitch, rS, rIdx, rows, x, beta, baseIndex);
 	else
@@ -168,6 +169,8 @@ _spgpuSellspmv (spgpuHandle_t handle, float* z, const float *y, float alpha, con
 			spgpuSellspmv_krn_b0 <<< grid, block, 0, handle->currentStream >>> (z, y, alpha, cM, rP, cMPitch, rPPitch, rS, rows, x, baseIndex);
 	}
 
+	cudaDeviceSynchronize();
+	cudaCheckError("After");
 #ifdef ENABLE_CACHE
   	unbind_tex_x (x);
 #endif
