@@ -127,27 +127,30 @@ int main(int argc, char** argv)
 
 	printf("Compute on GPU..\n");
 
-	testType *x = (testType*) malloc(rowsCount*sizeof(testType));
+	testType *x = (testType*) malloc(columnsCount*sizeof(testType));
 	testType *y = (testType*) malloc(rowsCount*sizeof(testType));
 
-	for (int i=0; i<rowsCount; ++i)
+	for (int i=0; i<columnsCount; ++i)
 	{
 		x[i] = rand()/(testType)RAND_MAX;
+	}
+	
+	for (int i=0; i<rowsCount; ++i)
+	{
 		y[i] = rand()/(testType)RAND_MAX;
 	}
-
 
 	testType *devX, *devY, *devZ;
 	testType *devCm;
 	int *devRp, *devRs, *devRidx;
 
-	cudaMalloc((void**)&devX,rowsCount*sizeof(testType));
+	cudaMalloc((void**)&devX,columnsCount*sizeof(testType));
 	cudaMalloc((void**)&devY,rowsCount*sizeof(testType));
 	cudaMalloc((void**)&devZ,rowsCount*sizeof(testType));
 	cudaMalloc((void**)&devRs,rowsCount*sizeof(int));
 	cudaMalloc((void**)&devRidx,rowsCount*sizeof(int));
 
-	cudaMemcpy(devX, x, rowsCount*sizeof(testType), cudaMemcpyHostToDevice);
+	cudaMemcpy(devX, x, columnsCount*sizeof(testType), cudaMemcpyHostToDevice);
 	cudaMemcpy(devY, y, rowsCount*sizeof(testType), cudaMemcpyHostToDevice);
 	cudaMemcpy(devRs, ellRowLengths, rowsCount*sizeof(int), cudaMemcpyHostToDevice);
 

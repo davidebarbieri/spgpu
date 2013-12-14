@@ -27,7 +27,7 @@
   
   <td style="padding-left: 0.5em;">
    <div id="projectname">spGpu library
-   &#160;<span id="projectnumber">1.0.2</span>
+   &#160;<span id="projectnumber">1.1.0</span>
    </div>
    <div id="projectbrief">spgpu</div>
   </td>
@@ -77,6 +77,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <table class="memberdecls">
 <tr><td colspan="2"><h2><a name="func-members"></a>
 Functions</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__conversion_routines.html#gae0995b45f7b9b84c96b67743a74babbb">computeDiaDiagonalsCount</a> (int rowsCount, int columnsCount, int nonZerosCount, const int *cooRowIndices, const int *cooColsIndices)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__conversion_routines.html#ga5cd51bb5a67f20a41061b05aa61677fc">coo2dia</a> (void *values, int *offsets, int valuesPitch, int diagonals, int rowsCount, int columnsCount, int nonZerosCount, const int *cooRowIndices, const int *cooColsIndices, const void *cooValues, <a class="el" href="group__core_fun.html#ga6403dea459dde9675081ba6a27577fc8">spgpuType_t</a> valuesType)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__conversion_routines.html#ga09ef73b524ae710a7b30c7c584db575c">computeDiaAllocPitch</a> (int rowsCount)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__conversion_routines.html#gadc87180655ae54f2036967afc3c42266">computeEllRowLenghts</a> (int *ellRowLengths, int *ellMaxRowSize, int rowsCount, int nonZerosCount, const int *cooRowIndices, int cooBaseIndex)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__conversion_routines.html#ga1d08f06885a41b6c875cc029441dfc74">computeEllAllocPitch</a> (int rowsCount)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__conversion_routines.html#ga138847d14b7a67dded82657d249dfe3d">cooToEll</a> (void *ellValues, int *ellIndices, int ellValuesPitch, int ellIndicesPitch, int ellMaxRowSize, int ellBaseIndex, int rowsCount, int nonZerosCount, const int *cooRowIndices, const int *cooColsIndices, const void *cooValues, int cooBaseIndex, <a class="el" href="group__core_fun.html#ga6403dea459dde9675081ba6a27577fc8">spgpuType_t</a> valuesType)</td></tr>
@@ -85,6 +88,76 @@ Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__conversion_routines.html#gadf83002fecc8094a319381adb5f6cf76">ellToHell</a> (void *hellValues, int *hellIndices, int *hackOffsets, int hackSize, const void *ellValues, const int *ellIndices, int ellValuesPitch, int ellIndicesPitch, int *ellRowLengths, int rowsCount, <a class="el" href="group__core_fun.html#ga6403dea459dde9675081ba6a27577fc8">spgpuType_t</a> valuesType)</td></tr>
 </table>
 <hr/><h2>Function Documentation</h2>
+<a class="anchor" id="ga09ef73b524ae710a7b30c7c584db575c"></a><!-- doxytag: member="dia_conv.h::computeDiaAllocPitch" ref="ga09ef73b524ae710a7b30c7c584db575c" args="(int rowsCount)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int computeDiaAllocPitch </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>rowsCount</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>This function returns a pitch (in number of elements) that can be used to allocate the values array for DIA matrix format. </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">rowsCount</td><td>the rows count </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Returns:</b></dt><dd>the pitch for an DIA matrix of rowsCount rows. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="gae0995b45f7b9b84c96b67743a74babbb"></a><!-- doxytag: member="dia_conv.h::computeDiaDiagonalsCount" ref="gae0995b45f7b9b84c96b67743a74babbb" args="(int rowsCount, int columnsCount, int nonZerosCount, const int *cooRowIndices, const int *cooColsIndices)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int computeDiaDiagonalsCount </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>rowsCount</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>columnsCount</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>nonZerosCount</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int *&#160;</td>
+          <td class="paramname"><em>cooRowIndices</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int *&#160;</td>
+          <td class="paramname"><em>cooColsIndices</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
 <a class="anchor" id="ga1d08f06885a41b6c875cc029441dfc74"></a><!-- doxytag: member="ell_conv.h::computeEllAllocPitch" ref="ga1d08f06885a41b6c875cc029441dfc74" args="(int rowsCount)" -->
 <div class="memitem">
 <div class="memproto">
@@ -219,6 +292,87 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a class="anchor" id="ga5cd51bb5a67f20a41061b05aa61677fc"></a><!-- doxytag: member="dia_conv.h::coo2dia" ref="ga5cd51bb5a67f20a41061b05aa61677fc" args="(void *values, int *offsets, int valuesPitch, int diagonals, int rowsCount, int columnsCount, int nonZerosCount, const int *cooRowIndices, const int *cooColsIndices, const void *cooValues, spgpuType_t valuesType)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void coo2dia </td>
+          <td>(</td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>values</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *&#160;</td>
+          <td class="paramname"><em>offsets</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>valuesPitch</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>diagonals</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>rowsCount</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>columnsCount</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>nonZerosCount</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int *&#160;</td>
+          <td class="paramname"><em>cooRowIndices</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int *&#160;</td>
+          <td class="paramname"><em>cooColsIndices</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const void *&#160;</td>
+          <td class="paramname"><em>cooValues</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__core_fun.html#ga6403dea459dde9675081ba6a27577fc8">spgpuType_t</a>&#160;</td>
+          <td class="paramname"><em>valuesType</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
 
 </div>
 </div>
@@ -531,7 +685,7 @@ Functions</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Sun Apr 14 2013 20:27:28 for spGpu library by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sat Dec 14 2013 20:31:28 for spGpu library by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.5
 </small></address>

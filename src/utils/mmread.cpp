@@ -159,7 +159,8 @@ int loadMmMatrixToCoo(
 	if (!isStoredSparse)
 		return MATRIX_READ_INVALID_INPUT;
 
-	if (matrixStorage != MATRIX_STORAGE_REAL)
+	if (matrixStorage != MATRIX_STORAGE_REAL &&
+		matrixStorage != MATRIX_STORAGE_INTEGER)
 		return MATRIX_READ_UNSUPPORTED;
 
 	loadMmMatrixToCooReal(values, rowIndices, columnIndices, nonZerosCount, file);
