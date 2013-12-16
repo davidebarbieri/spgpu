@@ -25,14 +25,14 @@
 #include "string.h"
 
 #include "core/dia_conv.h"
-//#include "core/hdia_conv.h"
+#include "core/hdia_conv.h"
 
 #include "core/core.h"
 #include "core/dia.h"
-//#include "core/hdia.h"
+#include "core/hdia.h"
 #include "vector.h"
 
-#define NUM_TESTS 2000
+#define NUM_TESTS 1
 
 
 //#define TEST_DOUBLE
@@ -208,6 +208,89 @@ int main(int argc, char** argv)
 
 	gflops = (((nonZerosCount*2-1)) / time)*0.000000001f;
 	printf("GFlop/s: %f\n", gflops);
+
+
+	printf("Converting to HDIA..\n");
+
+	int hackSize = 32;
+	int hacksCount = getHdiaHacksCount(hackSize, rowsCount);
+
+	int allocationHeight;
+	int* hackOffsets = (int*)malloc((hacksCount+1)*sizeof(int)); 
+	
+	computeHdiaHackOffsets(
+		&allocationHeight,
+		hackOffsets,
+		hackSize,
+		diaValues,
+		diaPitch,	
+		diagsCount,
+		rowsCount,
+		valuesTypeCode);
+	
+	testType *hdiaValues = (testType*) malloc(hackSize*allocationHeight*sizeof(testType));
+	int *hdiaOffsets = (int*) malloc(allocationHeight*sizeof(int));
+	
+	diaToHdia(
+		hdiaValues,
+		hdiaOffsets,
+		hackOffsets,
+		hackSize,
+		diaValues,
+		diaOffsets,
+		diaPitch,	
+		diagsCount,
+		rowsCount,
+		valuesTypeCode
+	);
+	
+	printf("Conversion complete: HDIA format is %i Bytes.\n", hackSize*allocationHeight*sizeof(testType) + 
+	(allocationHeight + (hacksCount+1))*sizeof(int));
+	
+	testType *devHdiaDm;
+	int *devHdiaOffsets, *devHackOffsets;
+	
+	cudaMalloc((void**)&devHdiaDm, hackSize*allocationHeight*sizeof(testType));
+	cudaMalloc((void**)&devHdiaOffsets, allocationHeight*sizeof(int));
+	cudaMalloc((void**)&devHackOffsets,(hacksCount+1)*sizeof(int));
+
+	cudaMemcpy(devHdiaDm, hdiaValues, hackSize*allocationHeight*sizeof(testType), cudaMemcpyHostToDevice);
+	cudaMemcpy(devHdiaOffsets, hdiaOffsets, allocationHeight*sizeof(int), cudaMemcpyHostToDevice);
+	cudaMemcpy(devHackOffsets, hackOffsets, (hacksCount+1)*sizeof(int), cudaMemcpyHostToDevice);
+
+#ifdef TEST_DOUBLE
+	//spgpuDhdiaspmv (spgpuHandle, devZ, devY, 2.0, devDm, devOffsets, diaPitch, rowsCount, columnsCount, diagsCount, devX, -3.0);
+#else
+	spgpuShdiaspmv (spgpuHandle, devZ, devY, 2.0f, devHdiaDm, devHdiaOffsets, hackSize, devHackOffsets, rowsCount, columnsCount, devX, -3.0f);
+#endif
+	
+#ifdef TEST_DOUBLE
+	dotRes = spgpuDdot(spgpuHandle, rowsCount, devZ, devZ);
+#else
+	dotRes = spgpuSdot(spgpuHandle, rowsCount, devZ, devZ);
+#endif
+	cudaDeviceSynchronize();
+
+	printf("dot res: %e\n", dotRes);
+
+	start = timer.getTime();
+
+	for (int i=0; i<NUM_TESTS; ++i)
+	{
+#ifdef TEST_DOUBLE
+		
+#else
+		spgpuShdiaspmv (spgpuHandle, devZ, devY, 2.0f, devHdiaDm, devHdiaOffsets, hackSize, devHackOffsets, rowsCount, columnsCount, devX, -3.0f);
+#endif
+		
+	}
+	cudaDeviceSynchronize();
+
+	time = (timer.getTime() - start)/NUM_TESTS;
+	printf("elapsed time: %f seconds\n", time);
+
+	gflops = (((nonZerosCount*2-1)) / time)*0.000000001f;
+	printf("GFlop/s: %f\n", gflops);
 	
 	spgpuDestroy(spgpuHandle);
 
@@ -216,8 +299,20 @@ int main(int argc, char** argv)
 		printf("Error: %i (%s)\n",lastError,cudaGetErrorString(lastError));
 
 
+	cudaFree(devX);
+	cudaFree(devY);
+	cudaFree(devZ);
+	cudaFree(devOffsets);
+	cudaFree(devDm);
+	cudaFree(devHdiaDm);
+	cudaFree(devHdiaOffsets);
+	cudaFree(devHackOffsets);
+
 	free(diaValues);
 	free(diaOffsets);
+	free(hackOffsets);
+	free(hdiaValues);
+	free(hdiaOffsets);
 	free(rows);
 	free(cols);
 	
