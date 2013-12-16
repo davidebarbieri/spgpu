@@ -33,7 +33,38 @@ texture < float, 1, cudaReadModeElementType > x_tex;
 #define unbind_tex_x(x) cudaUnbindTexture(x_tex)
 #endif
 
+/*
+__device__ void
+spgpuSdiaspmv_mm (float *z, const float *y, float alpha, const float* dM, const int* offsets, int dMPitch, int rows, int cols, int diags, const float *x, float beta)
+{
+	int idx = threadIdx.x + blockIdx.x*blockDim.x;
 
+	float zProd = 0.0f;
+	float t_a = 0.0f;
+
+	float yVal = 0.0f;
+	if (idx < rows && beta != 0.0f)
+		yVal = y[idx];
+	
+	if(idx<rows)
+	{
+		for(int i=0; i<diags; i++)
+		{
+			t_a = dM[i*dMPitch+idx];
+			int temp_off = offsets[i];
+			int c = temp_off+idx;
+			
+			if(c >= 0 && c < cols)
+				zProd += t_a*x[idx+temp_off];
+      		}
+      		
+      		if (beta == 0.0f)
+			z[idx] = PREC_FMUL(alpha, zProd);
+		else
+			z[idx] = PREC_FADD(PREC_FMUL (beta, yVal), PREC_FMUL (alpha, zProd));
+	}
+}
+*/
 
 __device__ void
 spgpuSdiaspmv_ (float *z, const float *y, float alpha, const float* dM, const int* offsets, int dMPitch, int rows, int cols, int diags, const float *x, float beta)
@@ -222,11 +253,14 @@ spgpuSdiaspmv (spgpuHandle_t handle,
     	
     	int threadCount;
     	
+    	/*
 	if (deviceProp.major < 2)
     		threadCount = 64; 
     	else	
 		threadCount = 512; 
-
+*/
+	threadCount = 128; 
+	
 	int maxThreadForACall = threadCount*65535;
 	
 	while (rows > maxThreadForACall) //managing large vectors
