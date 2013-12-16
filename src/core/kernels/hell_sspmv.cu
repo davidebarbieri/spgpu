@@ -23,9 +23,7 @@ extern "C"
 #include "hell.h"
 }
 
-
 #include "debug.h"
-
 
 #ifdef ENABLE_CACHE
 // Texture cache management
@@ -57,6 +55,9 @@ spgpuShellspmv_ridx (int i, float yVal, int outRow,
 	unsigned int laneId = threadIdx.x % 32;
 #if __CUDA_ARCH__ < 300	
 	// "volatile" used to avoid __syncthreads()
+	// TODO: do this only when assume lock step warps
+	// reintroduce synchthreads() and remove if >= n then return 
+	// (all threads should do the barrier)
 	volatile int* warpHackOffset = dynShrMem;
 
 
