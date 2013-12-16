@@ -32,7 +32,7 @@
 #include "core/hdia.h"
 #include "vector.h"
 
-#define NUM_TESTS 1
+#define NUM_TESTS 200
 
 
 //#define TEST_DOUBLE
@@ -259,7 +259,7 @@ int main(int argc, char** argv)
 	cudaMemcpy(devHackOffsets, hackOffsets, (hacksCount+1)*sizeof(int), cudaMemcpyHostToDevice);
 
 #ifdef TEST_DOUBLE
-	//spgpuDhdiaspmv (spgpuHandle, devZ, devY, 2.0, devDm, devOffsets, diaPitch, rowsCount, columnsCount, diagsCount, devX, -3.0);
+	spgpuDhdiaspmv (spgpuHandle, devZ, devY, 2.0, devHdiaDm, devHdiaOffsets, hackSize, devHackOffsets, rowsCount, columnsCount, devX, -3.0);
 #else
 	spgpuShdiaspmv (spgpuHandle, devZ, devY, 2.0f, devHdiaDm, devHdiaOffsets, hackSize, devHackOffsets, rowsCount, columnsCount, devX, -3.0f);
 #endif
@@ -278,7 +278,7 @@ int main(int argc, char** argv)
 	for (int i=0; i<NUM_TESTS; ++i)
 	{
 #ifdef TEST_DOUBLE
-		
+		spgpuDhdiaspmv (spgpuHandle, devZ, devY, 2.0, devHdiaDm, devHdiaOffsets, hackSize, devHackOffsets, rowsCount, columnsCount, devX, -3.0);	
 #else
 		spgpuShdiaspmv (spgpuHandle, devZ, devY, 2.0f, devHdiaDm, devHdiaOffsets, hackSize, devHackOffsets, rowsCount, columnsCount, devX, -3.0f);
 #endif

@@ -209,7 +209,7 @@ _spgpuDdiaspmv (spgpuHandle_t handle, int threadCount, double* z, const double *
 	bind_tex_x (x);
 #endif
 
-	if (beta != 0.0f)
+	if (beta != 0.0)
 		spgpuDdiaspmv_krn <<< grid, block, block.x*sizeof(int), handle->currentStream >>> (z, y, alpha, dM, offsets, dMPitch, rows, cols, diags, x, beta);
 	else
 		spgpuDdiaspmv_krn_b0 <<< grid, block, block.x*sizeof(int), handle->currentStream >>> (z, y, alpha, dM, offsets, dMPitch, rows, cols, diags, x);
