@@ -251,15 +251,7 @@ spgpuSdiaspmv (spgpuHandle_t handle,
 	cudaDeviceProp deviceProp;
     	cudaGetDeviceProperties(&deviceProp, 0);
     	
-    	int threadCount;
-    	
-    	/*
-	if (deviceProp.major < 2)
-    		threadCount = 64; 
-    	else	
-		threadCount = 512; 
-*/
-	threadCount = 128; 
+    	int threadCount = 128; 
 	
 	int maxThreadForACall = threadCount*65535;
 	
