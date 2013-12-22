@@ -16,18 +16,16 @@
  * GNU General Public License for more details.
  */
  
-// Used to avoid lower precision MAD
+// Used to avoid mad.f32 instructions on c.c. 1.*
 #if __CUDA_ARCH__ >= 200
 #define PREC_FADD(a,b) ((a) + (b))
 #define PREC_FMUL(a,b) ((a) * (b))
-#define PREC_DADD(a,b) ((a) + (b))
-#define PREC_DMUL(a,b) ((a) * (b))
 #else
 #define PREC_FADD(a,b) __fadd_rn((a),(b))
 #define PREC_FMUL(a,b) __fmul_rn((a),(b))
-#define PREC_DADD(a,b) __dadd_rn((a),(b))
-#define PREC_DMUL(a,b) __dmul_rn((a),(b))
 #endif
 
+#define PREC_DADD(a,b) ((a) + (b))
+#define PREC_DMUL(a,b) ((a) * (b))
 
 #define ENABLE_CACHE
