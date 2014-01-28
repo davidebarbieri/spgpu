@@ -205,6 +205,7 @@ spgpuZellspmv (spgpuHandle_t handle,
 		_spgpuZellspmv (handle, z, y, alpha, cM, rP, cMPitch, rPPitch, rS, rIdx, MAX_N_FOR_A_CALL, x, beta, baseIndex);
 
 		y = y + MAX_N_FOR_A_CALL;
+		z = z + MAX_N_FOR_A_CALL;
 		cM = cM + MAX_N_FOR_A_CALL;
 		rP = rP + MAX_N_FOR_A_CALL;
 		rS = rS + MAX_N_FOR_A_CALL;

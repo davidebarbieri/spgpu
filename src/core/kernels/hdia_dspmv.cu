@@ -266,6 +266,7 @@ spgpuDhdiaspmv (spgpuHandle_t handle,
 		_spgpuDhdiaspmv (handle, threadCount, z, y, alpha, dM, offsets, hackSize, hackOffsets, maxThreadForACall, cols, x, beta);
 
 		y = y + maxThreadForACall;
+		z = z + maxThreadForACall;
 		hackOffsets += maxThreadForACall/hackSize;
 		
 		rows -= maxThreadForACall;

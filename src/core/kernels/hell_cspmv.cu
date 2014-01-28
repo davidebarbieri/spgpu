@@ -220,6 +220,7 @@ spgpuChellspmv (spgpuHandle_t handle,
 		_spgpuChellspmv (handle, z, y, alpha, cM, rP, hackSize, hackOffsets, rS, rIdx, MAX_N_FOR_A_CALL, x, beta, baseIndex);
 
 		y = y + MAX_N_FOR_A_CALL;
+		z = z + MAX_N_FOR_A_CALL;
 		rS = rS + MAX_N_FOR_A_CALL;
 		hackOffsets += MAX_N_FOR_A_CALL/hackSize;
 		

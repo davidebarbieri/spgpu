@@ -1,7 +1,7 @@
 /*
  * spGPU - Sparse matrices on GPU library.
  * 
- * Copyright (C) 2010 - 2012 
+ * Copyright (C) 2010 - 2014
  *     Davide Barbieri - University of Rome Tor Vergata
  *
  * This program is free software; you can redistribute it and/or
@@ -77,6 +77,7 @@ void spgpuCaxpby(spgpuHandle_t handle,
 		
 		x = x + MAX_N_FOR_A_CALL;
 		y = y + MAX_N_FOR_A_CALL;
+		z = z + MAX_N_FOR_A_CALL;
 		n -= MAX_N_FOR_A_CALL;
 	}
 	
