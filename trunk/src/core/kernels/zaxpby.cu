@@ -78,6 +78,7 @@ void spgpuZaxpby(spgpuHandle_t handle,
 		
 		x = x + MAX_N_FOR_A_CALL;
 		y = y + MAX_N_FOR_A_CALL;
+		z = z + MAX_N_FOR_A_CALL;
 		n -= MAX_N_FOR_A_CALL;
 	}
 	

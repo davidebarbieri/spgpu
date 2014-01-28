@@ -34,9 +34,6 @@
 
 #define NUM_TESTS 200
 
-
-//#define TEST_DOUBLE
-
 #ifdef TEST_DOUBLE
 #define testType double
 #else
@@ -291,7 +288,66 @@ int main(int argc, char** argv)
 
 	gflops = (((nonZerosCount*2-1)) / time)*0.000000001f;
 	printf("GFlop/s: %f\n", gflops);
+
+	printf("Generating a Blocked HDIA..\n");
+
+	int blockRows = 2;
+	int blockCols = 2;
+	int blockSize = blockRows*blockCols;
 	
+	testType *devXB, *devYB, *devZB, *devBhdiaDm;
+	
+	cudaMalloc((void**)&devBhdiaDm, blockSize*hackSize*allocationHeight*sizeof(testType));
+	cudaMalloc((void**)&devXB, blockCols*columnsCount*sizeof(testType));
+	cudaMalloc((void**)&devYB, blockRows*rowsCount*sizeof(testType));
+	cudaMalloc((void**)&devZB, blockRows*rowsCount*sizeof(testType));
+	
+	cudaMemset(devBhdiaDm, 0, blockSize*hackSize*allocationHeight*sizeof(testType));
+	cudaMemset(devXB, 0, blockCols*columnsCount*sizeof(testType));
+	cudaMemset(devYB, 0, blockRows*rowsCount*sizeof(testType));
+	cudaMemset(devZB, 0, blockRows*rowsCount*sizeof(testType));
+	
+	cudaMemcpy2D(devBhdiaDm, blockSize * sizeof(testType), devHdiaDm, sizeof(testType),
+		sizeof(testType), hackSize*allocationHeight, cudaMemcpyDeviceToDevice);
+	cudaMemcpy2D(devXB, blockCols * sizeof(testType), devX, sizeof(testType),
+		sizeof(testType), columnsCount, cudaMemcpyDeviceToDevice);
+	cudaMemcpy2D(devYB, blockRows * sizeof(testType), devY, sizeof(testType),
+		sizeof(testType), rowsCount, cudaMemcpyDeviceToDevice);
+
+#ifdef TEST_DOUBLE
+	spgpuDbhdiaspmv (spgpuHandle, devZB, devYB, 2.0, blockRows, blockCols, devBhdiaDm, devHdiaOffsets, hackSize, devHackOffsets, rowsCount, columnsCount, devXB, -3.0);
+#else
+	spgpuSbhdiaspmv (spgpuHandle, devZB, devYB, 2.0f, blockRows, blockCols, devBhdiaDm, devHdiaOffsets, hackSize, devHackOffsets, rowsCount, columnsCount, devXB, -3.0f);
+#endif
+	
+#ifdef TEST_DOUBLE
+	dotRes = spgpuDdot(spgpuHandle, rowsCount*blockRows, devZB, devZB);
+#else
+	dotRes = spgpuSdot(spgpuHandle, rowsCount*blockRows, devZB, devZB);
+#endif
+	cudaDeviceSynchronize();
+
+	printf("dot res: %e\n", dotRes);
+
+	start = timer.getTime();
+
+	for (int i=0; i<NUM_TESTS; ++i)
+	{
+#ifdef TEST_DOUBLE
+		spgpuDbhdiaspmv (spgpuHandle, devZB, devYB, 2.0, blockRows, blockCols, devBhdiaDm, devHdiaOffsets, hackSize, devHackOffsets, rowsCount, columnsCount, devXB, -3.0);	
+#else
+		spgpuSbhdiaspmv (spgpuHandle, devZB, devYB, 2.0f, blockRows, blockCols, devBhdiaDm, devHdiaOffsets, hackSize, devHackOffsets, rowsCount, columnsCount, devXB, -3.0f);
+#endif
+		
+	}
+	cudaDeviceSynchronize();
+
+	time = (timer.getTime() - start)/NUM_TESTS;
+	printf("elapsed time: %f seconds\n", time);
+
+	gflops = (((nonZerosCount*2-1)) / time)*0.000000001f;
+	printf("GFlop/s: %f\n", gflops);
+
 	spgpuDestroy(spgpuHandle);
 
 	lastError = cudaGetLastError();

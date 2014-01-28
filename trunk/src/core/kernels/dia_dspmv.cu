@@ -280,6 +280,7 @@ spgpuDdiaspmv (spgpuHandle_t handle,
 		_spgpuDdiaspmv (handle, threadCount, z, y, alpha, dM, offsets, dMPitch, maxThreadForACall, cols, diags, x, beta);
 
 		y = y + maxThreadForACall;
+		z = z + maxThreadForACall;
 		dM = dM + maxThreadForACall;
 		
 		rows -= maxThreadForACall;

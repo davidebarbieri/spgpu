@@ -90,6 +90,38 @@ spgpuDhdiaspmv (spgpuHandle_t handle,
 	double beta);
 
 
+void 
+spgpuDbhdiaspmv (spgpuHandle_t handle, 
+	double* z, 
+	const double *y, 
+	double alpha, 
+	int blockRows,
+	int blockCols,
+	const double* dM, 
+	const int* offsets, 
+	int hackSize, 
+	const int* hackOffsets,
+	int rows,
+	int cols, 
+	const double *x, 
+	double beta);
+
+void 
+spgpuSbhdiaspmv (spgpuHandle_t handle, 
+	float* z, 
+	const float *y, 
+	float alpha, 
+	int blockRows,
+	int blockCols,
+	const float* dM, 
+	const int* offsets, 
+	int hackSize, 
+	const int* hackOffsets,
+	int rows,
+	int cols, 
+	const float *x, 
+	float beta);
+		
 /** @}*/
 
 #ifdef __cplusplus
