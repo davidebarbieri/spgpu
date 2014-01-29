@@ -236,6 +236,9 @@ int main(int argc, char** argv)
 	testType* devHellCm;
 	int* devHellRp, *devHackOffsets;
 
+	cudaFree(devCm);
+	cudaFree(devRp);
+
 	cudaMalloc((void**)&devHellCm, hackSize*hellHeight*sizeof(testType));
 	cudaMalloc((void**)&devHellRp, hackSize*hellHeight*sizeof(int));
 	cudaMalloc((void**)&devHackOffsets, ((rowsCount+hackSize-1)/hackSize)*sizeof(int));
@@ -282,6 +285,8 @@ int main(int argc, char** argv)
 	gflops = (((nonZerosCount*2-1)) / time)*0.000000001f;
 	printf("GFlop/s: %f\n", gflops);
 
+	cudaFree(devHellCm);
+	cudaFree(devHellRp);
 
 	// Convert to ordered matrix!
 	printf("Converting to Ordered Ellpack..\n");
@@ -298,6 +303,9 @@ int main(int argc, char** argv)
 		ellValues, ellIndices, ellRowLengths, ellPitch, ellPitch, rowsCount, valuesTypeCode);
 
 	printf("Conversion Complete!\n");
+
+	cudaMalloc((void**)&devCm, ellMaxRowSize*ellPitch*sizeof(testType));
+	cudaMalloc((void**)&devRp, ellMaxRowSize*ellPitch*sizeof(int));
 
 	cudaMemcpy(devRidx, oellRowIds, rowsCount*sizeof(int), cudaMemcpyHostToDevice);
 	cudaMemcpy(devRs, oellRowLengths, rowsCount*sizeof(int), cudaMemcpyHostToDevice);
