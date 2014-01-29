@@ -206,6 +206,9 @@ int main(int argc, char** argv)
 	gflops = (((nonZerosCount*2-1)) / time)*0.000000001f;
 	printf("GFlop/s: %f\n", gflops);
 
+	
+	cudaFree(devOffsets);
+	cudaFree(devDm);
 
 	printf("Converting to HDIA..\n");
 
@@ -358,8 +361,6 @@ int main(int argc, char** argv)
 	cudaFree(devX);
 	cudaFree(devY);
 	cudaFree(devZ);
-	cudaFree(devOffsets);
-	cudaFree(devDm);
 	cudaFree(devHdiaDm);
 	cudaFree(devHdiaOffsets);
 	cudaFree(devHackOffsets);
