@@ -118,7 +118,7 @@ int main(int argc, char** argv)
 	coo2dia(diaValues, diaOffsets, diaPitch, diagsCount, rowsCount,
 	columnsCount, nonZerosCount, rows, cols, values, valuesTypeCode);
 
-	printf("Conversion complete: DIA format is %i Bytes.\n", diagsCount*diaPitch*sizeof(testType) + diagsCount*sizeof(int));
+	printf("Conversion complete: DIA format is %li Bytes.\n", (long int)diagsCount*(long int)diaPitch*sizeof(testType) + diagsCount*sizeof(int));
 
 	printf("Compute on GPU..\n");
 
