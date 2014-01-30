@@ -123,7 +123,7 @@ int main(int argc, char** argv)
 	cooToEll(ellValues, ellIndices, ellPitch, ellPitch, ellMaxRowSize, 0,
 		 rowsCount, nonZerosCount, rows, cols, values, 0, valuesTypeCode);
 
-	printf("Conversion complete: ELL format is %i Bytes.\n", ellMaxRowSize*(ellPitch*sizeof(testType) + ellPitch*sizeof(int)) + rowsCount*sizeof(int));
+	printf("Conversion complete: ELL format is %li Bytes.\n", (long int)ellMaxRowSize*(ellPitch*sizeof(testType) + ellPitch*sizeof(int)) + rowsCount*sizeof(int));
 
 	printf("Compute on GPU..\n");
 
@@ -231,7 +231,7 @@ int main(int argc, char** argv)
 	ellToHell(hellValues, hellIndices, hackOffsets, hackSize, ellValues, ellIndices,
 		ellPitch, ellPitch, ellRowLengths, rowsCount, valuesTypeCode);
 
-	printf("Conversion complete: HELL format is %i Bytes.\n", hackSize*hellHeight*(sizeof(testType) + sizeof(int)) + ((rowsCount+hackSize-1)/hackSize)*sizeof(int) + rowsCount*sizeof(int));
+	printf("Conversion complete: HELL format is %li Bytes.\n", hackSize*hellHeight*(sizeof(testType) + sizeof(int)) + ((rowsCount+hackSize-1)/hackSize)*sizeof(int) + rowsCount*sizeof(int));
 
 	testType* devHellCm;
 	int* devHellRp, *devHackOffsets;
