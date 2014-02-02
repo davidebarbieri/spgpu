@@ -108,6 +108,8 @@ int main(int argc, char** argv)
 
 	int diaPitch = computeDiaAllocPitch(rowsCount);
 
+	printf("DIA format needs %li Bytes.\n", (long int)diagsCount*(long int)diaPitch*sizeof(testType) + diagsCount*sizeof(int));
+
 	diaValues = (testType*)malloc(diagsCount*diaPitch*sizeof(testType));
 	diaOffsets = (int*)malloc(diagsCount*sizeof(int));
 
@@ -118,7 +120,7 @@ int main(int argc, char** argv)
 	coo2dia(diaValues, diaOffsets, diaPitch, diagsCount, rowsCount,
 	columnsCount, nonZerosCount, rows, cols, values, valuesTypeCode);
 
-	printf("Conversion complete: DIA format is %li Bytes.\n", (long int)diagsCount*(long int)diaPitch*sizeof(testType) + diagsCount*sizeof(int));
+	printf("Conversion complete.\n");
 
 	printf("Compute on GPU..\n");
 
@@ -218,34 +220,36 @@ int main(int argc, char** argv)
 	int allocationHeight;
 	int* hackOffsets = (int*)malloc((hacksCount+1)*sizeof(int)); 
 	
-	computeHdiaHackOffsets(
+	computeHdiaHackOffsetsFromCoo(
 		&allocationHeight,
 		hackOffsets,
 		hackSize,
-		diaValues,
-		diaPitch,	
-		diagsCount,
 		rowsCount,
-		valuesTypeCode);
+		columnsCount, 
+		nonZerosCount,
+		rows, 
+		cols
+		);
+			
+	printf("HDIA format needs %li Bytes.\n", hackSize*allocationHeight*sizeof(testType) + (allocationHeight
+		+ (hacksCount+1))*sizeof(int));
 	
 	testType *hdiaValues = (testType*) malloc(hackSize*allocationHeight*sizeof(testType));
 	int *hdiaOffsets = (int*) malloc(allocationHeight*sizeof(int));
 	
-	diaToHdia(
+	cooToHdia(
 		hdiaValues,
 		hdiaOffsets,
 		hackOffsets,
 		hackSize,
-		diaValues,
-		diaOffsets,
-		diaPitch,	
-		diagsCount,
 		rowsCount,
+		columnsCount,
+		nonZerosCount,
+		rows,
+		cols,
+		values,
 		valuesTypeCode
 	);
-	
-	printf("Conversion complete: HDIA format is %i Bytes.\n", hackSize*allocationHeight*sizeof(testType) + 
-	(allocationHeight + (hacksCount+1))*sizeof(int));
 	
 	testType *devHdiaDm;
 	int *devHdiaOffsets, *devHackOffsets;
@@ -292,6 +296,7 @@ int main(int argc, char** argv)
 	gflops = (((nonZerosCount*2-1)) / time)*0.000000001f;
 	printf("GFlop/s: %f\n", gflops);
 
+/*
 	printf("Generating a Blocked HDIA..\n");
 
 	int blockRows = 2;
@@ -350,6 +355,8 @@ int main(int argc, char** argv)
 
 	gflops = (((nonZerosCount*2-1)) / time)*0.000000001f;
 	printf("GFlop/s: %f\n", gflops);
+*/
+
 
 	spgpuDestroy(spgpuHandle);
 
