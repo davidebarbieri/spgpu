@@ -19,7 +19,7 @@ void computeHdiaHackOffsets(
 	)
 {
 	int i,r,s, hack;
-	int hackCount = (rowsCount + hackSize - 1)/hackSize;
+	int hackCount = getHdiaHacksCount(hackSize, rowsCount);
 	
 	size_t elementSize = spgpuSizeOf(valuesType);
 	
@@ -77,7 +77,7 @@ void diaToHdia(
 {
 	int i,r,s;
 	int hack;
-	int hackCount = (rowsCount + hackSize - 1)/hackSize;
+	int hackCount = getHdiaHacksCount(hackSize, rowsCount);
 	
 	// Compute offsets
 	int hackOffsetsSize = hackCount + 1;
@@ -147,5 +147,158 @@ hackTest2:
 			}
 		}
 	}
+}
+
+
+
+
+
+
+
+void computeHdiaHackOffsetsFromCoo(
+	int *allocationHeight,
+	int *hackOffsets,
+	int hackSize,
+	int rowsCount,
+	int columnsCount,
+	int nonZerosCount,
+	const int* cooRowIndices,
+	const int* cooColsIndices
+	)
+{	
+	int i,h;
+	
+	int hackCount = getHdiaHacksCount(hackSize, rowsCount);
+
+	// Use hackOffsets to deduce hack's heights
+
+	int* diagIdsToPos = (int*)malloc((hackSize + columnsCount - 1)*sizeof(int));
+	
+	hackOffsets[0] = 0;
+	for (h=0; h<hackCount; ++h)
+	{
+		for (i=0; i<(hackSize + columnsCount - 1); ++i)
+			diagIdsToPos[i] = -1;
+			
+		int diagonalsCount = 0;
+	
+		for (i=0; i<nonZerosCount; ++i)
+		{
+			int rowIdx = cooRowIndices[i];
+			
+			// It is inside current hack
+			if (rowIdx/hackSize == h)
+			{
+				int colIdx = cooColsIndices[i];
+				int diagId = colIdx - (rowIdx % hackSize);
+				int diagPos = hackSize - 1 + diagId;
+		
+				if (diagIdsToPos[diagPos] < 0)
+				{
+					diagIdsToPos[diagPos] = 1;
+					++diagonalsCount;
+				}
+			}
+		}		
+				
+		hackOffsets[h+1] = hackOffsets[h] + diagonalsCount;
+	} 
+	
+	*allocationHeight = hackOffsets[hackCount];	
+	
+	free(diagIdsToPos);
+}
+	
+	
+
+
+
+
+void cooToHdia(
+	void *hdiaValues,
+	int *hdiaOffsets,
+	const int *hackOffsets,
+	int hackSize,
+	int rowsCount,
+	int columnsCount,
+	int nonZerosCount,
+	const int* cooRowIndices,
+	const int* cooColsIndices,
+	const void* cooValues,
+	spgpuType_t valuesType
+	)
+{	
+	int i,h;
+	
+	int hackCount = getHdiaHacksCount(hackSize, rowsCount);
+
+	int* hackDiagIdsToPos = (int*)malloc((hackSize + columnsCount - 1)*sizeof(int));
+	
+	for (h=0; h<hackCount; ++h)
+	{
+		int diagonalsCount = 0;
+	
+		for (i=0; i<(hackSize + columnsCount - 1); ++i)
+			hackDiagIdsToPos[i] = -rowsCount;
+
+		for (i=0; i<nonZerosCount; ++i)
+		{
+			int rowIdx = cooRowIndices[i];
+			// It is inside current hack
+			if (rowIdx/hackSize == h)
+			{
+				int colIdx = cooColsIndices[i];
+				int globalDiagId = colIdx - rowIdx;
+				int diagId = colIdx - (rowIdx % hackSize);
+				int diagPos = hackSize - 1 + diagId;
+		
+				if (hackDiagIdsToPos[diagPos] <= -rowsCount)
+				{
+					hackDiagIdsToPos[diagPos] = globalDiagId;
+				}
+			}
+		}	
+	
+		// Reorder diags
+		for (i=0; i<(hackSize + columnsCount - 1); ++i)
+		{
+			int globalDiagId = hackDiagIdsToPos[i];
+			if (globalDiagId > -rowsCount)
+			{
+			
+				int diagPosInsideOffsets;
+				int diagId = i - hackSize + 1;
+				hackDiagIdsToPos[i] = diagPosInsideOffsets = diagonalsCount++;
+				hdiaOffsets[diagPosInsideOffsets] = globalDiagId;
+			}
+		}
+
+	
+		hdiaOffsets += diagonalsCount;
+		
+		for (i=0; i<nonZerosCount; ++i)
+		{
+			int rowIdx = cooRowIndices[i];
+			// It is inside current hack
+			if (rowIdx/hackSize == h)
+			{
+				int colIdx = cooColsIndices[i];
+				int diagId = colIdx - (rowIdx % hackSize);
+		
+				int diagPosInsideOffsets = hackDiagIdsToPos[hackSize - 1 + diagId];
+		
+				size_t elementSize = spgpuSizeOf(valuesType);
+		
+				void* valAddr = hdiaValues + 
+					elementSize*((rowIdx % hackSize) 
+						+ hackSize* (hackOffsets[h] + diagPosInsideOffsets));
+		
+				memcpy(valAddr, (const char*)cooValues + i*elementSize, elementSize);
+			}
+		}
+	
+	}
+	
+	free(hackDiagIdsToPos);
 }
 

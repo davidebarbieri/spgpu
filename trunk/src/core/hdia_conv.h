@@ -52,6 +52,30 @@ void diaToHdia(
 	spgpuType_t valuesType
 	);
 
+void computeHdiaHackOffsetsFromCoo(
+	int *allocationHeight,
+	int *hackOffsets,
+	int hackSize,
+	int rowsCount,
+	int columnsCount,
+	int nonZerosCount,
+	const int* cooRowIndices,
+	const int* cooColsIndices
+	);
+
+void cooToHdia(
+	void *hdiaValues,
+	int *hdiaOffsets,
+	const int *hackOffsets,
+	int hackSize,
+	int rowsCount,
+	int columnsCount,
+	int nonZerosCount,
+	const int* cooRowIndices,
+	const int* cooColsIndices,
+	const void* cooValues,
+	spgpuType_t valuesType
+	);
 
 #ifdef __cplusplus
 }
