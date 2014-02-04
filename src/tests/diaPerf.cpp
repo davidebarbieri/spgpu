@@ -42,7 +42,7 @@
 
 void printUsage()
 {
-	printf("hdiaPerf <input>\n");
+	printf("diaPerf <input>\n");
 	printf("\tinput:\n");
 	printf("\t\tMatrix Market format file\n");
 }
@@ -98,31 +98,18 @@ int main(int argc, char** argv)
 
 	 __assert(rRes == MATRIX_READ_SUCCESS, "Error on file read");
 
-	 printf("Converting to DIA..\n");
+	spgpuHandle_t spgpuHandle;
+	spgpuCreate(&spgpuHandle, 0);
 
-	testType *diaValues;
-	int *diaOffsets;
-	int diagsCount = computeDiaDiagonalsCount(rowsCount, columnsCount, nonZerosCount, rows, cols);
+	cudaDeviceProp deviceProp;
+	cudaGetDeviceProperties(&deviceProp, 0);
+	printf("Computing on %s\n", deviceProp.name);
+	Clock timer;
 	
-	printf("Diagonals: %i\n", diagsCount);
-
-	int diaPitch = computeDiaAllocPitch(rowsCount);
-
-	printf("DIA format needs %li Bytes.\n", (long int)diagsCount*(long int)diaPitch*sizeof(testType) + diagsCount*sizeof(int));
-
-	diaValues = (testType*)malloc(diagsCount*diaPitch*sizeof(testType));
-	diaOffsets = (int*)malloc(diagsCount*sizeof(int));
-
-	memset((void*)diaValues, 0, diagsCount*diaPitch*sizeof(testType));
-	memset((void*)diaOffsets, 0, diagsCount*sizeof(int));
-
-
-	coo2dia(diaValues, diaOffsets, diaPitch, diagsCount, rowsCount,
-	columnsCount, nonZerosCount, rows, cols, values, valuesTypeCode);
-
-	printf("Conversion complete.\n");
-
-	printf("Compute on GPU..\n");
+	testType dotRes;
+	testType time;
+	testType gflops;
+	testType start;
 
 	testType *x = (testType*) malloc(columnsCount*sizeof(testType));
 	testType *y = (testType*) malloc(rowsCount*sizeof(testType));
@@ -138,79 +125,93 @@ int main(int argc, char** argv)
 	}
 	
 	cudaError_t lastError;
-
-
+	
 	testType *devX, *devY, *devZ;
-	testType *devDm;
-	int *devOffsets;
 
 	cudaMalloc((void**)&devX,columnsCount*sizeof(testType));
 	cudaMalloc((void**)&devY,rowsCount*sizeof(testType));
 	cudaMalloc((void**)&devZ,rowsCount*sizeof(testType));
-	cudaMalloc((void**)&devOffsets,diagsCount*sizeof(int));
 
 	cudaMemcpy(devX, x, columnsCount*sizeof(testType), cudaMemcpyHostToDevice);
 	cudaMemcpy(devY, y, rowsCount*sizeof(testType), cudaMemcpyHostToDevice);
-
-	cudaMalloc((void**)&devDm, diagsCount*diaPitch*sizeof(testType));
-
-	cudaMemcpy(devDm, diaValues, diagsCount*diaPitch*sizeof(testType), cudaMemcpyHostToDevice);
-	cudaMemcpy(devOffsets, diaOffsets, diagsCount*sizeof(int), cudaMemcpyHostToDevice);
-
-	spgpuHandle_t spgpuHandle;
-	spgpuCreate(&spgpuHandle, 0);
-
-	cudaDeviceProp deviceProp;
-	cudaGetDeviceProperties(&deviceProp, 0);
-	printf("Computing on %s\n", deviceProp.name);
-	Clock timer;
-
-	printf("Testing DIA format\n");
-
-
-#ifdef TEST_DOUBLE
-	spgpuDdiaspmv (spgpuHandle, devZ, devY, 2.0, devDm, devOffsets, diaPitch, rowsCount, columnsCount, diagsCount, devX, -3.0);
-#else
-	spgpuSdiaspmv (spgpuHandle, devZ, devY, 2.0f, devDm, devOffsets, diaPitch, rowsCount, columnsCount, diagsCount, devX, -3.0f);
-#endif
 	
-	testType dotRes;
-	testType time;
-	testType gflops;
-	testType start;
+	printf("Converting to DIA..\n");
 
+	testType *diaValues;
+	int *diaOffsets;
+	int diagsCount = computeDiaDiagonalsCount(rowsCount, columnsCount, nonZerosCount, rows, cols);
 	
-#ifdef TEST_DOUBLE
-	dotRes = spgpuDdot(spgpuHandle, rowsCount, devZ, devZ);
-#else
-	dotRes = spgpuSdot(spgpuHandle, rowsCount, devZ, devZ);
-#endif
-	cudaDeviceSynchronize();
+	printf("Diagonals: %i\n", diagsCount);
 
-	printf("dot res: %e\n", dotRes);
+	int diaPitch = computeDiaAllocPitch(rowsCount);
 
-	start = timer.getTime();
+	printf("DIA format needs %li Bytes.\n", (long int)diagsCount*(long int)diaPitch*sizeof(testType) + diagsCount*sizeof(int));
 
-	for (int i=0; i<NUM_TESTS; ++i)
+	diaValues = (testType*)malloc(diagsCount*diaPitch*sizeof(testType));
+	
+	if (diaValues)
 	{
+		testType *devDm;
+		int *devOffsets;
+		
+		diaOffsets = (int*)malloc(diagsCount*sizeof(int));
+
+		memset((void*)diaValues, 0, diagsCount*diaPitch*sizeof(testType));
+		memset((void*)diaOffsets, 0, diagsCount*sizeof(int));
+
+		coo2dia(diaValues, diaOffsets, diaPitch, diagsCount, rowsCount,
+		columnsCount, nonZerosCount, rows, cols, values, valuesTypeCode);
+
+		printf("Conversion complete.\n");
+
+		printf("Compute on GPU..\n");
+	
+		cudaMalloc((void**)&devOffsets,diagsCount*sizeof(int));
+		cudaMalloc((void**)&devDm, diagsCount*diaPitch*sizeof(testType));
+
+		cudaMemcpy(devDm, diaValues, diagsCount*diaPitch*sizeof(testType), cudaMemcpyHostToDevice);
+		cudaMemcpy(devOffsets, diaOffsets, diagsCount*sizeof(int), cudaMemcpyHostToDevice);
+
+		printf("Testing DIA format\n");
+
 #ifdef TEST_DOUBLE
 		spgpuDdiaspmv (spgpuHandle, devZ, devY, 2.0, devDm, devOffsets, diaPitch, rowsCount, columnsCount, diagsCount, devX, -3.0);
 #else
 		spgpuSdiaspmv (spgpuHandle, devZ, devY, 2.0f, devDm, devOffsets, diaPitch, rowsCount, columnsCount, diagsCount, devX, -3.0f);
 #endif
-		
-	}
-	cudaDeviceSynchronize();
-
-	time = (timer.getTime() - start)/NUM_TESTS;
-	printf("elapsed time: %f seconds\n", time);
-
-	gflops = (((nonZerosCount*2-1)) / time)*0.000000001f;
-	printf("GFlop/s: %f\n", gflops);
-
 	
-	cudaFree(devOffsets);
-	cudaFree(devDm);
+	#ifdef TEST_DOUBLE
+		dotRes = spgpuDdot(spgpuHandle, rowsCount, devZ, devZ);
+	#else
+		dotRes = spgpuSdot(spgpuHandle, rowsCount, devZ, devZ);
+	#endif
+		cudaDeviceSynchronize();
+
+		printf("dot res: %e\n", dotRes);
+
+		start = timer.getTime();
+
+		for (int i=0; i<NUM_TESTS; ++i)
+		{
+#ifdef TEST_DOUBLE
+			spgpuDdiaspmv (spgpuHandle, devZ, devY, 2.0, devDm, devOffsets, diaPitch, rowsCount, columnsCount, diagsCount, devX, -3.0);
+#else
+			spgpuSdiaspmv (spgpuHandle, devZ, devY, 2.0f, devDm, devOffsets, diaPitch, rowsCount, columnsCount, diagsCount, devX, -3.0f);
+#endif		
+		}
+		cudaDeviceSynchronize();
+
+		time = (timer.getTime() - start)/NUM_TESTS;
+		printf("elapsed time: %f seconds\n", time);
+
+		gflops = (((nonZerosCount*2-1)) / time)*0.000000001f;
+		printf("GFlop/s: %f\n", gflops);
+	
+		cudaFree(devOffsets);
+		cudaFree(devDm);
+	}
+	else
+		printf("Error on DIA format allocation..\n");
 
 	printf("Converting to HDIA..\n");
 
@@ -251,6 +252,8 @@ int main(int argc, char** argv)
 		valuesTypeCode
 	);
 	
+	printf("Conversion complete.\n");
+		
 	testType *devHdiaDm;
 	int *devHdiaOffsets, *devHackOffsets;
 	
