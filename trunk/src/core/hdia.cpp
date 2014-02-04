@@ -2,6 +2,8 @@
 #include "stdlib.h"
 #include "string.h"
 
+#include <vector>
+
 int getHdiaHacksCount(int hackSize, int rowsCount)
 {
 	return (rowsCount + hackSize - 1)/hackSize;
@@ -38,10 +40,10 @@ void computeHdiaHackOffsets(
 				if (row >= rowsCount)
 					break;
 			
-				const void* val = diaValues + elementSize*(row + i*diaValuesPitch);
+				const char* val = (char*)diaValues + elementSize*(row + i*diaValuesPitch);
 				
 				for (s=0; s<elementSize; ++s)
-					if (*(char*)(val+s) != 0)
+					if (*(val+s) != 0)
 					{
 						found = 1;
 						goto hackTest1;
@@ -99,10 +101,10 @@ void diaToHdia(
 				if (row >= rowsCount)
 					break;
 			
-				const void* val = diaValues + elementSize*(row + i*diaValuesPitch);
+				const char* val = (const char*)diaValues + elementSize*(row + i*diaValuesPitch);
 				
 				for (s=0; s<elementSize; ++s)
-					if (*(char*)(val+s) != 0)
+					if (*(val+s) != 0)
 					{
 						found = 1;
 						goto hackTest2;
@@ -140,8 +142,8 @@ hackTest2:
 				if (row >= rowsCount)
 					break;
 			
-				void* dest = hdiaValues + elementSize*((posOffset + i)*hackSize + r);
-				const void* src = diaValues + elementSize*(row + diagPosInsideDia*diaValuesPitch);
+				char* dest = (char*)hdiaValues + elementSize*((posOffset + i)*hackSize + r);
+				const char* src = (const char*)diaValues + elementSize*(row + diagPosInsideDia*diaValuesPitch);
 			
 				memcpy(dest, src, elementSize);
 			}
@@ -166,9 +168,24 @@ void computeHdiaHackOffsetsFromCoo(
 	const int* cooColsIndices
 	)
 {	
-	int i,h;
+
+	int i,j,h;
 	
 	int hackCount = getHdiaHacksCount(hackSize, rowsCount);
+	
+	
+	// Find rows per hack
+	std::vector<int> *rowsPerHack = new std::vector<int> [hackCount];
+	
+	for (i=0; i<nonZerosCount; ++i)
+	{
+		int rowIdx = cooRowIndices[i];
+			
+		// It is inside current hack
+		int h = rowIdx/hackSize;
+		rowsPerHack[h].push_back(i);
+	}
+			
 
 	// Use hackOffsets to deduce hack's heights
 
@@ -182,22 +199,21 @@ void computeHdiaHackOffsetsFromCoo(
 			
 		int diagonalsCount = 0;
 	
-		for (i=0; i<nonZerosCount; ++i)
-		{
-			int rowIdx = cooRowIndices[i];
-			
-			// It is inside current hack
-			if (rowIdx/hackSize == h)
-			{
-				int colIdx = cooColsIndices[i];
-				int diagId = colIdx - (rowIdx % hackSize);
-				int diagPos = hackSize - 1 + diagId;
+		std::vector<int> *hackRows = &rowsPerHack[h];
+		int hackRowsSize = hackRows->size();
 		
-				if (diagIdsToPos[diagPos] < 0)
-				{
-					diagIdsToPos[diagPos] = 1;
-					++diagonalsCount;
-				}
+		for (j=0; j<hackRowsSize; ++j)
+		{
+			i = hackRows->at(j);
+			int rowIdx = cooRowIndices[i];
+			int colIdx = cooColsIndices[i];
+			int diagId = colIdx - (rowIdx % hackSize);
+			int diagPos = hackSize - 1 + diagId;
+		
+			if (diagIdsToPos[diagPos] < 0)
+			{
+				diagIdsToPos[diagPos] = 1;
+				++diagonalsCount;
 			}
 		}		
 				
@@ -207,6 +223,8 @@ void computeHdiaHackOffsetsFromCoo(
 	*allocationHeight = hackOffsets[hackCount];	
 	
 	free(diagIdsToPos);
+	
+	delete[] rowsPerHack;
 }
 	
 	
@@ -228,9 +246,23 @@ void cooToHdia(
 	spgpuType_t valuesType
 	)
 {	
-	int i,h;
+	int i,j,h;
 	
 	int hackCount = getHdiaHacksCount(hackSize, rowsCount);
+
+	// Find rows per hack
+	std::vector<int> *rowsPerHack = new std::vector<int> [hackCount];
+	
+	for (i=0; i<nonZerosCount; ++i)
+	{
+		int rowIdx = cooRowIndices[i];
+			
+		// It is inside current hack
+		int h = rowIdx/hackSize;
+		rowsPerHack[h].push_back(i);
+	}
+		
+
 
 	int* hackDiagIdsToPos = (int*)malloc((hackSize + columnsCount - 1)*sizeof(int));
 	
@@ -241,21 +273,22 @@ void cooToHdia(
 		for (i=0; i<(hackSize + columnsCount - 1); ++i)
 			hackDiagIdsToPos[i] = -rowsCount;
 
-		for (i=0; i<nonZerosCount; ++i)
-		{
-			int rowIdx = cooRowIndices[i];
-			// It is inside current hack
-			if (rowIdx/hackSize == h)
-			{
-				int colIdx = cooColsIndices[i];
-				int globalDiagId = colIdx - rowIdx;
-				int diagId = colIdx - (rowIdx % hackSize);
-				int diagPos = hackSize - 1 + diagId;
+		std::vector<int> *hackRows = &rowsPerHack[h];
+		int hackRowsSize = hackRows->size();
 		
-				if (hackDiagIdsToPos[diagPos] <= -rowsCount)
-				{
-					hackDiagIdsToPos[diagPos] = globalDiagId;
-				}
+		for (j=0; j<hackRowsSize; ++j)
+		{
+			i = hackRows->at(j);
+			
+			int rowIdx = cooRowIndices[i];
+			int colIdx = cooColsIndices[i];
+			int globalDiagId = colIdx - rowIdx;
+			int diagId = colIdx - (rowIdx % hackSize);
+			int diagPos = hackSize - 1 + diagId;
+		
+			if (hackDiagIdsToPos[diagPos] <= -rowsCount)
+			{
+				hackDiagIdsToPos[diagPos] = globalDiagId;
 			}
 		}	
 	
@@ -276,29 +309,26 @@ void cooToHdia(
 	
 		hdiaOffsets += diagonalsCount;
 		
-		for (i=0; i<nonZerosCount; ++i)
+		for (j=0; j<hackRowsSize; ++j)
 		{
+			i = hackRows->at(j);
 			int rowIdx = cooRowIndices[i];
-			// It is inside current hack
-			if (rowIdx/hackSize == h)
-			{
-				int colIdx = cooColsIndices[i];
-				int diagId = colIdx - (rowIdx % hackSize);
+			int colIdx = cooColsIndices[i];
+			int diagId = colIdx - (rowIdx % hackSize);
 		
-				int diagPosInsideOffsets = hackDiagIdsToPos[hackSize - 1 + diagId];
+			int diagPosInsideOffsets = hackDiagIdsToPos[hackSize - 1 + diagId];
 		
-				size_t elementSize = spgpuSizeOf(valuesType);
+			size_t elementSize = spgpuSizeOf(valuesType);
 		
-				void* valAddr = hdiaValues + 
-					elementSize*((rowIdx % hackSize) 
-						+ hackSize* (hackOffsets[h] + diagPosInsideOffsets));
+			char* valAddr = (char*)hdiaValues + 
+				elementSize*((rowIdx % hackSize) 
+					+ hackSize* (hackOffsets[h] + diagPosInsideOffsets));
 		
-				memcpy(valAddr, (const char*)cooValues + i*elementSize, elementSize);
-			}
+			memcpy(valAddr, (const char*)cooValues + i*elementSize, elementSize);
 		}
-	
 	}
 	
 	free(hackDiagIdsToPos);
+	delete[] rowsPerHack;
 }
 
