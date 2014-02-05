@@ -3,6 +3,7 @@
 #include "string.h"
 
 #include <vector>
+#include <map>
 
 int getHdiaHacksCount(int hackSize, int rowsCount)
 {
@@ -188,14 +189,12 @@ void computeHdiaHackOffsetsFromCoo(
 			
 
 	// Use hackOffsets to deduce hack's heights
+	std::map<int, int> diagIdsToPos;
 
-	int* diagIdsToPos = (int*)malloc((hackSize + columnsCount - 1)*sizeof(int));
-	
 	hackOffsets[0] = 0;
 	for (h=0; h<hackCount; ++h)
 	{
-		for (i=0; i<(hackSize + columnsCount - 1); ++i)
-			diagIdsToPos[i] = -1;
+		diagIdsToPos.clear();
 			
 		int diagonalsCount = 0;
 	
@@ -210,7 +209,9 @@ void computeHdiaHackOffsetsFromCoo(
 			int diagId = colIdx - (rowIdx % hackSize);
 			int diagPos = hackSize - 1 + diagId;
 		
-			if (diagIdsToPos[diagPos] < 0)
+			std::map<int,int>::iterator it = diagIdsToPos.find(diagPos);
+			
+			if(it == diagIdsToPos.end())
 			{
 				diagIdsToPos[diagPos] = 1;
 				++diagonalsCount;
@@ -220,9 +221,7 @@ void computeHdiaHackOffsetsFromCoo(
 		hackOffsets[h+1] = hackOffsets[h] + diagonalsCount;
 	} 
 	
-	*allocationHeight = hackOffsets[hackCount];	
-	
-	free(diagIdsToPos);
+	*allocationHeight = hackOffsets[hackCount];
 	
 	delete[] rowsPerHack;
 }
@@ -263,15 +262,13 @@ void cooToHdia(
 	}
 		
 
-
-	int* hackDiagIdsToPos = (int*)malloc((hackSize + columnsCount - 1)*sizeof(int));
+	std::map<int, int> hackDiagIdsToPos;
 	
 	for (h=0; h<hackCount; ++h)
 	{
 		int diagonalsCount = 0;
 	
-		for (i=0; i<(hackSize + columnsCount - 1); ++i)
-			hackDiagIdsToPos[i] = -rowsCount;
+		hackDiagIdsToPos.clear();
 
 		std::vector<int> *hackRows = &rowsPerHack[h];
 		int hackRowsSize = hackRows->size();
@@ -286,24 +283,24 @@ void cooToHdia(
 			int diagId = colIdx - (rowIdx % hackSize);
 			int diagPos = hackSize - 1 + diagId;
 		
-			if (hackDiagIdsToPos[diagPos] <= -rowsCount)
+			std::map<int,int>::iterator it = hackDiagIdsToPos.find(diagPos);
+			
+			if(it == hackDiagIdsToPos.end())
 			{
 				hackDiagIdsToPos[diagPos] = globalDiagId;
 			}
 		}	
 	
 		// Reorder diags
-		for (i=0; i<(hackSize + columnsCount - 1); ++i)
+		for (std::map<int, int>::iterator it = hackDiagIdsToPos.begin(); it != hackDiagIdsToPos.end(); ++it)
 		{
-			int globalDiagId = hackDiagIdsToPos[i];
-			if (globalDiagId > -rowsCount)
-			{
+			int i = it->first;
 			
-				int diagPosInsideOffsets;
-				int diagId = i - hackSize + 1;
-				hackDiagIdsToPos[i] = diagPosInsideOffsets = diagonalsCount++;
-				hdiaOffsets[diagPosInsideOffsets] = globalDiagId;
-			}
+			int globalDiagId = it->second;
+			int diagPosInsideOffsets;
+			int diagId = i - hackSize + 1;
+			hackDiagIdsToPos[i] = diagPosInsideOffsets = diagonalsCount++;
+			hdiaOffsets[diagPosInsideOffsets] = globalDiagId;
 		}
 
 	
@@ -328,7 +325,6 @@ void cooToHdia(
 		}
 	}
 	
-	free(hackDiagIdsToPos);
 	delete[] rowsPerHack;
 }
 
