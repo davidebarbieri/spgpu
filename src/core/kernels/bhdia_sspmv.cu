@@ -138,6 +138,12 @@ spgpuSbhdiaspmv_ (float *z, const float *y, float alpha, const float* dM, const 
 						xBlock[k] = tex1Dfetch (x_tex, blockColumn*blockCols + k);
 					}
 					
+#else
+					#pragma unroll
+					for (int k=0; k < blockCols; ++k)
+						xBlock[k] = x[blockColumn*blockCols + k];					
+#endif				
+					
 					const float* innerDm = dM;
 					#pragma unroll					
 					for (int k=0; k < blockCols; ++k)
@@ -146,10 +152,7 @@ spgpuSbhdiaspmv_ (float *z, const float *y, float alpha, const float* dM, const 
 						{
 							zProd[l] = PREC_FADD(zProd[l], PREC_FMUL (innerDm[0],xBlock[k]));
 							innerDm = innerDm + 1;
-						}					
-#else
-					
-#endif				
+						}
 				}
 				
 				dM += hackSize*blockSize;
@@ -285,16 +288,58 @@ spgpuSbhdiaspmv (spgpuHandle_t handle,
 	const float *x, 
 	float beta)
 {
-	__assert(blockRows == blockCols, "Only square blocks are supported.");
-	
 	if (blockRows == 1)
-		spgpuSbhdiaspmv_<1,1>(handle,z, y, alpha, dM, offsets, hackSize, hackOffsets, rows, cols, x, beta);
+	{
+		if (blockCols == 1)
+			spgpuSbhdiaspmv_<1,1>(handle,z, y, alpha, dM, offsets, hackSize, hackOffsets, rows, cols, x, beta);
+		else if (blockCols == 2)
+			spgpuSbhdiaspmv_<1,2>(handle,z, y, alpha, dM, offsets, hackSize, hackOffsets, rows, cols, x, beta);
+		else if (blockCols == 3)
+			spgpuSbhdiaspmv_<1,3>(handle,z, y, alpha, dM, offsets, hackSize, hackOffsets, rows, cols, x, beta);
+		else if (blockCols == 4)
+			spgpuSbhdiaspmv_<1,4>(handle,z, y, alpha, dM, offsets, hackSize, hackOffsets, rows, cols, x, beta);
+		else
+			__assert(0, "Unsupported non zero block size.");
+	}
 	else if (blockRows == 2)
-		spgpuSbhdiaspmv_<2,2>(handle,z, y, alpha, dM, offsets, hackSize, hackOffsets, rows, cols, x, beta);
+	{
+		if (blockCols == 1)
+			spgpuSbhdiaspmv_<2,1>(handle,z, y, alpha, dM, offsets, hackSize, hackOffsets, rows, cols, x, beta);
+		else if (blockCols == 2)
+			spgpuSbhdiaspmv_<2,2>(handle,z, y, alpha, dM, offsets, hackSize, hackOffsets, rows, cols, x, beta);
+		else if (blockCols == 3)
+			spgpuSbhdiaspmv_<2,3>(handle,z, y, alpha, dM, offsets, hackSize, hackOffsets, rows, cols, x, beta);
+		else if (blockCols == 4)
+			spgpuSbhdiaspmv_<2,4>(handle,z, y, alpha, dM, offsets, hackSize, hackOffsets, rows, cols, x, beta);
+		else
+			__assert(0, "Unsupported non zero block size.");
+	}
 	else if (blockRows == 3)
-		spgpuSbhdiaspmv_<3,3>(handle,z, y, alpha, dM, offsets, hackSize, hackOffsets, rows, cols, x, beta);
+	{
+		if (blockCols == 1)
+			spgpuSbhdiaspmv_<3,1>(handle,z, y, alpha, dM, offsets, hackSize, hackOffsets, rows, cols, x, beta);
+		else if (blockCols == 2)
+			spgpuSbhdiaspmv_<3,2>(handle,z, y, alpha, dM, offsets, hackSize, hackOffsets, rows, cols, x, beta);
+		else if (blockCols == 3)
+			spgpuSbhdiaspmv_<3,3>(handle,z, y, alpha, dM, offsets, hackSize, hackOffsets, rows, cols, x, beta);
+		else if (blockCols == 4)
+			spgpuSbhdiaspmv_<3,4>(handle,z, y, alpha, dM, offsets, hackSize, hackOffsets, rows, cols, x, beta);
+		else
+			__assert(0, "Unsupported non zero block size.");
+	}
 	else if (blockRows == 4)
-		spgpuSbhdiaspmv_<4,4>(handle,z, y, alpha, dM, offsets, hackSize, hackOffsets, rows, cols, x, beta);
+	{
+		if (blockCols == 1)
+			spgpuSbhdiaspmv_<4,1>(handle,z, y, alpha, dM, offsets, hackSize, hackOffsets, rows, cols, x, beta);
+		else if (blockCols == 2)
+			spgpuSbhdiaspmv_<4,2>(handle,z, y, alpha, dM, offsets, hackSize, hackOffsets, rows, cols, x, beta);
+		else if (blockCols == 3)
+			spgpuSbhdiaspmv_<4,3>(handle,z, y, alpha, dM, offsets, hackSize, hackOffsets, rows, cols, x, beta);
+		else if (blockCols == 4)
+			spgpuSbhdiaspmv_<4,4>(handle,z, y, alpha, dM, offsets, hackSize, hackOffsets, rows, cols, x, beta);
+		else
+			__assert(0, "Unsupported non zero block size.");
+	} 
 	else
 	{
 		__assert(0, "Unsupported non zero block size.");

@@ -225,13 +225,8 @@ void computeHdiaHackOffsetsFromCoo(
 	
 	delete[] rowsPerHack;
 }
-	
-	
 
-
-
-
-void cooToHdia(
+void cooToHdia_size(
 	void *hdiaValues,
 	int *hdiaOffsets,
 	const int *hackOffsets,
@@ -242,7 +237,7 @@ void cooToHdia(
 	const int* cooRowIndices,
 	const int* cooColsIndices,
 	const void* cooValues,
-	spgpuType_t valuesType
+	size_t elementSize
 	)
 {	
 	int i,j,h;
@@ -315,8 +310,6 @@ void cooToHdia(
 		
 			int diagPosInsideOffsets = hackDiagIdsToPos[hackSize - 1 + diagId];
 		
-			size_t elementSize = spgpuSizeOf(valuesType);
-		
 			char* valAddr = (char*)hdiaValues + 
 				elementSize*((rowIdx % hackSize) 
 					+ hackSize* (hackOffsets[h] + diagPosInsideOffsets));
@@ -326,5 +319,52 @@ void cooToHdia(
 	}
 	
 	delete[] rowsPerHack;
+}
+
+
+
+void cooToHdia(
+	void *hdiaValues,
+	int *hdiaOffsets,
+	const int *hackOffsets,
+	int hackSize,
+	int rowsCount,
+	int columnsCount,
+	int nonZerosCount,
+	const int* cooRowIndices,
+	const int* cooColsIndices,
+	const void* cooValues,
+	spgpuType_t valuesType
+	)
+{
+	size_t elementSize = spgpuSizeOf(valuesType);
+	
+	cooToHdia_size(hdiaValues, hdiaOffsets,
+		hackOffsets, hackSize, rowsCount,
+		columnsCount, nonZerosCount, 
+		cooRowIndices, cooColsIndices, cooValues, elementSize);
+}
+
+void bcooToBhdia(
+	void *hdiaValues,
+	int *hdiaOffsets,
+	const int *hackOffsets,
+	int hackSize,
+	int rowsCount,
+	int columnsCount,
+	int nonZerosCount,
+	const int* cooRowIndices,
+	const int* cooColsIndices,
+	const void* cooValues,
+	spgpuType_t valuesType,
+	int blockSize
+	)
+{
+	size_t elementSize = blockSize*spgpuSizeOf(valuesType);
+	
+	cooToHdia_size(hdiaValues, hdiaOffsets,
+		hackOffsets, hackSize, rowsCount,
+		columnsCount, nonZerosCount, 
+		cooRowIndices, cooColsIndices, cooValues, elementSize);
 }
 
