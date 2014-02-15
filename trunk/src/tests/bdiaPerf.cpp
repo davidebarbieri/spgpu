@@ -252,6 +252,7 @@ int main(int argc, char** argv)
 
 	gflops = (((nonZerosCount*2-1)) / time)*0.000000001f;
 	printf("GFlop/s: %f\n", gflops);
+	printf("GFlop/s: %f (considering block overhead)\n", (((blockedNonZerosCount*blockRows*blockCols*2-1)) / time)*0.000000001f);
 
 
 	spgpuDestroy(spgpuHandle);
