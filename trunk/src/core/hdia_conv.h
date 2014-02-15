@@ -77,6 +77,20 @@ void cooToHdia(
 	spgpuType_t valuesType
 	);
 
+void bcooToBhdia(
+	void *hdiaValues,
+	int *hdiaOffsets,
+	const int *hackOffsets,
+	int hackSize,
+	int rowsCount,
+	int columnsCount,
+	int nonZerosCount,
+	const int* cooRowIndices,
+	const int* cooColsIndices,
+	const void* cooValues,
+	spgpuType_t valuesType,
+	int blockSize);
+	
 #ifdef __cplusplus
 }
 #endif

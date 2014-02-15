@@ -1,7 +1,7 @@
 /*
  * spGPU - Sparse matrices on GPU library.
  * 
- * Copyright (C) 2010 - 2012 
+ * Copyright (C) 2010 - 2014
  *     Davide Barbieri - University of Rome Tor Vergata
  *
  * This program is free software; you can redistribute it and/or
@@ -26,11 +26,13 @@
 
 #include "core/dia_conv.h"
 #include "core/hdia_conv.h"
+#include "core/coo_conv.h"
 
 #include "core/core.h"
 #include "core/dia.h"
 #include "core/hdia.h"
 #include "vector.h"
+
 
 #define NUM_TESTS 200
 
@@ -42,7 +44,7 @@
 
 void printUsage()
 {
-	printf("diaPerf <input>\n");
+	printf("bdiaPerf <block_rows> <block_cols> <input>\n");
 	printf("\tinput:\n");
 	printf("\t\tMatrix Market format file\n");
 }
@@ -50,13 +52,17 @@ void printUsage()
 int main(int argc, char** argv)
 {
 
-	if (argc != 2)
+	if (argc != 4)
 	{
 		printUsage();
 		return 0;
 	}
 	
-	const char* input = argv[1];
+	int blockRows = atoi(argv[1]);
+	int blockCols = atoi(argv[2]);
+	int blockSize = blockRows*blockCols;
+	
+	const char* input = argv[3];
 
 	FILE* file;
 
@@ -90,6 +96,9 @@ int main(int argc, char** argv)
 	 int* rows = (int*) malloc(nonZerosCount*sizeof(int));
 	 int* cols = (int*) malloc(nonZerosCount*sizeof(int));
 
+	printf("COO format needs %li Bytes.\n", 2*nonZerosCount*sizeof(int) 
+		+ nonZerosCount*sizeof(testType));
+		
 	 printf("Reading matrix from file..\n");
 
 	 int rRes = loadMmMatrixToCoo(values, rows, cols, rowsCount, columnsCount, nonZerosCount, 
@@ -111,112 +120,62 @@ int main(int argc, char** argv)
 	testType gflops;
 	testType start;
 
-	testType *x = (testType*) malloc(columnsCount*sizeof(testType));
-	testType *y = (testType*) malloc(rowsCount*sizeof(testType));
+	int paddedRowsCount = ((rowsCount + blockRows - 1)/blockRows)*blockRows;
+	int paddedColumnsCount = ((columnsCount + blockCols - 1)/blockCols)*blockCols;
+
+	testType *x = (testType*) malloc(paddedColumnsCount*sizeof(testType));
+	testType *y = (testType*) malloc(paddedRowsCount*sizeof(testType));
 
 	for (int i=0; i<columnsCount; ++i)
 	{
 		x[i] = rand()/(testType)RAND_MAX;
 	}
 	
+	for (int i=columnsCount; i<paddedColumnsCount; ++i)
+		x[i] = 0;
+	
 	for (int i=0; i<rowsCount; ++i)
 	{
 		y[i] = rand()/(testType)RAND_MAX;
 	}
 	
+	for (int i=rowsCount; i<paddedRowsCount; ++i)
+		y[i] = 0;
+	
 	cudaError_t lastError;
 	
 	testType *devX, *devY, *devZ;
 
-	cudaMalloc((void**)&devX,columnsCount*sizeof(testType));
-	cudaMalloc((void**)&devY,rowsCount*sizeof(testType));
-	cudaMalloc((void**)&devZ,rowsCount*sizeof(testType));
+	cudaMalloc((void**)&devX,paddedColumnsCount*sizeof(testType));
+	cudaMalloc((void**)&devY,paddedRowsCount*sizeof(testType));
+	cudaMalloc((void**)&devZ,paddedRowsCount*sizeof(testType));
 
-	cudaMemcpy(devX, x, columnsCount*sizeof(testType), cudaMemcpyHostToDevice);
-	cudaMemcpy(devY, y, rowsCount*sizeof(testType), cudaMemcpyHostToDevice);
+	cudaMemcpy(devX, x, paddedColumnsCount*sizeof(testType), cudaMemcpyHostToDevice);
+	cudaMemcpy(devY, y, paddedRowsCount*sizeof(testType), cudaMemcpyHostToDevice);
 	
-	printf("Converting to DIA..\n");
-
-	testType *diaValues;
-	int *diaOffsets;
-	int diagsCount = computeDiaDiagonalsCount(rowsCount, columnsCount, nonZerosCount, rows, cols);
+	printf("Converting to BCOO..\n");
 	
-	printf("Diagonals: %i\n", diagsCount);
+	int blockedNonZerosCount = computeBcooSize(blockRows, blockCols, rows, cols, nonZerosCount);
 
-	int diaPitch = computeDiaAllocPitch(rowsCount);
-
-	printf("DIA format needs %li Bytes.\n", (long int)diagsCount*(long int)diaPitch*sizeof(testType) + diagsCount*sizeof(int));
-
-	diaValues = (testType*)malloc(diagsCount*diaPitch*sizeof(testType));
-	
-	if (diaValues)
-	{
-		testType *devDm;
-		int *devOffsets;
+	printf("BCOO format needs %li Bytes.\n", 2*blockedNonZerosCount*sizeof(int) 
+		+ blockedNonZerosCount*blockSize*sizeof(testType));
 		
-		diaOffsets = (int*)malloc(diagsCount*sizeof(int));
+	int *bRows = (int*) malloc(blockedNonZerosCount*sizeof(int));
+	int *bCols = (int*) malloc(blockedNonZerosCount*sizeof(int));
+	testType *bValues = (testType*) malloc(blockedNonZerosCount*blockSize*sizeof(testType));
 
-		memset((void*)diaValues, 0, diagsCount*diaPitch*sizeof(testType));
-		memset((void*)diaOffsets, 0, diagsCount*sizeof(int));
-
-		coo2dia(diaValues, diaOffsets, diaPitch, diagsCount, rowsCount,
-		columnsCount, nonZerosCount, rows, cols, values, valuesTypeCode);
-
-		printf("Conversion complete.\n");
-
-		printf("Compute on GPU..\n");
+	// column-major format for blocks
+	cooToBcoo(bRows, bCols, bValues, blockRows, blockCols, rows, cols, values, nonZerosCount, valuesTypeCode);
 	
-		cudaMalloc((void**)&devOffsets,diagsCount*sizeof(int));
-		cudaMalloc((void**)&devDm, diagsCount*diaPitch*sizeof(testType));
-
-		cudaMemcpy(devDm, diaValues, diagsCount*diaPitch*sizeof(testType), cudaMemcpyHostToDevice);
-		cudaMemcpy(devOffsets, diaOffsets, diagsCount*sizeof(int), cudaMemcpyHostToDevice);
-
-		printf("Testing DIA format\n");
-
-#ifdef TEST_DOUBLE
-		spgpuDdiaspmv (spgpuHandle, devZ, devY, 2.0, devDm, devOffsets, diaPitch, rowsCount, columnsCount, diagsCount, devX, -3.0);
-#else
-		spgpuSdiaspmv (spgpuHandle, devZ, devY, 2.0f, devDm, devOffsets, diaPitch, rowsCount, columnsCount, diagsCount, devX, -3.0f);
-#endif
+	printf("Conversion complete.\n");
 	
-	#ifdef TEST_DOUBLE
-		dotRes = spgpuDdot(spgpuHandle, rowsCount, devZ, devZ);
-	#else
-		dotRes = spgpuSdot(spgpuHandle, rowsCount, devZ, devZ);
-	#endif
-		cudaDeviceSynchronize();
-
-		printf("dot res: %e\n", dotRes);
-
-		start = timer.getTime();
-
-		for (int i=0; i<NUM_TESTS; ++i)
-		{
-#ifdef TEST_DOUBLE
-			spgpuDdiaspmv (spgpuHandle, devZ, devY, 2.0, devDm, devOffsets, diaPitch, rowsCount, columnsCount, diagsCount, devX, -3.0);
-#else
-			spgpuSdiaspmv (spgpuHandle, devZ, devY, 2.0f, devDm, devOffsets, diaPitch, rowsCount, columnsCount, diagsCount, devX, -3.0f);
-#endif		
-		}
-		cudaDeviceSynchronize();
-
-		time = (timer.getTime() - start)/NUM_TESTS;
-		printf("elapsed time: %f seconds\n", time);
-
-		gflops = (((nonZerosCount*2-1)) / time)*0.000000001f;
-		printf("GFlop/s: %f\n", gflops);
+	printf("Converting to BHDIA..\n");
 	
-		cudaFree(devOffsets);
-		cudaFree(devDm);
-	}
-	else
-		printf("Error on DIA format allocation..\n");
-
-	printf("Converting to HDIA..\n");
-
+	int blockedRowsCount = paddedRowsCount/blockRows;
+	int blockedColsCount = paddedColumnsCount/blockCols;
+	
 	int hackSize = 32;
-	int hacksCount = getHdiaHacksCount(hackSize, rowsCount);
+	int hacksCount = getHdiaHacksCount(hackSize, blockedRowsCount);
 
 	int allocationHeight;
 	int* hackOffsets = (int*)malloc((hacksCount+1)*sizeof(int)); 
@@ -225,50 +184,45 @@ int main(int argc, char** argv)
 		&allocationHeight,
 		hackOffsets,
 		hackSize,
-		rowsCount,
-		columnsCount, 
-		nonZerosCount,
-		rows, 
-		cols
+		blockedRowsCount,
+		blockedColsCount, 
+		blockedNonZerosCount,
+		bRows, 
+		bCols
 		);
 			
-	printf("HDIA format needs %li Bytes.\n", hackSize*allocationHeight*sizeof(testType) + (allocationHeight
+	printf("BHDIA format needs %li Bytes.\n", hackSize*allocationHeight*blockSize*sizeof(testType) + (allocationHeight
 		+ (hacksCount+1))*sizeof(int));
 	
-	testType *hdiaValues = (testType*) malloc(hackSize*allocationHeight*sizeof(testType));
+	testType *bhdiaValues = (testType*) malloc(hackSize*allocationHeight*blockSize*sizeof(testType));
 	int *hdiaOffsets = (int*) malloc(allocationHeight*sizeof(int));
 	
-	cooToHdia(
-		hdiaValues,
+	bcooToBhdia(
+		bhdiaValues,
 		hdiaOffsets,
 		hackOffsets,
 		hackSize,
-		rowsCount,
-		columnsCount,
-		nonZerosCount,
-		rows,
-		cols,
-		values,
-		valuesTypeCode
-	);
+		blockedRowsCount, blockedColsCount,
+		blockedNonZerosCount, bRows, bCols, bValues, valuesTypeCode, blockSize);
 	
 	printf("Conversion complete.\n");
 		
-	testType *devHdiaDm;
+	testType *devBhdiaDm;
 	int *devHdiaOffsets, *devHackOffsets;
 	
-	cudaMalloc((void**)&devHdiaDm, hackSize*allocationHeight*sizeof(testType));
+	cudaMalloc((void**)&devBhdiaDm, hackSize*allocationHeight*blockSize*sizeof(testType));
 	cudaMalloc((void**)&devHdiaOffsets, allocationHeight*sizeof(int));
 	cudaMalloc((void**)&devHackOffsets,(hacksCount+1)*sizeof(int));
 
-	cudaMemcpy(devHdiaDm, hdiaValues, hackSize*allocationHeight*sizeof(testType), cudaMemcpyHostToDevice);
+	cudaMemcpy(devBhdiaDm, bhdiaValues, hackSize*allocationHeight*blockSize*sizeof(testType), cudaMemcpyHostToDevice);
 	cudaMemcpy(devHdiaOffsets, hdiaOffsets, allocationHeight*sizeof(int), cudaMemcpyHostToDevice);
 	cudaMemcpy(devHackOffsets, hackOffsets, (hacksCount+1)*sizeof(int), cudaMemcpyHostToDevice);
 
+
 #ifdef TEST_DOUBLE
-	spgpuDhdiaspmv (spgpuHandle, devZ, devY, 2.0, devHdiaDm, devHdiaOffsets, hackSize, devHackOffsets, rowsCount, columnsCount, devX, -3.0);
+	spgpuDbhdiaspmv (spgpuHandle, devZ, devY, 2.0, blockRows, blockCols, devBhdiaDm, devHdiaOffsets, hackSize, devHackOffsets, blockedRowsCount, blockedColsCount, devX, -3.0);
 #else
-	spgpuShdiaspmv (spgpuHandle, devZ, devY, 2.0f, devHdiaDm, devHdiaOffsets, hackSize, devHackOffsets, rowsCount, columnsCount, devX, -3.0f);
+	spgpuSbhdiaspmv (spgpuHandle, devZ, devY, 2.0f, blockRows, blockCols, devBhdiaDm, devHdiaOffsets, hackSize, devHackOffsets, blockedRowsCount, blockedColsCount, devX, -3.0f);
 #endif
 	
 #ifdef TEST_DOUBLE
@@ -285,9 +239,9 @@ int main(int argc, char** argv)
 	for (int i=0; i<NUM_TESTS; ++i)
 	{
 #ifdef TEST_DOUBLE
-		spgpuDhdiaspmv (spgpuHandle, devZ, devY, 2.0, devHdiaDm, devHdiaOffsets, hackSize, devHackOffsets, rowsCount, columnsCount, devX, -3.0);	
+		spgpuDbhdiaspmv (spgpuHandle, devZ, devY, 2.0, blockRows, blockCols, devBhdiaDm, devHdiaOffsets, hackSize, devHackOffsets, blockedRowsCount, blockedColsCount, devX, -3.0);	
 #else
-		spgpuShdiaspmv (spgpuHandle, devZ, devY, 2.0f, devHdiaDm, devHdiaOffsets, hackSize, devHackOffsets, rowsCount, columnsCount, devX, -3.0f);
+		spgpuSbhdiaspmv (spgpuHandle, devZ, devY, 2.0f, blockRows, blockCols, devBhdiaDm, devHdiaOffsets, hackSize, devHackOffsets, blockedRowsCount, blockedColsCount, devX, -3.0f);
 #endif
 		
 	}
@@ -299,6 +253,7 @@ int main(int argc, char** argv)
 	gflops = (((nonZerosCount*2-1)) / time)*0.000000001f;
 	printf("GFlop/s: %f\n", gflops);
 
+
 	spgpuDestroy(spgpuHandle);
 
 	lastError = cudaGetLastError();
@@ -309,17 +264,19 @@ int main(int argc, char** argv)
 	cudaFree(devX);
 	cudaFree(devY);
 	cudaFree(devZ);
-	cudaFree(devHdiaDm);
+	cudaFree(devBhdiaDm);
 	cudaFree(devHdiaOffsets);
 	cudaFree(devHackOffsets);
 
-	free(diaValues);
-	free(diaOffsets);
 	free(hackOffsets);
-	free(hdiaValues);
+	free(bhdiaValues);
 	free(hdiaOffsets);
+	free(bRows);
+	free(bCols);
+	free(bValues);
 	free(rows);
 	free(cols);
+	free(values);
 	
 	return 0;
 }
