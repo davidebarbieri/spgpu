@@ -46,6 +46,7 @@ extern "C" {
  * \param rPPitch  the pitch (in number of elements) of the allocation containing the matrix non zero column indices
  * \param rS the array containing the row sized (in non zero elements)
  * \param rIdx (optional) An array containing the row index per every row (i.e. the reorder array) of the Ell matrix. Pass NULL if you don't use a reorder array (i.e. the k-th row is stored in the k-th position in the ELL format).
+ * \param maxNnzPerRow (optional) Max number of non zeroes per row. Pass 0 if you don't have such information.
  * \param rows the rows count
  * \param x the x vector
  * \param beta the beta scalar
@@ -61,6 +62,7 @@ void spgpuSellspmv (spgpuHandle_t handle,
 	int rPPitch, 
 	const __device int* rS, 
 	const __device int* rIdx, 
+	int maxNnzPerRow,
 	int rows, 
 	const __device float *x, 
 	float beta,
@@ -79,6 +81,7 @@ void spgpuSellspmv (spgpuHandle_t handle,
  * \param rPPitch the pitch (in number of elements) of the allocation containing the matrix non zero column indices
  * \param rS the array containing the row sized (in non zero elements)
  * \param rIdx (optional) An array containing the row index per every row (i.e. the reorder array) of the Ell matrix. Pass NULL if you don't use a reorder array (i.e. the k-th row is stored in the k-th position in the ELL format).
+ * \param maxNnzPerRow (optional) Max number of non zeroes per row. Pass 0 if you don't have such information.
  * \param rows the rows count
  * \param x the x vector
  * \param beta the beta scalar
@@ -93,7 +96,8 @@ void spgpuDellspmv (spgpuHandle_t handle,
 	int cMPitch, 
 	int rPPitch, 
 	const __device int* rS, 
-	const __device int* rIdx, 
+	const __device int* rIdx,  
+	int maxNnzPerRow,
 	int rows, 
 	const __device double *x, 
 	double beta,
@@ -113,6 +117,7 @@ void spgpuDellspmv (spgpuHandle_t handle,
  * \param rPPitch  the pitch (in number of elements) of the allocation containing the matrix non zero column indices
  * \param rS the array containing the row sized (in non zero elements)
  * \param rIdx (optional) An array containing the row index per every row (i.e. the reorder array) of the Ell matrix. Pass NULL if you don't use a reorder array (i.e. the k-th row is stored in the k-th position in the ELL format).
+ * \param maxNnzPerRow (optional) Max number of non zeroes per row. Pass 0 if you don't have such information.
  * \param rows the rows count
  * \param x the x vector
  * \param beta the beta scalar
@@ -127,7 +132,8 @@ void spgpuCellspmv (spgpuHandle_t handle,
 	int cMPitch, 
 	int rPPitch, 
 	const __device int* rS, 
-	const __device int* rIdx, 
+	const __device int* rIdx,  
+	int maxNnzPerRow,
 	int rows, 
 	const __device cuFloatComplex *x, 
 	cuFloatComplex beta,
@@ -146,6 +152,7 @@ void spgpuCellspmv (spgpuHandle_t handle,
  * \param rPPitch the pitch (in number of elements) of the allocation containing the matrix non zero column indices
  * \param rS the array containing the row sized (in non zero elements)
  * \param rIdx (optional) An array containing the row index per every row (i.e. the reorder array) of the Ell matrix. Pass NULL if you don't use a reorder array (i.e. the k-th row is stored in the k-th position in the ELL format).
+ * \param maxNnzPerRow (optional) Max number of non zeroes per row. Pass 0 if you don't have such information.
  * \param rows the rows count
  * \param x the x vector
  * \param beta the beta scalar
@@ -160,7 +167,8 @@ void spgpuZellspmv (spgpuHandle_t handle,
 	int cMPitch, 
 	int rPPitch, 
 	const __device int* rS, 
-	const __device int* rIdx, 
+	const __device int* rIdx,  
+	int maxNnzPerRow,
 	int rows, 
 	const __device cuDoubleComplex *x, 
 	cuDoubleComplex beta,
