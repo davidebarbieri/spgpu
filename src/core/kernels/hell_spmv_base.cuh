@@ -18,9 +18,9 @@
 #define PRE_CONCAT(A, B) A ## B
 #define CONCAT(A, B) PRE_CONCAT(A, B)
 
-#undef GEN_SPGPU_ELL_NAME
+#undef GEN_SPGPU_HELL_NAME
 #undef X_TEX
-#define GEN_SPGPU_ELL_NAME(x) CONCAT(CONCAT(spgpu,x),ellspmv)
+#define GEN_SPGPU_HELL_NAME(x) CONCAT(CONCAT(spgpu,x),hellspmv)
 #define X_TEX CONCAT(x_tex_, FUNC_SUFFIX)
 
 #ifdef ENABLE_CACHE
@@ -34,12 +34,15 @@ texture < TEX_FETCH_TYPE, 1, cudaReadModeElementType > X_TEX;
 #define THREAD_BLOCK 128
 #define MAX_N_FOR_A_CALL (THREAD_BLOCK*65535)
 
+#if __CUDA_ARCH__ < 300
+extern __shared__ int dynShrMem[]; 
+#endif
+
 // Define:
 //#define USE_PREFETCHING
 //#define VALUE_TYPE
 //#define TYPE_SYMBOL
 //#define TEX_FETCH_TYPE
-
 
 
 __device__ __host__ static float zero_float() { return 0.0f; }
@@ -88,9 +91,9 @@ __device__ static VALUE_TYPE fetchTex(int pointer)
 }
 
 __device__ void
-CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx_2)
+CONCAT(GEN_SPGPU_HELL_NAME(TYPE_SYMBOL), _ridx_2)
 (int i, VALUE_TYPE yVal, int outRow,
-	VALUE_TYPE *z, const VALUE_TYPE *y, VALUE_TYPE alpha, const VALUE_TYPE* cM, const int* rP, int cMPitch, int rPPitch, const int* rS, int rows, const VALUE_TYPE *x, VALUE_TYPE beta, int baseIndex)
+	VALUE_TYPE *z, const VALUE_TYPE *y, VALUE_TYPE alpha, const VALUE_TYPE* cM, const int* rP, int hackSize, const int* hackOffsets, const int* rS, int rows, const VALUE_TYPE *x, VALUE_TYPE beta, int baseIndex)
 {
 	VALUE_TYPE zProd = CONCAT(zero_,VALUE_TYPE)();
 
@@ -98,7 +101,31 @@ CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx_2)
 	
 	if (i < rows)
 	{
-		rS += i; rP += i; cM += i;
+		rS += i; 
+		
+		int hackId = i / hackSize;
+		int hackLaneId = i % hackSize;
+		
+		int hackOffset;
+		unsigned int laneId = threadIdx.x % 32;
+#if __CUDA_ARCH__ < 300
+        	// "volatile" used to avoid __syncthreads()
+        	volatile int* warpHackOffset = dynShrMem;
+
+        	unsigned int warpId = threadIdx.x / 32;
+
+        	if (laneId == 0)
+              		warpHackOffset[warpId] = hackOffsets[hackId];
+
+        	hackOffset = warpHackOffset[warpId] + hackLaneId;
+#else
+     		if (laneId == 0)
+                	hackOffset = hackOffsets[hackId];
+        	hackOffset = __shfl(hackOffset, 0) + hackLaneId;
+#endif
+
+		rP += hackOffset; 
+		cM += hackOffset; 
 
 		int rowSize = rS[0];
 		int rowSizeM = rowSize / 2;
@@ -110,8 +137,8 @@ CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx_2)
 		}
 		else
 		{
-			rP += rPPitch; 
-			cM += cMPitch;
+			rP += hackSize; 
+			cM += hackSize;
 		}
 		
 		
@@ -122,12 +149,12 @@ CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx_2)
 			VALUE_TYPE fetch;
 		
 			pointer = rP[0] - baseIndex;
-			rP += rPPitch; 
-			rP += rPPitch;
+			rP += hackSize; 
+			rP += hackSize;
 
 			value = cM[0];
-			cM += cMPitch;
-			cM += cMPitch;
+			cM += hackSize;
+			cM += hackSize;
 
 #ifdef ENABLE_CACHE
 			fetch = fetchTex(pointer);
@@ -164,15 +191,39 @@ CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx_2)
 }	
 
 __device__ void
-CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx)
+CONCAT(GEN_SPGPU_HELL_NAME(TYPE_SYMBOL), _ridx)
 (int i, VALUE_TYPE yVal, int outRow,
-	VALUE_TYPE *z, const VALUE_TYPE *y, VALUE_TYPE alpha, const VALUE_TYPE* cM, const int* rP, int cMPitch, int rPPitch, const int* rS, int rows, const VALUE_TYPE *x, VALUE_TYPE beta, int baseIndex)
+	VALUE_TYPE *z, const VALUE_TYPE *y, VALUE_TYPE alpha, const VALUE_TYPE* cM, const int* rP,  int hackSize, const int* hackOffsets, const int* rS, int rows, const VALUE_TYPE *x, VALUE_TYPE beta, int baseIndex)
 {
 	VALUE_TYPE zProd = CONCAT(zero_,VALUE_TYPE)();
 
 	if (i < rows)
 	{
-		rS += i; rP += i; cM += i;
+		rS += i; 
+		
+		int hackId = i / hackSize;
+		int hackLaneId = i % hackSize;
+		
+		int hackOffset;
+		unsigned int laneId = threadIdx.x % 32;
+#if __CUDA_ARCH__ < 300
+        	// "volatile" used to avoid __syncthreads()
+        	volatile int* warpHackOffset = dynShrMem;
+
+        	unsigned int warpId = threadIdx.x / 32;
+
+        	if (laneId == 0)
+              		warpHackOffset[warpId] = hackOffsets[hackId];
+
+        	hackOffset = warpHackOffset[warpId] + hackLaneId;
+#else
+     		if (laneId == 0)
+                	hackOffset = hackOffsets[hackId];
+        	hackOffset = __shfl(hackOffset, 0) + hackLaneId;
+#endif
+
+		rP += hackOffset; 
+		cM += hackOffset; 
 
 		int rowSize = rS[0];
 
@@ -184,15 +235,15 @@ CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx)
 			VALUE_TYPE fetches1, fetches2;
 		
 			pointers1 = rP[0] - baseIndex;
-			rP += rPPitch; 
+			rP += hackSize; 
 			pointers2 = rP[0] - baseIndex;
-			rP += rPPitch; 
+			rP += hackSize; 
 
 			values1 = cM[0];
-			cM += cMPitch;
+			cM += hackSize;
 			
 			values2 = cM[0];
-			cM += cMPitch;
+			cM += hackSize;
 
 #ifdef ENABLE_CACHE
 			fetches1 = fetchTex(pointers1);
@@ -229,10 +280,10 @@ CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx)
 			VALUE_TYPE fetch;
 		
 			pointer = rP[0] - baseIndex;
-			rP += rPPitch;
+			rP += hackSize;
 
 			value = cM[0];
-			cM += cMPitch;
+			cM += hackSize;
 
 #ifdef ENABLE_CACHE
 			fetch = fetchTex (pointer);
@@ -254,8 +305,8 @@ CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx)
 }
 
 __global__ void
-CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _krn_ridx)
-(VALUE_TYPE *z, const VALUE_TYPE *y, VALUE_TYPE alpha, const VALUE_TYPE* cM, const int* rP, int cMPitch, int rPPitch, const int* rS, const int* rIdx, int rows, const VALUE_TYPE *x, VALUE_TYPE beta, int baseIndex)
+CONCAT(GEN_SPGPU_HELL_NAME(TYPE_SYMBOL), _krn_ridx)
+(VALUE_TYPE *z, const VALUE_TYPE *y, VALUE_TYPE alpha, const VALUE_TYPE* cM, const int* rP,  int hackSize, const int* hackOffsets, const int* rS, const int* rIdx, int rows, const VALUE_TYPE *x, VALUE_TYPE beta, int baseIndex)
 {
 	int i = threadIdx.x + blockIdx.x * (THREAD_BLOCK);
 	
@@ -270,17 +321,17 @@ CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _krn_ridx)
 	}
 	
 	if (blockDim.y == 1)
-		CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx)
-			(i, yVal, outRow, z, y, alpha, cM, rP, cMPitch, rPPitch, rS, rows, x, beta, baseIndex);
+		CONCAT(GEN_SPGPU_HELL_NAME(TYPE_SYMBOL), _ridx)
+			(i, yVal, outRow, z, y, alpha, cM, rP, hackSize, hackOffsets, rS, rows, x, beta, baseIndex);
 	else
-		CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx_2)
-			(i, yVal, outRow, z, y, alpha, cM, rP, cMPitch, rPPitch, rS, rows, x, beta, baseIndex);
+		CONCAT(GEN_SPGPU_HELL_NAME(TYPE_SYMBOL), _ridx_2)
+			(i, yVal, outRow, z, y, alpha, cM, rP, hackSize, hackOffsets, rS, rows, x, beta, baseIndex);
 }
 
 
 __device__ void
-CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _)
-(VALUE_TYPE *z, const VALUE_TYPE *y, VALUE_TYPE alpha, const VALUE_TYPE* cM, const int* rP, int cMPitch, int rPPitch, const int* rS, int rows, const VALUE_TYPE *x, VALUE_TYPE beta, int baseIndex)
+CONCAT(GEN_SPGPU_HELL_NAME(TYPE_SYMBOL), _)
+(VALUE_TYPE *z, const VALUE_TYPE *y, VALUE_TYPE alpha, const VALUE_TYPE* cM, const int* rP,  int hackSize, const int* hackOffsets, const int* rS, int rows, const VALUE_TYPE *x, VALUE_TYPE beta, int baseIndex)
 {
 	int i = threadIdx.x + blockIdx.x * (THREAD_BLOCK);
 	
@@ -294,54 +345,62 @@ CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _)
 	}
 	
 	if (blockDim.y == 1)
-		CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx)
-			(i, yVal, i, z, y, alpha, cM, rP, cMPitch, rPPitch, rS, rows, x, beta, baseIndex);
+		CONCAT(GEN_SPGPU_HELL_NAME(TYPE_SYMBOL), _ridx)
+			(i, yVal, i, z, y, alpha, cM, rP, hackSize, hackOffsets, rS, rows, x, beta, baseIndex);
 	else
-		CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx_2)
-			(i, yVal, i, z, y, alpha, cM, rP, cMPitch, rPPitch, rS, rows, x, beta, baseIndex);
+		CONCAT(GEN_SPGPU_HELL_NAME(TYPE_SYMBOL), _ridx_2)
+			(i, yVal, i, z, y, alpha, cM, rP, hackSize, hackOffsets, rS, rows, x, beta, baseIndex);
 }
 
 // Force to recompile and optimize with llvm
 __global__ void
-CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _krn_b0) 
-(VALUE_TYPE *z, const VALUE_TYPE *y, VALUE_TYPE alpha, const VALUE_TYPE* cM, const int* rP, int cMPitch, int rPPitch, const int* rS, int rows, const VALUE_TYPE *x, int baseIndex)
+CONCAT(GEN_SPGPU_HELL_NAME(TYPE_SYMBOL), _krn_b0) 
+(VALUE_TYPE *z, const VALUE_TYPE *y, VALUE_TYPE alpha, const VALUE_TYPE* cM, const int* rP,  int hackSize, const int* hackOffsets, const int* rS, int rows, const VALUE_TYPE *x, int baseIndex)
 {
-	CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _)
-		(z, y, alpha, cM, rP, cMPitch, rPPitch, rS, rows, x, CONCAT(zero_,VALUE_TYPE)(), baseIndex);
+	CONCAT(GEN_SPGPU_HELL_NAME(TYPE_SYMBOL), _)
+		(z, y, alpha, cM, rP, hackSize, hackOffsets, rS, rows, x, CONCAT(zero_,VALUE_TYPE)(), baseIndex);
 }
 
 __global__ void
-CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _krn)
-(VALUE_TYPE *z, const VALUE_TYPE *y, VALUE_TYPE alpha, const VALUE_TYPE* cM, const int* rP, int cMPitch, int rPPitch, const int* rS, int rows, const VALUE_TYPE *x, VALUE_TYPE beta, int baseIndex)
+CONCAT(GEN_SPGPU_HELL_NAME(TYPE_SYMBOL), _krn)
+(VALUE_TYPE *z, const VALUE_TYPE *y, VALUE_TYPE alpha, const VALUE_TYPE* cM, const int* rP, int hackSize, const int* hackOffsets, const int* rS, int rows, const VALUE_TYPE *x, VALUE_TYPE beta, int baseIndex)
 {
-	CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _)
-		(z, y, alpha, cM, rP, cMPitch, rPPitch, rS, rows, x, beta, baseIndex);
+	CONCAT(GEN_SPGPU_HELL_NAME(TYPE_SYMBOL), _)
+		(z, y, alpha, cM, rP, hackSize, hackOffsets, rS, rows, x, beta, baseIndex);
 }
 
 void
-CONCAT(_,GEN_SPGPU_ELL_NAME(TYPE_SYMBOL))
+CONCAT(_,GEN_SPGPU_HELL_NAME(TYPE_SYMBOL))
 (spgpuHandle_t handle, VALUE_TYPE* z, const VALUE_TYPE *y, VALUE_TYPE alpha, 
-	const VALUE_TYPE* cM, const int* rP, int cMPitch, int rPPitch, const int* rS,  
+	const VALUE_TYPE* cM, const int* rP, int hackSize, const int* hackOffsets, const int* rS,  
 	const __device int* rIdx, int maxNnzPerRow, int rows, const VALUE_TYPE *x, VALUE_TYPE beta, int baseIndex)
 {
 	dim3 block (THREAD_BLOCK, maxNnzPerRow >= 64 ? 2 : 1);
 	dim3 grid ((rows + THREAD_BLOCK - 1) / THREAD_BLOCK);
+
+	int shrMemSize;
+#if __CUDA_ARCH__ < 300
+       	int warpsPerBlock = THREAD_BLOCK/handle->warpSize;
+        shrMemSize = warpsPerBlock*sizeof(int);
+#else
+       	shrMemSize = 0;
+#endif
 
 #ifdef ENABLE_CACHE
 	bind_tex_x ((const TEX_FETCH_TYPE *) x);
 #endif
 
 	if (rIdx)
-		CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _krn_ridx)
-			<<< grid, block, 0, handle->currentStream >>> (z, y, alpha, cM, rP, cMPitch, rPPitch, rS, rIdx, rows, x, beta, baseIndex);
+		CONCAT(GEN_SPGPU_HELL_NAME(TYPE_SYMBOL), _krn_ridx)
+			<<< grid, block, shrMemSize, handle->currentStream >>> (z, y, alpha, cM, rP, hackSize, hackOffsets, rS, rIdx, rows, x, beta, baseIndex);
 	else
 	{
 		if (CONCAT(VALUE_TYPE, _isNotZero(beta)))
-			CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _krn) 
-				<<< grid, block, 0, handle->currentStream >>> (z, y, alpha, cM, rP, cMPitch, rPPitch, rS, rows, x, beta, baseIndex);
+			CONCAT(GEN_SPGPU_HELL_NAME(TYPE_SYMBOL), _krn) 
+				<<< grid, block, shrMemSize, handle->currentStream >>> (z, y, alpha, cM, rP, hackSize, hackOffsets, rS, rows, x, beta, baseIndex);
 		else
-			CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _krn_b0)
-				<<< grid, block, 0, handle->currentStream >>> (z, y, alpha, cM, rP, cMPitch, rPPitch, rS, rows, x, baseIndex);
+			CONCAT(GEN_SPGPU_HELL_NAME(TYPE_SYMBOL), _krn_b0)
+				<<< grid, block, shrMemSize, handle->currentStream >>> (z, y, alpha, cM, rP, hackSize, hackOffsets, rS, rows, x, baseIndex);
 	}
 
 #ifdef ENABLE_CACHE
@@ -351,17 +410,17 @@ CONCAT(_,GEN_SPGPU_ELL_NAME(TYPE_SYMBOL))
 }
 
 void
-GEN_SPGPU_ELL_NAME(TYPE_SYMBOL)
+GEN_SPGPU_HELL_NAME(TYPE_SYMBOL)
 (spgpuHandle_t handle, 
 	VALUE_TYPE* z, 
 	const VALUE_TYPE *y, 
 	VALUE_TYPE alpha, 
 	const VALUE_TYPE* cM, 
 	const int* rP, 
-	int cMPitch, 
-	int rPPitch, 
-	const int* rS, 
-	const __device int* rIdx,
+	int hackSize,
+	const __device int* hackOffsets, 
+	const __device int* rS,
+	const __device int* rIdx, 
 	int maxNnzPerRow,
 	int rows, 
 	const VALUE_TYPE *x, 
@@ -370,7 +429,7 @@ GEN_SPGPU_ELL_NAME(TYPE_SYMBOL)
 {
 	while (rows > MAX_N_FOR_A_CALL) //managing large vectors
 	{
-		CONCAT(_,GEN_SPGPU_ELL_NAME(TYPE_SYMBOL)) (handle, z, y, alpha, cM, rP, cMPitch, rPPitch, rS, rIdx, maxNnzPerRow, MAX_N_FOR_A_CALL, x, beta, baseIndex);
+		CONCAT(_,GEN_SPGPU_HELL_NAME(TYPE_SYMBOL)) (handle, z, y, alpha, cM, rP, hackSize, hackOffsets, rS, rIdx, maxNnzPerRow, MAX_N_FOR_A_CALL, x, beta, baseIndex);
 
 		y = y + MAX_N_FOR_A_CALL;
 		z = z + MAX_N_FOR_A_CALL;
@@ -381,8 +440,8 @@ GEN_SPGPU_ELL_NAME(TYPE_SYMBOL)
 		rows -= MAX_N_FOR_A_CALL;
 	}
 	
-	CONCAT(_,GEN_SPGPU_ELL_NAME(TYPE_SYMBOL)) (handle, z, y, alpha, cM, rP, cMPitch, rPPitch, rS, rIdx, maxNnzPerRow, rows, x, beta, baseIndex);
+	CONCAT(_,GEN_SPGPU_HELL_NAME(TYPE_SYMBOL)) (handle, z, y, alpha, cM, rP, hackSize, hackOffsets, rS, rIdx, maxNnzPerRow, rows, x, beta, baseIndex);
 	
-	cudaCheckError("CUDA error on ell_spmv");
+	cudaCheckError("CUDA error on hell_spmv");
 }
 

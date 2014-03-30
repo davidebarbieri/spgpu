@@ -46,6 +46,7 @@ extern "C" {
  * \param hackOffsets the array of base index offset for every hack of HELL non zero values allocation and HELL indices allocation.
  * \param rS the array containing the row sized (in non zero elements)
  * \param rIdx (optional) An array containing the row index per every row (i.e. the reorder array) of the Hell matrix. Pass NULL if you don't use a reorder array (i.e. the k-th row is stored in the k-th position in the HELL format).
+ * \param maxNnzPerRow (optional) Max number of non zeroes per row. Pass 0 if you don't have such information.
  * \param rows the rows count
  * \param x the x vector
  * \param beta the beta scalar
@@ -61,6 +62,7 @@ void spgpuShellspmv (spgpuHandle_t handle,
 	const __device int* hackOffsets, 
 	const __device int* rS,
 	const __device int* rIdx, 
+	int maxNnzPerRow,
 	int rows, 
 	const __device float *x, 
 	float beta,
@@ -81,6 +83,7 @@ void spgpuShellspmv (spgpuHandle_t handle,
  * \param hackOffsets the array of base index offset for every hack of HELL non zero values allocation and HELL indices allocation.
  * \param rS the array containing the row sized (in non zero elements)
  * \param rIdx (optional) An array containing the row index per every row (i.e. the reorder array) of the Hell matrix. Pass NULL if you don't use a reorder array (i.e. the k-th row is stored in the k-th position in the HELL format).
+ * \param maxNnzPerRow (optional) Max number of non zeroes per row. Pass 0 if you don't have such information.
  * \param rows the rows count
  * \param x the x vector
  * \param beta the beta scalar
@@ -96,6 +99,7 @@ void spgpuDhellspmv (spgpuHandle_t handle,
 	const __device int* hackOffsets, 
 	const __device int* rS,
 	const __device int* rIdx, 
+	int maxNnzPerRow,
 	int rows, 
 	const __device double *x, 
 	double beta,
@@ -115,6 +119,7 @@ void spgpuDhellspmv (spgpuHandle_t handle,
  * \param hackOffsets the array of base index offset for every hack of HELL non zero values allocation and HELL indices allocation.
  * \param rS the array containing the row sized (in non zero elements)
  * \param rIdx (optional) An array containing the row index per every row (i.e. the reorder array) of the Hell matrix. Pass NULL if you don't use a reorder array (i.e. the k-th row is stored in the k-th position in the HELL format).
+ * \param maxNnzPerRow (optional) Max number of non zeroes per row. Pass 0 if you don't have such information.
  * \param rows the rows count
  * \param x the x vector
  * \param beta the beta scalar
@@ -130,6 +135,7 @@ void spgpuChellspmv (spgpuHandle_t handle,
 	const __device int* hackOffsets, 
 	const __device int* rS,
 	const __device int* rIdx, 
+	int maxNnzPerRow,
 	int rows, 
 	const __device cuFloatComplex *x, 
 	cuFloatComplex beta,
@@ -150,6 +156,7 @@ void spgpuChellspmv (spgpuHandle_t handle,
  * \param hackOffsets the array of base index offset for every hack of HELL non zero values allocation and HELL indices allocation.
  * \param rS the array containing the row sized (in non zero elements)
  * \param rIdx (optional) An array containing the row index per every row (i.e. the reorder array) of the Hell matrix. Pass NULL if you don't use a reorder array (i.e. the k-th row is stored in the k-th position in the HELL format).
+ * \param maxNnzPerRow (optional) Max number of non zeroes per row. Pass 0 if you don't have such information.
  * \param rows the rows count
  * \param x the x vector
  * \param beta the beta scalar
@@ -165,6 +172,7 @@ void spgpuZhellspmv (spgpuHandle_t handle,
 	const __device int* hackOffsets, 
 	const __device int* rS,
 	const __device int* rIdx, 
+	int maxNnzPerRow,
 	int rows, 
 	const __device cuDoubleComplex *x, 
 	cuDoubleComplex beta,

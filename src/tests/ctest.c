@@ -153,7 +153,7 @@ int main(int argc, char** argv)
 
 	printf("Testing HELL format\n");
 
-	spgpuShellspmv (spgpuHandle, devZ, devY, 2.0f, devHellCm, devHellRp, hackSize, devHackOffsets, devRs, NULL, rowsCount, devX, -3.0f, 0);
+	spgpuShellspmv (spgpuHandle, devZ, devY, 2.0f, devHellCm, devHellRp, hackSize, devHackOffsets, devRs, NULL, ellMaxRowSize, rowsCount, devX, -3.0f, 0);
 	dotRes = spgpuSdot(spgpuHandle, rowsCount, devZ, devZ);
 	cudaDeviceSynchronize();
 	printf("dot res: %e\n", dotRes);
