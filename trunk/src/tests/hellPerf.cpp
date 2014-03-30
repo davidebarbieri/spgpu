@@ -251,11 +251,11 @@ int main(int argc, char** argv)
 	printf("Testing HELL format\n");
 
 #ifdef TEST_DOUBLE
-	spgpuDhellspmv (spgpuHandle, devZ, devY, ALPHA, devHellCm, devHellRp, hackSize, devHackOffsets, devRs, NULL, rowsCount, devX, BETA, 0);
+	spgpuDhellspmv (spgpuHandle, devZ, devY, ALPHA, devHellCm, devHellRp, hackSize, devHackOffsets, devRs, NULL, ellMaxRowSize, rowsCount, devX, BETA, 0);
 	//cublasDdot(cublasHandle,rowsCount,devZ, 1, devZ, 1, &dotRes);
 	dotRes = spgpuDdot(spgpuHandle, rowsCount, devZ, devZ);
 #else
-	spgpuShellspmv (spgpuHandle, devZ, devY, (float)ALPHA, devHellCm, devHellRp, hackSize, devHackOffsets, devRs, NULL, rowsCount, devX, (float)BETA, 0);
+	spgpuShellspmv (spgpuHandle, devZ, devY, (float)ALPHA, devHellCm, devHellRp, hackSize, devHackOffsets, devRs, NULL, ellMaxRowSize, rowsCount, devX, (float)BETA, 0);
 	//cublasSdot(cublasHandle,rowsCount,devZ, 1, devZ, 1, &dotRes);
 	dotRes = spgpuSdot(spgpuHandle, rowsCount, devZ, devZ);
 #endif
@@ -272,9 +272,9 @@ int main(int argc, char** argv)
 	for (int i=0; i<NUM_TESTS; ++i)
 	{
 #ifdef TEST_DOUBLE
-		spgpuDhellspmv (spgpuHandle, devZ, devY, ALPHA, devHellCm, devHellRp, hackSize, devHackOffsets, devRs, NULL, rowsCount, devX, BETA, 0);
+		spgpuDhellspmv (spgpuHandle, devZ, devY, ALPHA, devHellCm, devHellRp, hackSize, devHackOffsets, devRs, NULL, ellMaxRowSize, rowsCount, devX, BETA, 0);
 #else
-		spgpuShellspmv (spgpuHandle, devZ, devY, (float)ALPHA, devHellCm, devHellRp, hackSize, devHackOffsets, devRs, NULL, rowsCount, devX, (float)BETA, 0);
+		spgpuShellspmv (spgpuHandle, devZ, devY, (float)ALPHA, devHellCm, devHellRp, hackSize, devHackOffsets, devRs, NULL, ellMaxRowSize, rowsCount, devX, (float)BETA, 0);
 #endif
 	}
 	cudaDeviceSynchronize();
