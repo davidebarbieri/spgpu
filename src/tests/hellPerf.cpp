@@ -87,12 +87,6 @@ int main(int argc, char** argv)
 
 	 __assert(res, "Error on file read");
 
-	 printf("Input matrix is %s:\n", input);
-	 printf("rows: %i:\n", rowsCount);
-	 printf("columns: %i\n", columnsCount);
-	 printf("non zeros: %i\n", nonZerosCount);
-	 printf("symmetric: %s\n", matrixType == MATRIX_TYPE_SYMMETRIC ? "true" : "false");
-
 	 printf("Allocating COO matrix..\n");
 	 testType* values = (testType*) malloc(nonZerosCount*sizeof(testType));
 	 int* rows = (int*) malloc(nonZerosCount*sizeof(int));
@@ -128,6 +122,13 @@ int main(int argc, char** argv)
 		values = unfoldedValues;
 	}
 	 
+
+	printf("Input matrix is %s:\n", input);
+	printf("rows: %i:\n", rowsCount);
+	printf("columns: %i\n", columnsCount);
+	printf("symmetric: %s\n", matrixType == MATRIX_TYPE_SYMMETRIC ? "true" : "false");
+	printf("non zeros: %i\n", nonZerosCount);
+	
 	printf("Converting to ELL..\n");
 
 	testType *ellValues;
