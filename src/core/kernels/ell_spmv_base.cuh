@@ -87,6 +87,88 @@ __device__ static VALUE_TYPE fetchTex(int pointer)
 	return CONCAT(readValue_,VALUE_TYPE) (fetch);
 }
 
+
+__device__ void
+CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx_4)
+(int i, VALUE_TYPE yVal, int outRow,
+	VALUE_TYPE *z, const VALUE_TYPE *y, VALUE_TYPE alpha, const VALUE_TYPE* cM, const int* rP, int cMPitch, int rPPitch, const int* rS, int rows, const VALUE_TYPE *x, VALUE_TYPE beta, int baseIndex)
+{
+	VALUE_TYPE zProd = CONCAT(zero_,VALUE_TYPE)();
+
+	__shared__ VALUE_TYPE temp[2][THREAD_BLOCK+1];
+	
+	if (i < rows)
+	{
+		rS += i; rP += i; cM += i;
+
+		int rowSize = rS[0];
+		int rowSizeM = rowSize / 4;
+		
+				
+		if ((rowSize % 4) > threadIdx.y)
+			++rowSizeM;
+		
+		rP += threadIdx.y*rPPitch; 
+		cM += threadIdx.y*cMPitch;
+		
+		
+		for (int j = 0; j < rowSizeM; j++)
+		{
+			int pointer;
+			VALUE_TYPE value;
+			VALUE_TYPE fetch;
+		
+			pointer = rP[0] - baseIndex;
+			rP += 4*rPPitch; 
+
+			value = cM[0];
+			cM +=  4*cMPitch;
+
+#ifdef ENABLE_CACHE
+			fetch = fetchTex(pointer);
+#else
+			fetch = x[pointer];
+#endif	
+
+			// avoid MAD on pre-Fermi
+			zProd = CONCAT(VALUE_TYPE, _fma)(value, fetch, zProd);
+		}
+
+		// Reduction
+		if (threadIdx.y > 1)
+			temp[threadIdx.y - 2][threadIdx.x] = zProd;
+	}
+	
+	__syncthreads();
+	
+	if (i < rows)
+	{
+		if (threadIdx.y <= 1)
+			zProd = CONCAT(VALUE_TYPE, _add)(zProd, temp[threadIdx.y][threadIdx.x]);
+		
+		if (threadIdx.y == 1)
+			temp[1][threadIdx.x] = zProd;
+	}
+	
+	__syncthreads();
+	
+	if (i < rows)
+	{
+		if (threadIdx.y == 0)	
+		{
+			zProd = CONCAT(VALUE_TYPE, _add)(zProd, temp[1][threadIdx.x]);
+		
+			// Since z and y are accessed with the same offset by the same thread,
+			// and the write to z follows the y read, y and z can share the same base address (in-place computing).
+	
+			if (CONCAT(VALUE_TYPE, _isNotZero(beta)))
+				z[outRow] = CONCAT(VALUE_TYPE, _fma)(beta, yVal, CONCAT(VALUE_TYPE, _mul) (alpha, zProd));
+			else
+				z[outRow] = CONCAT(VALUE_TYPE, _mul)(alpha, zProd);
+		}
+	}
+}
+
 __device__ void
 CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx_2)
 (int i, VALUE_TYPE yVal, int outRow,
@@ -272,9 +354,17 @@ CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _krn_ridx)
 	if (blockDim.y == 1)
 		CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx)
 			(i, yVal, outRow, z, y, alpha, cM, rP, cMPitch, rPPitch, rS, rows, x, beta, baseIndex);
-	else
+	else //if (blockDim.y == 2)
+	
 		CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx_2)
 			(i, yVal, outRow, z, y, alpha, cM, rP, cMPitch, rPPitch, rS, rows, x, beta, baseIndex);
+	/*
+	else if (blockDim.y == 4)
+	
+	 
+		CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx_4)
+			(i, yVal, outRow, z, y, alpha, cM, rP, cMPitch, rPPitch, rS, rows, x, beta, baseIndex);
+			*/
 }
 
 
@@ -296,9 +386,18 @@ CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _)
 	if (blockDim.y == 1)
 		CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx)
 			(i, yVal, i, z, y, alpha, cM, rP, cMPitch, rPPitch, rS, rows, x, beta, baseIndex);
-	else
+	
+	else //if (blockDim.y == 2)
+	
 		CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx_2)
 			(i, yVal, i, z, y, alpha, cM, rP, cMPitch, rPPitch, rS, rows, x, beta, baseIndex);
+	/*
+	else if (blockDim.y == 4)
+	
+		CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx_4)
+			(i, yVal, i, z, y, alpha, cM, rP, cMPitch, rPPitch, rS, rows, x, beta, baseIndex);
+			*/
+			
 }
 
 // Force to recompile and optimize with llvm
@@ -322,9 +421,10 @@ void
 CONCAT(_,GEN_SPGPU_ELL_NAME(TYPE_SYMBOL))
 (spgpuHandle_t handle, VALUE_TYPE* z, const VALUE_TYPE *y, VALUE_TYPE alpha, 
 	const VALUE_TYPE* cM, const int* rP, int cMPitch, int rPPitch, const int* rS,  
-	const __device int* rIdx, int maxNnzPerRow, int rows, const VALUE_TYPE *x, VALUE_TYPE beta, int baseIndex)
+	const __device int* rIdx, int avgNnzPerRow, int rows, const VALUE_TYPE *x, VALUE_TYPE beta, int baseIndex)
 {
-	dim3 block (THREAD_BLOCK, maxNnzPerRow >= 64 ? 2 : 1);
+	dim3 block (THREAD_BLOCK, avgNnzPerRow >= 64 ? 2 : 1);
+	
 	dim3 grid ((rows + THREAD_BLOCK - 1) / THREAD_BLOCK);
 
 #ifdef ENABLE_CACHE
