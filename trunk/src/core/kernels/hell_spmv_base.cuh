@@ -326,6 +326,7 @@ CONCAT(GEN_SPGPU_HELL_NAME(TYPE_SYMBOL), _krn_ridx)
 	else
 		CONCAT(GEN_SPGPU_HELL_NAME(TYPE_SYMBOL), _ridx_2)
 			(i, yVal, outRow, z, y, alpha, cM, rP, hackSize, hackOffsets, rS, rows, x, beta, baseIndex);
+			
 }
 
 
@@ -350,6 +351,7 @@ CONCAT(GEN_SPGPU_HELL_NAME(TYPE_SYMBOL), _)
 	else
 		CONCAT(GEN_SPGPU_HELL_NAME(TYPE_SYMBOL), _ridx_2)
 			(i, yVal, i, z, y, alpha, cM, rP, hackSize, hackOffsets, rS, rows, x, beta, baseIndex);
+			
 }
 
 // Force to recompile and optimize with llvm
@@ -373,9 +375,10 @@ void
 CONCAT(_,GEN_SPGPU_HELL_NAME(TYPE_SYMBOL))
 (spgpuHandle_t handle, VALUE_TYPE* z, const VALUE_TYPE *y, VALUE_TYPE alpha, 
 	const VALUE_TYPE* cM, const int* rP, int hackSize, const int* hackOffsets, const int* rS,  
-	const __device int* rIdx, int maxNnzPerRow, int rows, const VALUE_TYPE *x, VALUE_TYPE beta, int baseIndex)
+	const __device int* rIdx, int avgNnzPerRow, int rows, const VALUE_TYPE *x, VALUE_TYPE beta, int baseIndex)
 {
-	dim3 block (THREAD_BLOCK, maxNnzPerRow >= 64 ? 2 : 1);
+	dim3 block (THREAD_BLOCK, avgNnzPerRow >= 64 ? 2 : 1);
+
 	dim3 grid ((rows + THREAD_BLOCK - 1) / THREAD_BLOCK);
 
 	int shrMemSize;

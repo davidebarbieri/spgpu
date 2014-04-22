@@ -19,6 +19,7 @@
 #include <stdlib.h>
 
 #include "mmread.hpp"
+#include "mmutils.hpp"
 #include "debug.h"
 #include "timing.hpp"
 #include "cuda_runtime.h"
@@ -90,6 +91,7 @@ int main(int argc, char** argv)
 	 printf("rows: %i:\n", rowsCount);
 	 printf("columns: %i\n", columnsCount);
 	 printf("non zeros: %i\n", nonZerosCount);
+	 printf("symmetric: %s\n", matrixType == MATRIX_TYPE_SYMMETRIC ? "true" : "false");
 
 	 printf("Allocating COO matrix..\n");
 	 testType* values = (testType*) malloc(nonZerosCount*sizeof(testType));
@@ -104,7 +106,29 @@ int main(int argc, char** argv)
 
 	 __assert(rRes == MATRIX_READ_SUCCESS, "Error on file read");
 
-	 printf("Converting to ELL..\n");
+	// Deal with the symmetric property of the matrix
+	if (matrixType == MATRIX_TYPE_SYMMETRIC)
+	{
+		int unfoldedNonZerosCount = 0;
+		getUnfoldedMmSymmetricSize(&unfoldedNonZerosCount, values, rows, cols, nonZerosCount);
+		
+		int *unfoldedRows = (int*) malloc(unfoldedNonZerosCount*sizeof(int));
+		int *unfoldedCols = (int*) malloc(unfoldedNonZerosCount*sizeof(int));
+		testType *unfoldedValues = (testType*) malloc(unfoldedNonZerosCount*sizeof(testType));
+		
+		unfoldMmSymmetricReal(unfoldedRows, unfoldedCols, unfoldedValues, rows, cols, values, nonZerosCount);
+		
+		free(rows);
+		free(cols);
+		free(values);
+		
+		nonZerosCount = unfoldedNonZerosCount;
+		rows = unfoldedRows;
+		cols = unfoldedCols;
+		values = unfoldedValues;
+	}
+	 
+	printf("Converting to ELL..\n");
 
 	testType *ellValues;
 	int *ellIndices;
