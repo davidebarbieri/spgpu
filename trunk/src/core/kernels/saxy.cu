@@ -25,7 +25,7 @@ extern "C"
 #include "vector.h"
 }
 
-#define BLOCK_SIZE 512
+#define BLOCK_SIZE 256
 #define MAX_N_FOR_A_CALL (BLOCK_SIZE*65535)
 
 __global__ void spgpuSaxy_kern(float *z, int n, float alpha, float* x, float* y)
@@ -142,10 +142,11 @@ void spgpuSaxypbz(spgpuHandle_t handle,
 			x = x + MAX_N_FOR_A_CALL;
 			y = y + MAX_N_FOR_A_CALL;
 			z = z + MAX_N_FOR_A_CALL;
+			w = w + MAX_N_FOR_A_CALL;
 			n -= MAX_N_FOR_A_CALL;
 		}
     
-		spgpuSaxypbz_(handle, w, MAX_N_FOR_A_CALL, beta, z, alpha, x, y);
+		spgpuSaxypbz_(handle, w, n, beta, z, alpha, x, y);
     }	
   
 	cudaCheckError("CUDA error on saxypbz");
@@ -171,6 +172,7 @@ void spgpuSmaxypbz(spgpuHandle_t handle,
       x += pitch;
       y += pitch;
       z += pitch;
+      w += pitch;
     }
 }
 
