@@ -1,7 +1,7 @@
 /*
  * spGPU - Sparse matrices on GPU library.
  * 
- * Copyright (C) 2010 - 2012 
+ * Copyright (C) 2010 - 2014
  *     Salvatore Filippone - University of Rome Tor Vergata
  *     Davide Barbieri - University of Rome Tor Vergata
  *
