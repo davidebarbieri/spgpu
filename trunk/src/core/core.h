@@ -92,6 +92,12 @@ typedef struct spgpuHandleStruct {
 	int warpSize;
 	/// the max threads per block count for this device
 	int maxThreadsPerBlock;
+	/// the max size for the X coordinate of the grid dimensions
+	int maxGridSizeX;
+	/// the max size for the Y coordinate of the grid dimensions
+	int maxGridSizeY;
+	/// the max size for the Z coordinate of the grid dimensions
+	int maxGridSizeZ;
 } SpgpuHandleStruct;
 
 /// A spGPU handle represents a single CUDA device on your platform.

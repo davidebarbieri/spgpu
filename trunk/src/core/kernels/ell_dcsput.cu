@@ -13,19 +13,19 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
- 
-#include "stdio.h"
+
 #include "cudadebug.h"
 #include "cudalang.h"
 
 extern "C"
 {
 #include "core.h"
-#include "vector.h"
+#include "ell.h"
 }
 
 #include "debug.h"
 
-#define VALUE_TYPE cuDoubleComplex
-#define TYPE_SYMBOL Z
-#include "axy_base.cuh"
+#define VALUE_TYPE double
+#define TYPE_SYMBOL D
+#include "ell_csput_base.cuh"
+

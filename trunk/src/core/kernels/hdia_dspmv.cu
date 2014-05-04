@@ -259,7 +259,7 @@ spgpuDhdiaspmv (spgpuHandle_t handle,
     	
     	int threadCount = 128;
 
-	int maxThreadForACall = threadCount*65535;
+	int maxThreadForACall = threadCount*handle->maxGridSizeX;
 	
 	while (rows > maxThreadForACall) //managing large vectors
 	{

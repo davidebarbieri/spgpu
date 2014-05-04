@@ -1,7 +1,7 @@
 /*
  * spGPU - Sparse matrices on GPU library.
  * 
- * Copyright (C) 2010 - 2012 
+ * Copyright (C) 2010 - 2014
  *     Davide Barbieri - University of Rome Tor Vergata
  *
  * This program is free software; you can redistribute it and/or
@@ -13,11 +13,10 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
-
+ 
 #include "stdio.h"
-#include "cudalang.h"
 #include "cudadebug.h"
-
+#include "cudalang.h"
 
 extern "C"
 {
@@ -25,49 +24,8 @@ extern "C"
 #include "vector.h"
 }
 
+#include "debug.h"
 
-#define BLOCK_SIZE 512
-#define MAX_N_FOR_A_CALL (BLOCK_SIZE*65535)
-
-__global__ void spgpuDscal_kern(double *y, int n, double alpha, double* x)
-{
-	int id = threadIdx.x + BLOCK_SIZE*blockIdx.x;
-
-	// Since x and y are accessed with the same offset by the same thread,
-	// and the write to y follows the x read, x and y can share the same base address (in-place computing).		
-	if (id < n)
-	{
-		y[id] = alpha*x[id];
-	}
-}
-
-void spgpuDscal_(spgpuHandle_t handle, double *y, int n, double alpha, double* x)
-{
-  int msize = (n+BLOCK_SIZE-1)/BLOCK_SIZE;
-
-  dim3 block(BLOCK_SIZE);
-  dim3 grid(msize);
-
-  spgpuDscal_kern<<<grid, block, 0, handle->currentStream>>>(y, n, alpha, x);
-
-}
-
-void spgpuDscal(spgpuHandle_t handle,
-	__device double *y,
-	int n,
-	double alpha,
-	__device double *x)
-{
-
-	while (n > MAX_N_FOR_A_CALL) //managing large vectors
-    {
-		spgpuDscal_(handle, y, MAX_N_FOR_A_CALL, alpha, x);
-		x = x + MAX_N_FOR_A_CALL;
-		y = y + MAX_N_FOR_A_CALL;
-		n -= MAX_N_FOR_A_CALL;
-	}
-	
-    spgpuDscal_(handle, y, n, alpha, x);
-	
-	cudaCheckError("CUDA error on dscal");
-}
+#define VALUE_TYPE double
+#define TYPE_SYMBOL D
+#include "scal_base.cuh"
