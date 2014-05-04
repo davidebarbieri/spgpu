@@ -27,7 +27,7 @@
   
   <td style="padding-left: 0.5em;">
    <div id="projectname">spGpu library
-   &#160;<span id="projectnumber">1.1.1</span>
+   &#160;<span id="projectnumber">1.2.0</span>
    </div>
    <div id="projectbrief">spgpu</div>
   </td>
@@ -86,6 +86,8 @@ Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dia_fun.html#gad873eabc3b4afac4f9bac7a34e42b653">spgpuDdiaspmv</a> (<a class="el" href="group__core_fun.html#ga5d4825ac610d6524df843758da392dec">spgpuHandle_t</a> handle, __device double *z, const __device double *y, double alpha, const __device double *dM, const __device int *offsets, int dMPitch, int rows, int cols, int diags, const __device double *x, double beta)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dia_fun.html#ga3bbcd597fa950d8cc409e53b0649b03f">spgpuShdiaspmv</a> (<a class="el" href="group__core_fun.html#ga5d4825ac610d6524df843758da392dec">spgpuHandle_t</a> handle, float *z, const float *y, float alpha, const float *dM, const int *offsets, int hackSize, const int *hackOffsets, int rows, int cols, const float *x, float beta)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dia_fun.html#ga16e6fedad25c07ff0928f4e4456b4d1f">spgpuDhdiaspmv</a> (<a class="el" href="group__core_fun.html#ga5d4825ac610d6524df843758da392dec">spgpuHandle_t</a> handle, double *z, const double *y, double alpha, const double *dM, const int *offsets, int hackSize, const int *hackOffsets, int rows, int cols, const double *x, double beta)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dia_fun.html#gaa6ecef9a6c22b41e8277e3eb3059da55">spgpuDbhdiaspmv</a> (<a class="el" href="group__core_fun.html#ga5d4825ac610d6524df843758da392dec">spgpuHandle_t</a> handle, double *z, const double *y, double alpha, int blockRows, int blockCols, const double *dM, const int *offsets, int hackSize, const int *hackOffsets, int rows, int cols, const double *x, double beta)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__dia_fun.html#gafa337324f0f217c47a2142bb7f6dcf73">spgpuSbhdiaspmv</a> (<a class="el" href="group__core_fun.html#ga5d4825ac610d6524df843758da392dec">spgpuHandle_t</a> handle, float *z, const float *y, float alpha, int blockRows, int blockCols, const float *dM, const int *offsets, int hackSize, const int *hackOffsets, int rows, int cols, const float *x, float beta)</td></tr>
 </table>
 <hr/><h2>Define Documentation</h2>
 <a class="anchor" id="ga76b29161bd32f9c4440278a7da63bd78"></a><!-- doxytag: member="dia.h::DIA_PITCH_ALIGN_BYTE" ref="ga76b29161bd32f9c4440278a7da63bd78" args="" -->
@@ -104,6 +106,105 @@ Functions</h2></td></tr>
 </div>
 </div>
 <hr/><h2>Function Documentation</h2>
+<a class="anchor" id="gaa6ecef9a6c22b41e8277e3eb3059da55"></a><!-- doxytag: member="hdia.h::spgpuDbhdiaspmv" ref="gaa6ecef9a6c22b41e8277e3eb3059da55" args="(spgpuHandle_t handle, double *z, const double *y, double alpha, int blockRows, int blockCols, const double *dM, const int *offsets, int hackSize, const int *hackOffsets, int rows, int cols, const double *x, double beta)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void spgpuDbhdiaspmv </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__core_fun.html#ga5d4825ac610d6524df843758da392dec">spgpuHandle_t</a>&#160;</td>
+          <td class="paramname"><em>handle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>alpha</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>blockRows</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>blockCols</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *&#160;</td>
+          <td class="paramname"><em>dM</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int *&#160;</td>
+          <td class="paramname"><em>offsets</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>hackSize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int *&#160;</td>
+          <td class="paramname"><em>hackOffsets</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>rows</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cols</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>beta</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
 <a class="anchor" id="gad873eabc3b4afac4f9bac7a34e42b653"></a><!-- doxytag: member="dia.h::spgpuDdiaspmv" ref="gad873eabc3b4afac4f9bac7a34e42b653" args="(spgpuHandle_t handle, __device double *z, const __device double *y, double alpha, const __device double *dM, const __device int *offsets, int dMPitch, int rows, int cols, int diags, const __device double *x, double beta)" -->
 <div class="memitem">
 <div class="memproto">
@@ -311,6 +412,105 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a class="anchor" id="gafa337324f0f217c47a2142bb7f6dcf73"></a><!-- doxytag: member="hdia.h::spgpuSbhdiaspmv" ref="gafa337324f0f217c47a2142bb7f6dcf73" args="(spgpuHandle_t handle, float *z, const float *y, float alpha, int blockRows, int blockCols, const float *dM, const int *offsets, int hackSize, const int *hackOffsets, int rows, int cols, const float *x, float beta)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void spgpuSbhdiaspmv </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__core_fun.html#ga5d4825ac610d6524df843758da392dec">spgpuHandle_t</a>&#160;</td>
+          <td class="paramname"><em>handle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float *&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const float *&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>alpha</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>blockRows</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>blockCols</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const float *&#160;</td>
+          <td class="paramname"><em>dM</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int *&#160;</td>
+          <td class="paramname"><em>offsets</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>hackSize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int *&#160;</td>
+          <td class="paramname"><em>hackOffsets</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>rows</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cols</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const float *&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>beta</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
 
 </div>
 </div>
@@ -542,7 +742,7 @@ Functions</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Dec 16 2013 21:53:43 for spGpu library by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon May 5 2014 00:50:30 for spGpu library by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.5
 </small></address>

@@ -19,7 +19,7 @@
 #define CONCAT(A, B) PRE_CONCAT(A, B)
 
 #undef GEN_SPGPU_ELL_NAME
-#define GEN_SPGPU_ELL_NAME(x) CONCAT(CONCAT(spgpu,x),csput)
+#define GEN_SPGPU_ELL_NAME(x) CONCAT(CONCAT(spgpu,x),ellcsput)
 
 #define THREAD_BLOCK 256
 

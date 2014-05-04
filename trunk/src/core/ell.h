@@ -34,7 +34,7 @@ extern "C" {
 #define ELL_PITCH_ALIGN_BYTE 128
 
 /** 
-* \fn void spgpuSellspmv (spgpuHandle_t handle,__device float *z,const __device float *y, float alpha, const __device float* cM, const __device int* rP, int cMPitch, int rPPitch, const __device int* rS, const __device int* rIdx, int rows, const __device float *x, float beta,int baseIndex)
+* \fn void spgpuSellspmv (spgpuHandle_t handle, __device float *z, const __device float *y, float alpha, const __device float* cM, const __device int* rP, int cMPitch, int rPPitch, const __device int* rS, const __device int* rIdx, int avgNnzPerRow, int rows, const __device float *x, float beta,int baseIndex)
  * Computes single precision z = alpha*A*x + beta*y, with A stored in ELLpack Format on GPU.
  * \param handle The spgpu handle used to call this routine
  * \param z The output vector of the routine. z could be y, but not y + k (i.e. an overlapping area over y, but starting from a base index different from y).
@@ -69,7 +69,7 @@ void spgpuSellspmv (spgpuHandle_t handle,
 	int baseIndex);
 
 /** 
-* \fn void spgpuDellspmv (spgpuHandle_t handle,__device double *z,const __device double *y, double alpha, const __device double* cM, const __device int* rP, int cMPitch, int rPPitch, const __device int* rS, const __device int* rIdx, int rows, const __device double *x, double beta,int baseIndex)
+* \fn void spgpuDellspmv (spgpuHandle_t handle,__device double *z,const __device double *y, double alpha, const __device double* cM, const __device int* rP, int cMPitch, int rPPitch, const __device int* rS, const __device int* rIdx, int avgNnzPerRow, int rows, const __device double *x, double beta,int baseIndex)
  * Computes double precision z = alpha*A*x + beta*y, with A stored in ELLpack Format on GPU.
  * \param handle The spgpu handle used to call this routine
  * \param z The output vector of the routine. z could be y, but not y + k (i.e. an overlapping area over y, but starting from a base index different from y).
@@ -105,7 +105,7 @@ void spgpuDellspmv (spgpuHandle_t handle,
 
 
 /** 
-* \fn void spgpuCellspmv (spgpuHandle_t handle,__device cuFloatComplex *z,const __device cuFloatComplex *y, cuFloatComplex alpha, const __device cuFloatComplex* cM, const __device int* rP, int cMPitch, int rPPitch, const __device int* rS, const __device int* rIdx, int rows, const __device cuFloatComplex *x, cuFloatComplex beta, int baseIndex)
+* \fn void spgpuCellspmv (spgpuHandle_t handle,__device cuFloatComplex *z,const __device cuFloatComplex *y, cuFloatComplex alpha, const __device cuFloatComplex* cM, const __device int* rP, int cMPitch, int rPPitch, const __device int* rS, const __device int* rIdx, int avgNnzPerRow, int rows, const __device cuFloatComplex *x, cuFloatComplex beta, int baseIndex)
  * Computes single precision complex z = alpha*A*x + beta*y, with A stored in ELLpack Format on GPU.
  * \param handle The spgpu handle used to call this routine
  * \param z The output vector of the routine. z could be y, but not y + k (i.e. an overlapping area over y, but starting from a base index different from y).
@@ -140,7 +140,7 @@ void spgpuCellspmv (spgpuHandle_t handle,
 	int baseIndex);
 
 /** 
-* \fn void spgpuZellspmv (spgpuHandle_t handle,__device cuDoubleComplex *z,const __device cuDoubleComplex *y, cuDoubleComplex alpha, const __device cuDoubleComplex* cM, const __device int* rP, int cMPitch, int rPPitch, const __device int* rS, const __device int* rIdx, int rows, const __device cuDoubleComplex *x, cuDoubleComplex beta, int baseIndex)
+* \fn void spgpuZellspmv (spgpuHandle_t handle,__device cuDoubleComplex *z,const __device cuDoubleComplex *y, cuDoubleComplex alpha, const __device cuDoubleComplex* cM, const __device int* rP, int cMPitch, int rPPitch, const __device int* rS, const __device int* rIdx, int avgNnzPerRow, int rows, const __device cuDoubleComplex *x, cuDoubleComplex beta, int baseIndex)
  * Computes double precision complex z = alpha*A*x + beta*y, with A stored in ELLpack Format on GPU.
  * \param handle The spgpu handle used to call this routine
  * \param z The output vector of the routine. z could be y, but not y + k (i.e. an overlapping area over y, but starting from a base index different from y).
@@ -173,6 +173,139 @@ void spgpuZellspmv (spgpuHandle_t handle,
 	const __device cuDoubleComplex *x, 
 	cuDoubleComplex beta,
 	int baseIndex);
+	
+	
+/** 
+* \fn void spgpuSellcsput (spgpuHandle_t handle, float alpha, __device float *cM, __device const int* rP, int cMPitch, int rPPitch, __device const int* rS, int nnz, __device int *aI, __device int *aJ, __device float *aVal, int baseIndex)
+ * Replaces the values at coordinate (aI[i], aJ[i]) inside A with the value aVal[i] * alpha, with A stored in ELLpack Format on GPU.
+ * It assumes that indices from the same row inside rP are sorted by ascending order.
+ * Values are single precision floating point numbers.
+ * \param handle The spgpu handle used to call this routine
+ * \param alpha The alpha scalar
+ * \param cM The ELL non zero values allocation pointer
+ * \param rP The ELL column indices allocation pointer
+ * \param cMPitch the pitch (in number of elements) of the allocation containing the matrix non zero values
+ * \param rPPitch  the pitch (in number of elements) of the allocation containing the matrix non zero column indices
+ * \param rS the array containing the row sized (in non zero elements)
+ * \param nnz the number of triples (aI, aJ, aVal) to process
+ * \param aI The row coordinates vector
+ * \param aJ The column coordinates vector
+ * \param aVal The values vector
+ * \param baseIndex the ELL format base index used (i.e. 0 for C, 1 for Fortran).
+ */
+void spgpuSellcsput
+	(spgpuHandle_t handle, 
+	float alpha, 
+	__device float *cM, 
+	__device const int* rP, 
+	int cMPitch, 
+	int rPPitch, 
+	__device const int* rS,
+	int nnz, 
+	__device int *aI, 
+	__device int *aJ, 
+	__device float *aVal, 
+	int baseIndex);	
+
+/** 
+* \fn void spgpuDellcsput (spgpuHandle_t handle, double alpha, __device double *cM, __device const int* rP, int cMPitch, int rPPitch, __device const int* rS, int nnz, __device int *aI, __device int *aJ, __device double *aVal, int baseIndex)
+ * Replaces the values at coordinate (aI[i], aJ[i]) inside A with the value aVal[i] * alpha, with A stored in ELLpack Format on GPU.
+ * It assumes that indices from the same row inside rP are sorted by ascending order.
+ * Values are double precision floating point numbers.
+ * \param handle The spgpu handle used to call this routine
+ * \param alpha The alpha scalar
+ * \param cM The ELL non zero values allocation pointer
+ * \param rP The ELL column indices allocation pointer
+ * \param cMPitch the pitch (in number of elements) of the allocation containing the matrix non zero values
+ * \param rPPitch  the pitch (in number of elements) of the allocation containing the matrix non zero column indices
+ * \param rS the array containing the row sized (in non zero elements)
+ * \param nnz the number of triples (aI, aJ, aVal) to process
+ * \param aI The row coordinates vector
+ * \param aJ The column coordinates vector
+ * \param aVal The values vector
+ * \param baseIndex the ELL format base index used (i.e. 0 for C, 1 for Fortran).
+ */	
+void spgpuDellcsput
+	(spgpuHandle_t handle, 
+	double alpha, 
+	__device double *cM, 
+	__device const int* rP, 
+	int cMPitch, 
+	int rPPitch, 
+	__device const int* rS,
+	int nnz, 
+	__device int *aI, 
+	__device int *aJ, 
+	__device double *aVal, 
+	int baseIndex);	
+
+/** 
+* \fn void spgpuCellcsput (spgpuHandle_t handle, cuFloatComplex alpha, __device cuFloatComplex *cM, __device const int* rP, int cMPitch, int rPPitch, __device const int* rS, int nnz, __device int *aI, __device int *aJ, __device cuFloatComplex *aVal, int baseIndex)
+ * Replaces the values at coordinate (aI[i], aJ[i]) inside A with the value aVal[i] * alpha, with A stored in ELLpack Format on GPU.
+ * It assumes that indices from the same row inside rP are sorted by ascending order.
+ * Values are single precision floating point complex numbers.
+ * \param handle The spgpu handle used to call this routine
+ * \param alpha The alpha scalar
+ * \param cM The ELL non zero values allocation pointer
+ * \param rP The ELL column indices allocation pointer
+ * \param cMPitch the pitch (in number of elements) of the allocation containing the matrix non zero values
+ * \param rPPitch  the pitch (in number of elements) of the allocation containing the matrix non zero column indices
+ * \param rS the array containing the row sized (in non zero elements)
+ * \param nnz the number of triples (aI, aJ, aVal) to process
+ * \param aI The row coordinates vector
+ * \param aJ The column coordinates vector
+ * \param aVal The values vector
+ * \param baseIndex the ELL format base index used (i.e. 0 for C, 1 for Fortran).
+ */
+void spgpuCellcsput
+	(spgpuHandle_t handle, 
+	cuFloatComplex alpha, 
+	__device cuFloatComplex *cM, 
+	__device const int* rP, 
+	int cMPitch, 
+	int rPPitch, 
+	__device const int* rS,
+	int nnz, 
+	__device int *aI, 
+	__device int *aJ, 
+	__device cuFloatComplex *aVal, 
+	int baseIndex);	
+
+/** 
+* \fn void spgpuZellcsput (spgpuHandle_t handle, cuDoubleComplex alpha, __device cuDoubleComplex *cM, __device const int* rP, int cMPitch, int rPPitch, __device const int* rS, int nnz, __device int *aI, __device int *aJ, __device cuDoubleComplex *aVal, int baseIndex)
+ * Replaces the values at coordinate (aI[i], aJ[i]) inside A with the value aVal[i] * alpha, with A stored in ELLpack Format on GPU.
+ * It assumes that indices from the same row inside rP are sorted by ascending order.
+ * Values are double precision floating point complex numbers.
+ * \param handle The spgpu handle used to call this routine
+ * \param alpha The alpha scalar
+ * \param cM The ELL non zero values allocation pointer
+ * \param rP The ELL column indices allocation pointer
+ * \param cMPitch the pitch (in number of elements) of the allocation containing the matrix non zero values
+ * \param rPPitch  the pitch (in number of elements) of the allocation containing the matrix non zero column indices
+ * \param rS the array containing the row sized (in non zero elements)
+ * \param nnz the number of triples (aI, aJ, aVal) to process
+ * \param aI The row coordinates vector
+ * \param aJ The column coordinates vector
+ * \param aVal The values vector
+ * \param baseIndex the ELL format base index used (i.e. 0 for C, 1 for Fortran).
+ */
+void spgpuZellcsput
+	(spgpuHandle_t handle, 
+	cuDoubleComplex alpha, 
+	__device cuDoubleComplex *cM, 
+	__device const int* rP, 
+	int cMPitch, 
+	int rPPitch, 
+	__device const int* rS,
+	int nnz, 
+	__device int *aI, 
+	__device int *aJ, 
+	__device cuDoubleComplex *aVal, 
+	int baseIndex);		
+	
+	
+	
+	
 /** @}*/
 
 #ifdef __cplusplus
