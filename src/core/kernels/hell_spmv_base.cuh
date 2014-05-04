@@ -32,7 +32,6 @@ texture < TEX_FETCH_TYPE, 1, cudaReadModeElementType > X_TEX;
 #endif
 
 #define THREAD_BLOCK 128
-#define MAX_N_FOR_A_CALL (THREAD_BLOCK*65535)
 
 #if __CUDA_ARCH__ < 300
 extern __shared__ int dynShrMem[]; 
@@ -430,17 +429,19 @@ GEN_SPGPU_HELL_NAME(TYPE_SYMBOL)
 	VALUE_TYPE beta, 
 	int baseIndex)
 {
-	while (rows > MAX_N_FOR_A_CALL) //managing large vectors
-	{
-		CONCAT(_,GEN_SPGPU_HELL_NAME(TYPE_SYMBOL)) (handle, z, y, alpha, cM, rP, hackSize, hackOffsets, rS, rIdx, maxNnzPerRow, MAX_N_FOR_A_CALL, x, beta, baseIndex);
+	int maxNForACall = THREAD_BLOCK*handle->maxGridSizeX;
 
-		y = y + MAX_N_FOR_A_CALL;
-		z = z + MAX_N_FOR_A_CALL;
-		cM = cM + MAX_N_FOR_A_CALL;
-		rP = rP + MAX_N_FOR_A_CALL;
-		rS = rS + MAX_N_FOR_A_CALL;
+	while (rows > maxNForACall) //managing large vectors
+	{
+		CONCAT(_,GEN_SPGPU_HELL_NAME(TYPE_SYMBOL)) (handle, z, y, alpha, cM, rP, hackSize, hackOffsets, rS, rIdx, maxNnzPerRow, maxNForACall, x, beta, baseIndex);
+
+		y = y + maxNForACall;
+		z = z + maxNForACall;
+		cM = cM + maxNForACall;
+		rP = rP + maxNForACall;
+		rS = rS + maxNForACall;
 		
-		rows -= MAX_N_FOR_A_CALL;
+		rows -= maxNForACall;
 	}
 	
 	CONCAT(_,GEN_SPGPU_HELL_NAME(TYPE_SYMBOL)) (handle, z, y, alpha, cM, rP, hackSize, hackOffsets, rS, rIdx, maxNnzPerRow, rows, x, beta, baseIndex);
