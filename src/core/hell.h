@@ -34,7 +34,7 @@ extern "C" {
 #define HELL_PITCH_ALIGN_BYTE 128
 
 /** 
-* \fn void spgpuShellspmv (spgpuHandle_t handle,__device float *z,const __device float *y, float alpha, const __device float* cM, const __device int* rP,int hackSize,const __device int* hackOffsets, const __device int* rS,const __device int* rIdx, int rows, const __device float *x, float beta,int baseIndex)
+* \fn void spgpuShellspmv (spgpuHandle_t handle,__device float *z,const __device float *y, float alpha, const __device float* cM, const __device int* rP,int hackSize,const __device int* hackOffsets, const __device int* rS,const __device int* rIdx, int avgNnzPerRow, int rows, const __device float *x, float beta,int baseIndex)
  * Computes single precision z = alpha*A*x + beta*y, with A stored in Hacked ELLpack Format on GPU.
  * \param handle The spgpu handle used to call this routine
  * \param z The output vector of the routine. z could be y, but not y + k (i.e. an overlapping area over y, but starting from a base index different from y).
@@ -71,7 +71,7 @@ void spgpuShellspmv (spgpuHandle_t handle,
 
 
 /** 
-* \fn void spgpuDhellspmv (spgpuHandle_t handle,__device double *z,const __device double *y, double alpha, const __device double* cM, const __device int* rP,int hackSize,const __device int* hackOffsets, const __device int* rS,const __device int* rIdx, int rows, const __device double *x, double beta,int baseIndex)
+* \fn void spgpuDhellspmv (spgpuHandle_t handle,__device double *z,const __device double *y, double alpha, const __device double* cM, const __device int* rP,int hackSize,const __device int* hackOffsets, const __device int* rS,const __device int* rIdx, int avgNnzPerRow, int rows, const __device double *x, double beta,int baseIndex)
  * Computes double precision z = alpha*A*x + beta*y, with A stored in Hacked ELLpack Format on GPU.
  * \param handle The spgpu handle used to call this routine
  * \param z The output vector of the routine. z could be y, but not y + k (i.e. an overlapping area over y, but starting from a base index different from y).
@@ -107,7 +107,7 @@ void spgpuDhellspmv (spgpuHandle_t handle,
 
 
 /** 
-* \fn void spgpuChellspmv (spgpuHandle_t handle,__device cuFloatComplex *z,const __device cuFloatComplex *y, cuFloatComplex alpha, const __device cuFloatComplex* cM, const __device int* rP,int hackSize,const __device int* hackOffsets, const __device int* rS, const __device int* rIdx, int rows, const __device cuFloatComplex *x, cuFloatComplex beta, int baseIndex)
+* \fn void spgpuChellspmv (spgpuHandle_t handle,__device cuFloatComplex *z,const __device cuFloatComplex *y, cuFloatComplex alpha, const __device cuFloatComplex* cM, const __device int* rP,int hackSize,const __device int* hackOffsets, const __device int* rS, const __device int* rIdx, int avgNnzPerRow, int rows, const __device cuFloatComplex *x, cuFloatComplex beta, int baseIndex)
  * Computes single precision complex z = alpha*A*x + beta*y, with A stored in Hacked ELLpack Format on GPU.
  * \param handle The spgpu handle used to call this routine
  * \param z The output vector of the routine. z could be y, but not y + k (i.e. an overlapping area over y, but starting from a base index different from y).
@@ -144,7 +144,7 @@ void spgpuChellspmv (spgpuHandle_t handle,
 
 
 /** 
-* \fn void spgpuZhellspmv (spgpuHandle_t handle,__device cuDoubleComplex *z,const __device cuDoubleComplex *y, cuDoubleComplex alpha, const __device cuDoubleComplex* cM, const __device int* rP,int hackSize,const __device int* hackOffsets, const __device int* rS,const __device int* rIdx, int rows, const __device cuDoubleComplex *x, cuDoubleComplex beta, int baseIndex)
+* \fn void spgpuZhellspmv (spgpuHandle_t handle,__device cuDoubleComplex *z,const __device cuDoubleComplex *y, cuDoubleComplex alpha, const __device cuDoubleComplex* cM, const __device int* rP,int hackSize,const __device int* hackOffsets, const __device int* rS,const __device int* rIdx, int avgNnzPerRow, int rows, const __device cuDoubleComplex *x, cuDoubleComplex beta, int baseIndex)
  * Computes double precision complex z = alpha*A*x + beta*y, with A stored in Hacked ELLpack Format on GPU.
  * \param handle The spgpu handle used to call this routine
  * \param z The output vector of the routine. z could be y, but not y + k (i.e. an overlapping area over y, but starting from a base index different from y).

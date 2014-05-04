@@ -27,7 +27,7 @@
   
   <td style="padding-left: 0.5em;">
    <div id="projectname">spGpu library
-   &#160;<span id="projectnumber">1.1.1</span>
+   &#160;<span id="projectnumber">1.2.0</span>
    </div>
    <div id="projectbrief">spgpu</div>
   </td>
@@ -97,6 +97,12 @@ Data Fields</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">the warp size for this device  <a href="#a48fa8b9d8b693778a249dad1ed747249"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structspgpu_handle_struct.html#a262aa0793e24a51d2fa64d7517665122">maxThreadsPerBlock</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">the max threads per block count for this device  <a href="#a262aa0793e24a51d2fa64d7517665122"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structspgpu_handle_struct.html#ab8de4e6e061fa7beb273efb7cc2b6a60">maxGridSizeX</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">the max size for the X coordinate of the grid dimensions  <a href="#ab8de4e6e061fa7beb273efb7cc2b6a60"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structspgpu_handle_struct.html#af713c1efefd5f7f73297d4e5c4c7a61d">maxGridSizeY</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">the max size for the Y coordinate of the grid dimensions  <a href="#af713c1efefd5f7f73297d4e5c4c7a61d"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structspgpu_handle_struct.html#ab4571755472dbf004f1be81b8512c6a4">maxGridSizeZ</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">the max size for the Z coordinate of the grid dimensions  <a href="#ab4571755472dbf004f1be81b8512c6a4"></a><br/></td></tr>
 </table>
 <hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
 <div class="textblock"><p>this struct should be modified only internally by spgpu </p>
@@ -143,6 +149,51 @@ Data Fields</h2></td></tr>
 <div class="memdoc">
 
 <p>the device associated to this handle </p>
+
+</div>
+</div>
+<a class="anchor" id="ab8de4e6e061fa7beb273efb7cc2b6a60"></a><!-- doxytag: member="spgpuHandleStruct::maxGridSizeX" ref="ab8de4e6e061fa7beb273efb7cc2b6a60" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="structspgpu_handle_struct.html#ab8de4e6e061fa7beb273efb7cc2b6a60">maxGridSizeX</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>the max size for the X coordinate of the grid dimensions </p>
+
+</div>
+</div>
+<a class="anchor" id="af713c1efefd5f7f73297d4e5c4c7a61d"></a><!-- doxytag: member="spgpuHandleStruct::maxGridSizeY" ref="af713c1efefd5f7f73297d4e5c4c7a61d" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="structspgpu_handle_struct.html#af713c1efefd5f7f73297d4e5c4c7a61d">maxGridSizeY</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>the max size for the Y coordinate of the grid dimensions </p>
+
+</div>
+</div>
+<a class="anchor" id="ab4571755472dbf004f1be81b8512c6a4"></a><!-- doxytag: member="spgpuHandleStruct::maxGridSizeZ" ref="ab4571755472dbf004f1be81b8512c6a4" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="structspgpu_handle_struct.html#ab4571755472dbf004f1be81b8512c6a4">maxGridSizeZ</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>the max size for the Z coordinate of the grid dimensions </p>
 
 </div>
 </div>
@@ -194,7 +245,7 @@ Data Fields</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Dec 16 2013 21:53:43 for spGpu library by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon May 5 2014 00:50:30 for spGpu library by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.5
 </small></address>
