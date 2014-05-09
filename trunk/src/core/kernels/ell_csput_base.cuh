@@ -56,7 +56,7 @@ CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _krn)
 		{
 			int medium = (lower + upper) / 2;
 			
-			int currentColumn = rP[medium*rPPitch];
+			int currentColumn = rP[medium*cMPitch];
 			
 			if(currentColumn == column) 
 			{
