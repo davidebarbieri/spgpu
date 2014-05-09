@@ -24,7 +24,6 @@
 #define THREAD_BLOCK 256
 
 // Define:
-//#define USE_PREFETCHING
 //#define VALUE_TYPE
 //#define TYPE_SYMBOL
 
@@ -51,23 +50,23 @@ CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _krn)
 		
 		// Binary search
 		int lower = 0;
-		int upper = (rS[i]-1)*rPPitch;
+		int upper = (*rS - 1);
 		
 		while(lower <= upper) 
 		{
 			int medium = (lower + upper) / 2;
 			
-			int currentColumn = rP[medium];
+			int currentColumn = rP[medium*rPPitch];
 			
 			if(currentColumn == column) 
 			{
-				*cM = value;
+				cM[medium*rPPitch] = value;
 				break;
 			}
 			else if(currentColumn < column)
-			    lower = medium + rPPitch;
+			    lower = medium + 1;
 			else
-			    upper = medium - rPPitch;
+			    upper = medium - 1;
 		}
 	}
 }
