@@ -43,6 +43,9 @@ CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _krn)
 		int column = aJ[i];
 		VALUE_TYPE value = aVal[i];
 		
+		if (row < 0)
+			return;
+		
 		// Select row
 		cM += row;
 		rP += row;
