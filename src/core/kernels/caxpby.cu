@@ -28,7 +28,6 @@ extern "C"
 #include "debug.h"
 
 #define BLOCK_SIZE 512
-#define MAX_N_FOR_A_CALL (BLOCK_SIZE*65535)
 
 __global__ void spgpuCaxpby_krn(cuFloatComplex *z, int n, cuFloatComplex beta, cuFloatComplex *y, cuFloatComplex alpha, cuFloatComplex* x)
 {
@@ -71,14 +70,16 @@ void spgpuCaxpby(spgpuHandle_t handle,
 	cuFloatComplex alpha,
 	__device cuFloatComplex* x)
 {
-	while (n > MAX_N_FOR_A_CALL) //managing large vectors
+	int maxNForACall = max(handle->maxGridSizeX, BLOCK_SIZE*handle->maxGridSizeX);
+
+	while (n > maxNForACall) //managing large vectors
 	{
-		spgpuCaxpby_(handle, z, MAX_N_FOR_A_CALL, beta, y, alpha, x);
+		spgpuCaxpby_(handle, z, maxNForACall, beta, y, alpha, x);
 		
-		x = x + MAX_N_FOR_A_CALL;
-		y = y + MAX_N_FOR_A_CALL;
-		z = z + MAX_N_FOR_A_CALL;
-		n -= MAX_N_FOR_A_CALL;
+		x = x + maxNForACall;
+		y = y + maxNForACall;
+		z = z + maxNForACall;
+		n -= maxNForACall;
 	}
 	
 	spgpuCaxpby_(handle, z, n, beta, y, alpha, x);

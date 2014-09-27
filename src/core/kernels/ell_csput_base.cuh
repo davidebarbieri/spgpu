@@ -104,7 +104,7 @@ GEN_SPGPU_ELL_NAME(TYPE_SYMBOL)
 	VALUE_TYPE *aVal, 
 	int baseIndex)
 {
-	int maxNForACall = THREAD_BLOCK*handle->maxGridSizeX;
+	int maxNForACall = max(handle->maxGridSizeX, THREAD_BLOCK*handle->maxGridSizeX);
 
 	while (nnz > maxNForACall) //managing large vectors
 	{

@@ -26,7 +26,6 @@ extern "C"
 #include "debug.h"
 
 #define BLOCK_SIZE 512
-#define MAX_N_FOR_A_CALL (BLOCK_SIZE*65535)
 
 __global__ void spgpuSaxpby_krn(float *z, int n, float beta, float *y, float alpha, float* x)
 {
@@ -69,14 +68,15 @@ void spgpuSaxpby(spgpuHandle_t handle,
 	float alpha,
 	__device float* x)
 {
-	while (n > MAX_N_FOR_A_CALL) //managing large vectors
+	int maxNForACall = max(handle->maxGridSizeX, BLOCK_SIZE*handle->maxGridSizeX);
+	while (n > maxNForACall) //managing large vectors
 	{
-		spgpuSaxpby_(handle, z, MAX_N_FOR_A_CALL, beta, y, alpha, x);
+		spgpuSaxpby_(handle, z, maxNForACall, beta, y, alpha, x);
 		
-		x = x + MAX_N_FOR_A_CALL;
-		y = y + MAX_N_FOR_A_CALL;
-		z = z + MAX_N_FOR_A_CALL;
-		n -= MAX_N_FOR_A_CALL;
+		x = x + maxNForACall;
+		y = y + maxNForACall;
+		z = z + maxNForACall;
+		n -= maxNForACall;
 	}
 	
 	spgpuSaxpby_(handle, z, n, beta, y, alpha, x);
