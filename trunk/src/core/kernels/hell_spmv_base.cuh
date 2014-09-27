@@ -429,7 +429,8 @@ GEN_SPGPU_HELL_NAME(TYPE_SYMBOL)
 	VALUE_TYPE beta, 
 	int baseIndex)
 {
-	int maxNForACall = THREAD_BLOCK*handle->maxGridSizeX;
+
+	int maxNForACall = max(handle->maxGridSizeX, THREAD_BLOCK*handle->maxGridSizeX);
 
 	while (rows > maxNForACall) //managing large vectors
 	{

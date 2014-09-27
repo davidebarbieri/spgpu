@@ -23,7 +23,6 @@ extern "C"
 }
 
 #define BLOCK_SIZE 512
-#define MAX_N_FOR_A_CALL (BLOCK_SIZE*65535)
 
 // Single Precision Indexed Scatter
 __global__ void discat_gpu_kern(double* vector, int count, const int* indexes, const double* values, int firstIndex, double beta)
@@ -91,13 +90,14 @@ void spgpuDscat(spgpuHandle_t handle,
 	int xBaseIndex,
 	double beta)
 {
-	while (xNnz > MAX_N_FOR_A_CALL) //managing large vectors
+	int maxNForACall = max(handle->maxGridSizeX, BLOCK_SIZE*handle->maxGridSizeX);
+	while (xNnz > maxNForACall) //managing large vectors
 	{
-		spgpuDscat_(handle, y, MAX_N_FOR_A_CALL, xValues, xIndices, xBaseIndex, beta);
+		spgpuDscat_(handle, y, maxNForACall, xValues, xIndices, xBaseIndex, beta);
 	
-		xIndices += MAX_N_FOR_A_CALL;
-		xValues += MAX_N_FOR_A_CALL;
-		xNnz -= MAX_N_FOR_A_CALL;
+		xIndices += maxNForACall;
+		xValues += maxNForACall;
+		xNnz -= maxNForACall;
 	}
 	
 	spgpuDscat_(handle, y, xNnz, xValues, xIndices, xBaseIndex, beta);
@@ -110,13 +110,14 @@ void spgpuDgath(spgpuHandle_t handle,
 	int xBaseIndex,
 	const __device double* y)	
 {
-	while (xNnz > MAX_N_FOR_A_CALL) //managing large vectors
+	int maxNForACall = max(handle->maxGridSizeX, BLOCK_SIZE*handle->maxGridSizeX);
+	while (xNnz > maxNForACall) //managing large vectors
 	{
-		spgpuDgath_(handle, xValues, MAX_N_FOR_A_CALL, xIndices, xBaseIndex, y);
+		spgpuDgath_(handle, xValues, maxNForACall, xIndices, xBaseIndex, y);
 	
-		xIndices += MAX_N_FOR_A_CALL;
-		xValues += MAX_N_FOR_A_CALL;
-		xNnz -= MAX_N_FOR_A_CALL;
+		xIndices += maxNForACall;
+		xValues += maxNForACall;
+		xNnz -= maxNForACall;
 	}
 	
 	spgpuDgath_(handle, xValues, xNnz, xIndices, xBaseIndex, y);

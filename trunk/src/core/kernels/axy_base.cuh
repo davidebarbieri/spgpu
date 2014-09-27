@@ -71,7 +71,7 @@ GEN_SPGPU_FUNC_NAME(TYPE_SYMBOL)
 	__device VALUE_TYPE *x,
 	__device VALUE_TYPE *y)
 {
-	int maxNForACall = BLOCK_SIZE*handle->maxGridSizeX;
+	int maxNForACall = max(handle->maxGridSizeX, BLOCK_SIZE*handle->maxGridSizeX);
 	while (n > maxNForACall) //managing large vectors
 	{
 		CONCAT(GEN_SPGPU_FUNC_NAME(TYPE_SYMBOL),_)
@@ -163,7 +163,7 @@ GEN_SPGPU_FUNC_NAME_2(TYPE_SYMBOL)
 			(handle, w, n, alpha, x, y);
 	} 
 	else {
-		int maxNForACall = BLOCK_SIZE*handle->maxGridSizeX;
+		int maxNForACall = max(handle->maxGridSizeX, BLOCK_SIZE*handle->maxGridSizeX);
 		
 		while (n > maxNForACall) //managing large vectors
 		{

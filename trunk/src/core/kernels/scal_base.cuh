@@ -67,7 +67,8 @@ GEN_SPGPU_FUNC_NAME(TYPE_SYMBOL)
 	__device VALUE_TYPE *x)
 {
 
-	int maxNForACall = THREAD_BLOCK*handle->maxGridSizeX;
+	int maxNForACall = max(handle->maxGridSizeX, THREAD_BLOCK*handle->maxGridSizeX);
+
 	while (n > maxNForACall) //managing large vectors
     	{
 		CONCAT(_,GEN_SPGPU_FUNC_NAME(TYPE_SYMBOL))(handle, y, maxNForACall, alpha, x);

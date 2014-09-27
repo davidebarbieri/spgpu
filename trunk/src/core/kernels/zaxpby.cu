@@ -29,7 +29,6 @@ extern "C"
 #include "debug.h"
 
 #define BLOCK_SIZE 512
-#define MAX_N_FOR_A_CALL (BLOCK_SIZE*65535)
 
 __global__ void spgpuZaxpby_krn(cuDoubleComplex *z, int n, cuDoubleComplex beta, cuDoubleComplex *y, cuDoubleComplex alpha, cuDoubleComplex* x)
 {
@@ -72,14 +71,15 @@ void spgpuZaxpby(spgpuHandle_t handle,
 	cuDoubleComplex alpha,
 	__device cuDoubleComplex* x)
 {
-	while (n > MAX_N_FOR_A_CALL) //managing large vectors
+	int maxNForACall = max(handle->maxGridSizeX, BLOCK_SIZE*handle->maxGridSizeX);
+	while (n > maxNForACall) //managing large vectors
 	{
-		spgpuZaxpby_(handle, z, MAX_N_FOR_A_CALL, beta, y, alpha, x);
+		spgpuZaxpby_(handle, z, maxNForACall, beta, y, alpha, x);
 		
-		x = x + MAX_N_FOR_A_CALL;
-		y = y + MAX_N_FOR_A_CALL;
-		z = z + MAX_N_FOR_A_CALL;
-		n -= MAX_N_FOR_A_CALL;
+		x = x + maxNForACall;
+		y = y + maxNForACall;
+		z = z + maxNForACall;
+		n -= maxNForACall;
 	}
 	
 	spgpuZaxpby_(handle, z, n, beta, y, alpha, x);
