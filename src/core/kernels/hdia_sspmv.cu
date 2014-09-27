@@ -251,17 +251,17 @@ spgpuShdiaspmv (spgpuHandle_t handle,
     	
     	int threadCount = 128; 
 
-	int maxThreadForACall = threadCount*handle->maxGridSizeX;
+	int maxNForACall = max(handle->maxGridSizeX, threadCount*handle->maxGridSizeX);
 	
-	while (rows > maxThreadForACall) //managing large vectors
+	while (rows > maxNForACall) //managing large vectors
 	{
-		_spgpuShdiaspmv (handle, threadCount, z, y, alpha, dM, offsets, hackSize, hackOffsets, maxThreadForACall, cols, x, beta);
+		_spgpuShdiaspmv (handle, threadCount, z, y, alpha, dM, offsets, hackSize, hackOffsets, maxNForACall, cols, x, beta);
 
-		y = y + maxThreadForACall;
-		z = z + maxThreadForACall;
-		hackOffsets += maxThreadForACall/hackSize;
+		y = y + maxNForACall;
+		z = z + maxNForACall;
+		hackOffsets += maxNForACall/hackSize;
 		
-		rows -= maxThreadForACall;
+		rows -= maxNForACall;
 	}
 	
 	_spgpuShdiaspmv (handle, threadCount, z, y, alpha, dM, offsets, hackSize, hackOffsets, rows, cols, x, beta);
