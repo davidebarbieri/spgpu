@@ -27,7 +27,7 @@
   
   <td style="padding-left: 0.5em;">
    <div id="projectname">spGpu library
-   &#160;<span id="projectnumber">1.2.0</span>
+   &#160;<span id="projectnumber">1.2.1</span>
    </div>
    <div id="projectbrief">spgpu</div>
   </td>
@@ -118,6 +118,7 @@ Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__core_fun.html#ga4a47a16ad6294b67fde76e71360cb9d4">spgpuStreamCreate</a> (<a class="el" href="group__core_fun.html#ga5d4825ac610d6524df843758da392dec">spgpuHandle_t</a> pHandle, cudaStream_t *stream)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__core_fun.html#ga2e6370e0f2c4040a1fd9e7092a9e933b">spgpuStreamDestroy</a> (cudaStream_t stream)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__core_fun.html#ga7d54bf94f7e8ed4d2004235d83cff6ce">spgpuSetStream</a> (<a class="el" href="group__core_fun.html#ga5d4825ac610d6524df843758da392dec">spgpuHandle_t</a> pHandle, cudaStream_t stream)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">cudaStream_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__core_fun.html#gaea7f2e596694f5e8436a26cb86dee393">spgpuGetStream</a> (<a class="el" href="group__core_fun.html#ga5d4825ac610d6524df843758da392dec">spgpuHandle_t</a> pHandle)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__core_fun.html#gaa3a379eb5f8a632897bcdfa6f3dff19d">spgpuSizeOf</a> (<a class="el" href="group__core_fun.html#ga6403dea459dde9675081ba6a27577fc8">spgpuType_t</a> typeCode)</td></tr>
 </table>
 <hr/><h2>Define Documentation</h2>
@@ -457,6 +458,30 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="gaea7f2e596694f5e8436a26cb86dee393"></a><!-- doxytag: member="core.h::spgpuGetStream" ref="gaea7f2e596694f5e8436a26cb86dee393" args="(spgpuHandle_t pHandle)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">cudaStream_t spgpuGetStream </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__core_fun.html#ga5d4825ac610d6524df843758da392dec">spgpuHandle_t</a>&#160;</td>
+          <td class="paramname"><em>pHandle</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Get the current stream from the handle pHandle. </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">pHandle</td><td>the handle from which get the stream. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a class="anchor" id="ga7d54bf94f7e8ed4d2004235d83cff6ce"></a><!-- doxytag: member="core.h::spgpuSetStream" ref="ga7d54bf94f7e8ed4d2004235d83cff6ce" args="(spgpuHandle_t pHandle, cudaStream_t stream)" -->
 <div class="memitem">
 <div class="memproto">
@@ -593,7 +618,7 @@ Functions</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon May 5 2014 00:50:30 for spGpu library by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Oct 7 2014 23:31:15 for spGpu library by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.5
 </small></address>
