@@ -34,8 +34,6 @@ spgpuStatus_t spgpuSscat(spgpuHandle_t handle,
 	const );
 	
 
-spgpuCreateStream/spgpuDestroyStream
-
 alpha e beta passabili come riferimento (host/device o entrambi)
 
 valore di ritorno sia su host che su device
