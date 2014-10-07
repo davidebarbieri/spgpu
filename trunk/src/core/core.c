@@ -80,6 +80,12 @@ void spgpuSetStream(spgpuHandle_t pHandle, cudaStream_t stream)
 		handle->currentStream = pHandle->defaultStream;
 }
 
+cudaStream_t spgpuGetStream(spgpuHandle_t pHandle)
+{
+	SpgpuHandleStruct* handle = (SpgpuHandleStruct*)pHandle;
+	return handle->currentStream;
+}
+
 size_t spgpuSizeOf(spgpuType_t typeCode)
 {
 	switch (typeCode)
