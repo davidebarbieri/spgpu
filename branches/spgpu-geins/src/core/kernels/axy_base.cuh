@@ -116,7 +116,8 @@ CONCAT(GEN_SPGPU_FUNC_NAME_2(TYPE_SYMBOL),_kern)
 	if (id < n)
 	{
 		// Since w, x and y and z are accessed with the same offset by the same thread,
-		// and the write to z follows the x, y and z reads, x, y, z and w can share the same base address (in-place computing).
+		// and the write to z follows the x, y and z reads, x, y, z and w can share the
+		// same base address (in-place computing).
 		w[id] = CONCAT(VALUE_TYPE, _fma) (
 				alpha,
 				CONCAT(VALUE_TYPE, _mul)(x[id],y[id]), 

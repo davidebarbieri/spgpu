@@ -205,7 +205,22 @@ void spgpuSellcsput
 	__device int *aI, 
 	__device int *aJ, 
 	__device float *aVal, 
-	int baseIndex);	
+	 int baseIndex);	
+
+  void spgpuSellcsputIdx  (spgpuHandle_t handle, 
+			   float alpha, 
+			   __device float *cM, 
+			   __device const int* rP, 
+			   int cMPitch, 
+			   int rPPitch, 
+			   __device const int* rS,
+			   int nnz, 
+			   __device int *aI, 
+			   __device int *aJ, 
+			   __device float *aVal, 
+			   int baseIndex,
+			   __device int *updIdx,
+			   int cnt);	
 
 /** 
 * \fn void spgpuDellcsput (spgpuHandle_t handle, double alpha, __device double *cM, __device const int* rP, int cMPitch, int rPPitch, __device const int* rS, int nnz, __device int *aI, __device int *aJ, __device double *aVal, int baseIndex)
@@ -238,6 +253,20 @@ void spgpuDellcsput
 	__device int *aJ, 
 	__device double *aVal, 
 	int baseIndex);	
+  void spgpuDellcsputIdx  (spgpuHandle_t handle, 
+			   double alpha, 
+			   __device double *cM, 
+			   __device const int* rP, 
+			   int cMPitch, 
+			   int rPPitch, 
+			   __device const int* rS,
+			   int nnz, 
+			   __device int *aI, 
+			   __device int *aJ, 
+			   __device double *aVal, 
+			   int baseIndex,
+			   __device int *updIdx,
+			   int cnt);	
 
 /** 
 * \fn void spgpuCellcsput (spgpuHandle_t handle, cuFloatComplex alpha, __device cuFloatComplex *cM, __device const int* rP, int cMPitch, int rPPitch, __device const int* rS, int nnz, __device int *aI, __device int *aJ, __device cuFloatComplex *aVal, int baseIndex)
