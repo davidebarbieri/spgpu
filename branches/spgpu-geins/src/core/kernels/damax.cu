@@ -31,7 +31,7 @@ void spgpuDmamax(cublasHandle_t handle, double *y, int n, __device double *x, in
   int i,j;
   for (i=0; i < count; ++i)
     {
-      //fprintf(stderr," Calling cublasIdamax %d %p, %d\n",n,x,count);
+       //fprintf(stderr," Calling cublasIdamax %d %p, %d\n",n,x,count);
       cublasIdamax(handle,n,x,1,&j);
       //fprintf(stderr," Exit from  cublasIdamax %d %p\n",j,x);
       cudaError_t err = cudaMemcpy(&(y[i]), &(x[j-1]), sizeof(double), cudaMemcpyDeviceToHost);
