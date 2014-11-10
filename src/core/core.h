@@ -49,6 +49,7 @@
  
 #include "driver_types.h"
 #include "cuComplex.h"
+#include "cublas_v2.h"
  
 /** \addtogroup coreFun Core Routines
  *  @{

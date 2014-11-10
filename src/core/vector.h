@@ -350,6 +350,64 @@ void spgpuDmnrm2(spgpuHandle_t handle,
 	int count, 
 	int pitch);
 	
+
+/** 
+* \fn double spgpuDamax(spgpuHandle_t handle, int n, __device double* x)
+ * Computes the double precision infinity vector norm of x. 
+ * \param handle the spgpu handle used to call this routine
+ * \param n the vector's length
+ * \param x the input vector
+ * \return the euclidean vector norm
+ */
+void spgpuDmamax(cublasHandle_t handle, 
+	double *y, 
+	int n, 
+	__device double *x, 
+	int count, 
+	int pitch);
+	
+
+/** 
+* \fn double spgpuDasum(spgpuHandle_t handle, int n, __device double* x)
+ * Computes the double precision vector 1-norm  of x. 
+ * \param handle the spgpu handle used to call this routine
+ * \param n the vector's length
+ * \param x the input vector
+ * \return the euclidean vector norm
+ */
+void spgpuDmasum(cublasHandle_t handle, 
+	double *y, 
+	int n, 
+	__device double *x, 
+	int count, 
+	int pitch);
+
+/** 
+* \fn void spgpuDaxpby(spgpuHandle_t handle, __device double *z, int n, double beta, __device double *y, double alpha, __device double* x)
+ * Computes the double precision z = beta * y + alpha * x. z could be exactly x or y (without offset) or another vector.
+ * \param handle the spgpu handle used to call this routine
+ * \param z the resulting vector
+ * \param n the vectors' length
+ * \param beta the beta value
+ * \param y the first input vector
+ * \param alpha the alpha value
+ * \param x the second input vector
+ */
+void spgpuDgeins(spgpuHandle_t handle,
+		 int n,
+		 __device int *irl,
+		 __device double *val,
+		 int dupl,
+		 int xBaseIndex,
+		 __device double* x);
+void spgpuSgeins(spgpuHandle_t handle,
+		 int n,
+		 __device int *irl,
+		 __device float *val,
+		 int dupl,
+		 int xBaseIndex,
+		 __device float *x);
+	
 /** 
 * \fn void spgpuDaxpby(spgpuHandle_t handle, __device double *z, int n, double beta, __device double *y, double alpha, __device double* x)
  * Computes the double precision z = beta * y + alpha * x. z could be exactly x or y (without offset) or another vector.
