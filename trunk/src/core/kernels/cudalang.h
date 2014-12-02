@@ -29,3 +29,43 @@
 #define PREC_DMUL(a,b) ((a) * (b))
 
 #define ENABLE_CACHE
+
+inline __host__ __device__ double2 make_double2(double s)
+{
+	return make_double2(s, s);
+}
+
+inline __host__ __device__ double2 operator+(double2 a, double2 b)
+{
+	return make_double2(a.x + b.x, a.y + b.y);
+}
+
+inline __host__ __device__ void operator+=(double2 &a, double2 b)
+{
+	a.x += b.x; a.y += b.y;
+}
+
+inline __host__ __device__ double2 operator-(double2 a, double2 b)
+{
+	return make_double2(a.x - b.x, a.y - b.y);
+}
+
+inline __host__ __device__ void operator-=(double2 &a, double2 b)
+{
+	a.x -= b.x; a.y -= b.y;
+}
+
+inline __host__ __device__ double2 operator*(double2 a, double s)
+{
+	return make_double2(a.x * s, a.y * s);
+}
+
+inline __host__ __device__ double2 operator*(double s, double2 a)
+{
+	return make_double2(a.x * s, a.y * s);
+}
+
+inline __host__ __device__ void operator*=(double2 &a, double s)
+{
+	a.x *= s; a.y *= s;
+}

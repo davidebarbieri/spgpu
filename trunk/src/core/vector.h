@@ -271,6 +271,30 @@ void spgpuSscat(spgpuHandle_t handle,
 	const __device int *xIndices,
 	int xBaseIndex, float beta);	
 
+
+float spgpuSasum(spgpuHandle_t handle, 
+	int n, 
+	float* x);
+
+float spgpuSamax(spgpuHandle_t handle, 
+	int n, 
+	float* x);
+
+void spgpuSmasum(spgpuHandle_t handle, 
+	float* y,
+	int n, 
+	float* x,
+	int count,
+	int pitch);
+
+void spgpuSmamax(spgpuHandle_t handle, 
+	float* y,
+	int n, 
+	float* x,
+	int count,
+	int pitch);
+
+
 /** 
 * \fn void spgpuDscal(spgpuHandle_t handle, __device double *y, int n, double alpha, __device double *x)
  * Computes the Double precision y = alpha * x. y could be exactly x (without offset) or another vector.
@@ -513,6 +537,28 @@ void spgpuDscat(spgpuHandle_t handle,
 	const __device int *xIndices,
 	int xBaseIndex, double beta);
 
+double spgpuDasum(spgpuHandle_t handle, 
+	int n, 
+	double* x);
+
+double spgpuDamax(spgpuHandle_t handle, 
+	int n, 
+	double* x);
+
+void spgpuDmasum(spgpuHandle_t handle, 
+	double* y,
+	int n, 
+	double* x,
+	int count,
+	int pitch);
+
+void spgpuDmamax(spgpuHandle_t handle, 
+	double* y,
+	int n, 
+	double* x,
+	int count,
+	int pitch);
+	
 /** 
 * \fn cuFloatComplex spgpuCdot (spgpuHandle_t handle, int n, __device cuFloatComplex* a, __device cuFloatComplex* b)
  * Computes single precision complex dot product of a and b vectors.
@@ -756,6 +802,28 @@ void spgpuCscat(spgpuHandle_t handle,
 	const __device int *xIndices,
 	int xBaseIndex, cuFloatComplex beta);	
 
+float spgpuCasum(spgpuHandle_t handle, 
+	int n, 
+	cuFloatComplex* x);
+
+float spgpuCamax(spgpuHandle_t handle, 
+	int n, 
+	cuFloatComplex* x);
+
+void spgpuCmasum(spgpuHandle_t handle, 
+	float* y,
+	int n, 
+	cuFloatComplex* x,
+	int count,
+	int pitch);
+
+void spgpuCmamax(spgpuHandle_t handle, 
+	float* y,
+	int n, 
+	cuFloatComplex* x,
+	int count,
+	int pitch);
+	
 /** 
 * \fn void spgpuZscal(spgpuHandle_t handle, __device cuDoubleComplex *y, int n, cuDoubleComplex alpha, __device cuDoubleComplex *x)
  * Computes the double precision complex y = alpha * x. y could be exactly x (without offset) or another vector.
@@ -997,6 +1065,30 @@ void spgpuZscat(spgpuHandle_t handle,
 	const __device cuDoubleComplex *xValues,
 	const __device int *xIndices,
 	int xBaseIndex, cuDoubleComplex beta);	
+	
+
+double spgpuZasum(spgpuHandle_t handle, 
+	int n, 
+	cuDoubleComplex* x);
+
+double spgpuZamax(spgpuHandle_t handle, 
+	int n, 
+	cuDoubleComplex* x);
+
+void spgpuZmasum(spgpuHandle_t handle, 
+	double* y,
+	int n, 
+	cuDoubleComplex* x,
+	int count,
+	int pitch);
+
+void spgpuZmamax(spgpuHandle_t handle, 
+	double* y,
+	int n, 
+	cuDoubleComplex* x,
+	int count,
+	int pitch);	
+	
 /** @}*/
 		
 #ifdef __cplusplus
