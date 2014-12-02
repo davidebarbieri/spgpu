@@ -412,7 +412,7 @@ int main(int argc, char** argv)
 	
 	printf("Converting to CSR..\n");
 	status = cusparseXcoo2csr(cusparseHandle, rowsDev, nonZerosCount, rowsCount, csrRowPtrDev, CUSPARSE_INDEX_BASE_ZERO);
-	if (status != CUSPARSE_STATUS_SUCCESS) { printf("Conversion from COO to CSR format failed"); return 1; } 
+	if (status != CUSPARSE_STATUS_SUCCESS) { printf("Conversion from COO to CSR format failed\n"); return 1; } 
 
 	cudaDeviceSynchronize();
 	printf("Converted.\n");
@@ -445,7 +445,7 @@ int main(int argc, char** argv)
 
 	}
 	cudaDeviceSynchronize();
-	if (status != CUSPARSE_STATUS_SUCCESS) { printf("Matrix-vector multiplication failed"); return 1; } 
+	if (status != CUSPARSE_STATUS_SUCCESS) { printf("Matrix-vector multiplication failed\n"); return 1; } 
 
 
 	time = (timer.getTime() - start)/NUM_TESTS;
@@ -459,11 +459,11 @@ int main(int argc, char** argv)
 
 	printf("Converting to HYB..\n");
 #ifdef TEST_DOUBLE	
-	status= cusparseDcsr2hyb(cusparseHandle, rowsCount, rowsCount, descr, 
+	status= cusparseDcsr2hyb(cusparseHandle, rowsCount, columnsCount, descr, 
 		valuesDev, csrRowPtrDev, colsDev, hybA, 
 		0, CUSPARSE_HYB_PARTITION_AUTO);
 #else	
-	status= cusparseScsr2hyb(cusparseHandle, rowsCount, rowsCount, descr, 
+	status= cusparseScsr2hyb(cusparseHandle, rowsCount, columnsCount, descr, 
 		valuesDev, csrRowPtrDev, colsDev, hybA, 
 		0, CUSPARSE_HYB_PARTITION_AUTO);
 	
@@ -472,7 +472,7 @@ int main(int argc, char** argv)
 	cudaDeviceSynchronize();
 	printf("Converted.\n");
 	
-	if (status != CUSPARSE_STATUS_SUCCESS) { printf("Conversion from CSR to HYB format failed"); return 1; } 
+	if (status != CUSPARSE_STATUS_SUCCESS) { printf("Conversion from CSR to HYB format failed\n"); return 1; } 
 		
 	printf("Timing cuSPARSE HYB.\n");
 	start = timer.getTime();
@@ -503,18 +503,18 @@ int main(int argc, char** argv)
 
 	printf("Converting to ELL..\n");
 #ifdef TEST_DOUBLE	
-	status=cusparseDcsr2hyb(cusparseHandle, rowsCount, rowsCount, descr, 
+	status=cusparseDcsr2hyb(cusparseHandle, rowsCount, columnsCount, descr, 
 		valuesDev, csrRowPtrDev, colsDev, ellA, 
 		0, CUSPARSE_HYB_PARTITION_MAX);
 #else	
-	status=cusparseScsr2hyb(cusparseHandle, rowsCount, rowsCount, descr, 
+	status=cusparseScsr2hyb(cusparseHandle, rowsCount, columnsCount, descr, 
 		valuesDev, csrRowPtrDev, colsDev, ellA, 
 		0, CUSPARSE_HYB_PARTITION_MAX);
 	
 #endif	
 	cudaDeviceSynchronize();
 	printf("Converted.\n");
-	if (status != CUSPARSE_STATUS_SUCCESS) { printf("Conversion from CSR to ELL format failed"); return 1; } 
+	if (status != CUSPARSE_STATUS_SUCCESS) { printf("Conversion from CSR to ELL format failed\n"); return 1; } 
 
 	
 	printf("Timing cuSPARSE ELL.\n");
@@ -532,7 +532,7 @@ int main(int argc, char** argv)
 
 	}
 	cudaDeviceSynchronize();
-	if (status != CUSPARSE_STATUS_SUCCESS) { printf("Matrix-vector multiplication failed"); return 1; } 
+	if (status != CUSPARSE_STATUS_SUCCESS) { printf("Matrix-vector multiplication failed\n"); return 1; } 
 
 	time = (timer.getTime() - start)/NUM_TESTS;
 	printf("elapsed time: %f seconds\n", time);
