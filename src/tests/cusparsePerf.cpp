@@ -457,6 +457,7 @@ int main(int argc, char** argv)
 	cusparseHybMat_t hybA;
 	cusparseCreateHybMat(&hybA);
 
+	printf("Converting to HYB..\n");
 #ifdef TEST_DOUBLE	
 	status= cusparseDcsr2hyb(cusparseHandle, rowsCount, rowsCount, descr, 
 		valuesDev, csrRowPtrDev, colsDev, hybA, 
@@ -468,6 +469,9 @@ int main(int argc, char** argv)
 	
 #endif	
 
+	cudaDeviceSynchronize();
+	printf("Converted.\n");
+	
 	if (status != CUSPARSE_STATUS_SUCCESS) { printf("Conversion from CSR to HYB format failed"); return 1; } 
 		
 	printf("Timing cuSPARSE HYB.\n");
@@ -497,6 +501,7 @@ int main(int argc, char** argv)
 	cusparseHybMat_t ellA;
 	cusparseCreateHybMat(&ellA);
 
+	printf("Converting to ELL..\n");
 #ifdef TEST_DOUBLE	
 	status=cusparseDcsr2hyb(cusparseHandle, rowsCount, rowsCount, descr, 
 		valuesDev, csrRowPtrDev, colsDev, ellA, 
@@ -507,6 +512,8 @@ int main(int argc, char** argv)
 		0, CUSPARSE_HYB_PARTITION_MAX);
 	
 #endif	
+	cudaDeviceSynchronize();
+	printf("Converted.\n");
 	if (status != CUSPARSE_STATUS_SUCCESS) { printf("Conversion from CSR to ELL format failed"); return 1; } 
 
 	
