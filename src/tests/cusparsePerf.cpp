@@ -385,9 +385,11 @@ int main(int argc, char** argv)
 
 
 
-	
+	cusparseStatus_t status;
 	cusparseHandle_t cusparseHandle;
-	cusparseCreate(&cusparseHandle);
+	status = cusparseCreate(&cusparseHandle);
+	if (status != CUSPARSE_STATUS_SUCCESS) { printf("CUSPARSE Library initialization failed"); return 1; }
+
 	cusparseMatDescr_t descr=0;
 	
 	cusparseCreateMatDescr(&descr);
@@ -409,7 +411,9 @@ int main(int argc, char** argv)
 	cudaMemcpy(valuesDev, values, nonZerosCount*sizeof(testType), cudaMemcpyHostToDevice);
 	
 	printf("Converting to CSR..\n");
-	cusparseXcoo2csr(cusparseHandle, rowsDev, nonZerosCount, rowsCount, csrRowPtrDev, CUSPARSE_INDEX_BASE_ZERO);
+	status = cusparseXcoo2csr(cusparseHandle, rowsDev, nonZerosCount, rowsCount, csrRowPtrDev, CUSPARSE_INDEX_BASE_ZERO);
+	if (status != CUSPARSE_STATUS_SUCCESS) { printf("Conversion from COO to CSR format failed"); return 1; } 
+
 	cudaDeviceSynchronize();
 	printf("Converted.\n");
 	
@@ -430,17 +434,19 @@ int main(int argc, char** argv)
 	for (int i=0; i<NUM_TESTS; ++i)
 	{
 #ifdef TEST_DOUBLE
-		cusparseDcsrmv(cusparseHandle, CUSPARSE_OPERATION_NON_TRANSPOSE, 
+		status= cusparseDcsrmv(cusparseHandle, CUSPARSE_OPERATION_NON_TRANSPOSE, 
 			rowsCount, columnsCount, nonZerosCount, &alpha, descr, valuesDev, csrRowPtrDev, 
 			colsDev, devX, &beta, devY);
 #else
-		cusparseScsrmv(cusparseHandle, CUSPARSE_OPERATION_NON_TRANSPOSE, 
+		status= cusparseScsrmv(cusparseHandle, CUSPARSE_OPERATION_NON_TRANSPOSE, 
 			rowsCount, columnsCount, nonZerosCount, &alpha, descr, valuesDev, csrRowPtrDev, 
 			colsDev, devX, &beta, devY);
 #endif
 
 	}
 	cudaDeviceSynchronize();
+	if (status != CUSPARSE_STATUS_SUCCESS) { printf("Matrix-vector multiplication failed"); return 1; } 
+
 
 	time = (timer.getTime() - start)/NUM_TESTS;
 	printf("elapsed time: %f seconds\n", time);
@@ -452,21 +458,18 @@ int main(int argc, char** argv)
 	cusparseCreateHybMat(&hybA);
 
 #ifdef TEST_DOUBLE	
-	cusparseDcsr2hyb(cusparseHandle, rowsCount, rowsCount, descr, 
+	status= cusparseDcsr2hyb(cusparseHandle, rowsCount, rowsCount, descr, 
 		valuesDev, csrRowPtrDev, colsDev, hybA, 
 		0, CUSPARSE_HYB_PARTITION_AUTO);
 #else	
-	cusparseScsr2hyb(cusparseHandle, rowsCount, rowsCount, descr, 
+	status= cusparseScsr2hyb(cusparseHandle, rowsCount, rowsCount, descr, 
 		valuesDev, csrRowPtrDev, colsDev, hybA, 
 		0, CUSPARSE_HYB_PARTITION_AUTO);
 	
 #endif	
-	// ELL	
-	//cusparseDcsr2hyb(cusparseHandle, rowsCount, rowsCount, descr, 
-	//	valuesDev, csrRowPtrDev, colsDev, hybA, 
-	//	0, CUSPARSE_HYB_PARTITION_MAX);
 
-	
+	if (status != CUSPARSE_STATUS_SUCCESS) { printf("Conversion from CSR to HYB format failed"); return 1; } 
+		
 	printf("Timing cuSPARSE HYB.\n");
 	start = timer.getTime();
 
@@ -495,15 +498,16 @@ int main(int argc, char** argv)
 	cusparseCreateHybMat(&ellA);
 
 #ifdef TEST_DOUBLE	
-	cusparseDcsr2hyb(cusparseHandle, rowsCount, rowsCount, descr, 
+	status=cusparseDcsr2hyb(cusparseHandle, rowsCount, rowsCount, descr, 
 		valuesDev, csrRowPtrDev, colsDev, ellA, 
 		0, CUSPARSE_HYB_PARTITION_MAX);
 #else	
-	cusparseScsr2hyb(cusparseHandle, rowsCount, rowsCount, descr, 
+	status=cusparseScsr2hyb(cusparseHandle, rowsCount, rowsCount, descr, 
 		valuesDev, csrRowPtrDev, colsDev, ellA, 
 		0, CUSPARSE_HYB_PARTITION_MAX);
 	
 #endif	
+	if (status != CUSPARSE_STATUS_SUCCESS) { printf("Conversion from CSR to ELL format failed"); return 1; } 
 
 	
 	printf("Timing cuSPARSE ELL.\n");
@@ -512,15 +516,16 @@ int main(int argc, char** argv)
 	for (int i=0; i<NUM_TESTS; ++i)
 	{
 #ifdef TEST_DOUBLE
-		cusparseDhybmv(cusparseHandle, CUSPARSE_OPERATION_NON_TRANSPOSE, 
+		status=cusparseDhybmv(cusparseHandle, CUSPARSE_OPERATION_NON_TRANSPOSE, 
 			&alpha, descr, ellA, devX, &beta, devY);
 #else
-		cusparseShybmv(cusparseHandle, CUSPARSE_OPERATION_NON_TRANSPOSE, 
+		status=cusparseShybmv(cusparseHandle, CUSPARSE_OPERATION_NON_TRANSPOSE, 
 			&alpha, descr, ellA, devX, &beta, devY);
 #endif
 
 	}
 	cudaDeviceSynchronize();
+	if (status != CUSPARSE_STATUS_SUCCESS) { printf("Matrix-vector multiplication failed"); return 1; } 
 
 	time = (timer.getTime() - start)/NUM_TESTS;
 	printf("elapsed time: %f seconds\n", time);
