@@ -38,7 +38,7 @@
 #define ALPHA 1.0
 #define BETA 0.0
 
-#define NUM_TESTS 10000
+#define NUM_TESTS 1000
 
 #ifdef TEST_DOUBLE
 #define testType double
@@ -52,6 +52,99 @@ void printUsage()
 	printf("\tinput:\n");
 	printf("\t\tMatrix Market format file\n");
 }
+
+
+
+int *app_rows;
+int *app_cols;
+testType *app_vals;
+
+void merge(int *rows, int *cols, testType *vals, int start, int center, int end, int size) {
+	int i, j, k; 
+
+	i = start;
+	j = center+1;
+	k = 0;
+ 
+	while ((i<=center) && (j<=end)) {
+	
+		if((rows[i] < rows[j]) ||
+	 		((rows[i] == rows[j]) && cols[i] <= cols[j])) {
+			app_rows[k] = rows[i];
+			app_cols[k] = cols[i];
+			app_vals[k] = vals[i];
+			
+			++k; ++i;
+		} else {
+			app_rows[k] = rows[j];
+			app_cols[k] = cols[j];
+			app_vals[k] = vals[j];
+			
+			++k; ++j;
+		}
+	}
+ 
+	while (i<=center) 
+	{
+		app_rows[k] = rows[i];
+		app_cols[k] = cols[i];
+		app_vals[k] = vals[i];
+			
+		++k; ++i;
+	}
+ 
+	while (j<=end) 
+	{
+		app_rows[k] = rows[j];
+		app_cols[k] = cols[j];
+		app_vals[k] = vals[j];
+			
+		++k; ++j;
+	}
+ 
+	for (k=start; k<=end; k++)
+	{
+		rows[k] = app_rows[k-start];
+		cols[k] = app_cols[k-start];
+		vals[k] = app_vals[k-start];
+	}
+}
+ 
+void mergecoosort(int *rows, int *cols, testType *vals, int size) {
+	int sizetomerge=size-1;
+	size--;
+	int i;
+	int n=2;
+ 
+	app_rows = (int*)malloc(size*sizeof(int));
+	app_cols = (int*)malloc(size*sizeof(int));
+	app_vals = (testType*)malloc(size*sizeof(testType));
+
+	while (n<sizetomerge*2) {
+		for (i=0; (i+n-1)<=sizetomerge; i+=n) {
+			merge(rows,cols,vals,i,(i+i+n-1)/2,i+(n-1),sizetomerge); 
+		}
+ 
+		i--;
+		if ((sizetomerge+1)%n!=0) {
+			if (size>sizetomerge)
+				merge (rows,cols,vals,sizetomerge -((sizetomerge)%n),sizetomerge,size,size);
+			sizetomerge=sizetomerge-((sizetomerge+1)%n);}
+		n=n*2;
+	}
+ 
+	if (size>sizetomerge) 
+		merge (rows,cols,vals,0,size-(size-sizetomerge),size,size);
+		
+	free(app_rows);
+	free(app_cols);
+	free(app_vals);
+}
+
+
+
+
+
 
 int main(int argc, char** argv)
 {
@@ -121,6 +214,43 @@ int main(int argc, char** argv)
 		values = unfoldedValues;
 	}
 	 
+	// Sort COO for cusparse ////////////////////
+	
+	printf("Sorting COO for cusparse\n");
+	mergecoosort(rows, cols, values, nonZerosCount);
+	/*
+	{
+		int i,j,min;
+		int tempRow;
+		int tempCol;
+		testType tempVal;
+		 
+		for(i=0; i<nonZerosCount-1; i++)
+		{
+			min = i;
+			
+			for(j=i+1; j<nonZerosCount; j++)
+		 	{
+		 		if((rows[j] < rows[min]) ||
+		 		((rows[j] == rows[min]) && cols[j] < cols[min]))
+				     min = j;
+			}
+			
+			// Swap
+			tempRow=rows[min];
+			tempCol=cols[min];
+			tempVal=values[min];
+			rows[min]=rows[i];
+			cols[min]=cols[i];
+			values[min]=values[i];
+			rows[i]=tempRow;
+			cols[i]=tempCol;
+			values[i]=tempVal;
+		}
+	}
+	*/
+	
+	/////////////////////7
 
 	printf("Input matrix is %s:\n", input);
 	printf("rows: %i:\n", rowsCount);
@@ -370,9 +500,6 @@ int main(int argc, char** argv)
 	gflops = (((nonZerosCount*2-1)) / time)*0.000000001f;
 	printf("GFlop/s: %f\n", gflops);
 
-	cublasDestroy(cublasHandle);
-	spgpuDestroy(spgpuHandle);
-
 	cudaThreadSynchronize();
 
 	cudaError_t lastError = cudaGetLastError();
@@ -454,6 +581,15 @@ int main(int argc, char** argv)
 	gflops = (((nonZerosCount*2-1)) / time)*0.000000001f;
 	printf("GFlop/s: %f\n", gflops);
 	
+#ifdef TEST_DOUBLE	
+	dotRes = spgpuDdot(spgpuHandle, rowsCount, devY, devY);
+#else
+	dotRes = spgpuSdot(spgpuHandle, rowsCount, devY, devY);
+#endif
+	cudaDeviceSynchronize();
+
+	printf("dot res: %e\n", dotRes);
+	
 	cusparseHybMat_t hybA;
 	cusparseCreateHybMat(&hybA);
 
@@ -495,6 +631,18 @@ int main(int argc, char** argv)
 
 	gflops = (((nonZerosCount*2-1)) / time)*0.000000001f;
 	printf("GFlop/s: %f\n", gflops);
+	
+#ifdef TEST_DOUBLE	
+	dotRes = spgpuDdot(spgpuHandle, rowsCount, devY, devY);
+#else
+	dotRes = spgpuSdot(spgpuHandle, rowsCount, devY, devY);
+#endif
+	cudaDeviceSynchronize();
+
+	printf("dot res: %e\n", dotRes);
+
+
+
 	
 	cusparseDestroyHybMat(hybA);
 	
@@ -540,10 +688,23 @@ int main(int argc, char** argv)
 	gflops = (((nonZerosCount*2-1)) / time)*0.000000001f;
 	printf("GFlop/s: %f\n", gflops);
 	
+	
+#ifdef TEST_DOUBLE	
+	dotRes = spgpuDdot(spgpuHandle, rowsCount, devY, devY);
+#else
+	dotRes = spgpuSdot(spgpuHandle, rowsCount, devY, devY);
+#endif
+	cudaDeviceSynchronize();
+
+	printf("dot res: %e\n", dotRes);
+	
 	cusparseDestroyHybMat(ellA);
 	
 	cusparseDestroyMatDescr(descr); 
 	cusparseDestroy(cusparseHandle);
+
+	cublasDestroy(cublasHandle);
+	spgpuDestroy(spgpuHandle);
 	
 
 	free(ellRowLengths);
