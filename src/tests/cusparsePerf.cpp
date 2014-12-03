@@ -441,6 +441,7 @@ int main(int argc, char** argv)
 
 	cudaFree(devHellCm);
 	cudaFree(devHellRp);
+	cudaFree(devHackOffsets);
 
 	// Convert to ordered matrix!
 	printf("Converting to Ordered Ellpack..\n");
@@ -509,6 +510,85 @@ int main(int argc, char** argv)
 	printf("Error: %i (%s)\n",lastError,cudaGetErrorString(lastError));
 	}
 
+
+
+
+	///////////////////////////////////////////////////////////////////////////
+
+	free(hellValues);
+	free(hellIndices);
+	free(hackOffsets);
+
+	printf("Converting to OHELL format..\n");
+
+	computeHellAllocSize(&hellHeight, hackSize, rowsCount, oellRowLengths);
+
+	hellValues = (testType*) malloc(hackSize*hellHeight*sizeof(testType));
+	hellIndices = (int*) malloc(hackSize*hellHeight*sizeof(int));
+	hackOffsets =  (int*) malloc(((rowsCount+hackSize-1)/hackSize)*sizeof(int));
+	
+	
+	ellToHell(hellValues, hellIndices, hackOffsets, hackSize, oellValues, oellIndices,
+		ellPitch, ellPitch, oellRowLengths, rowsCount, valuesTypeCode);
+
+	printf("Conversion complete: OHELL format is %li Bytes.\n", hackSize*hellHeight*(sizeof(testType) + sizeof(int)) + ((rowsCount+hackSize-1)/hackSize)*sizeof(int) + rowsCount*sizeof(int));
+
+
+	cudaFree(devCm);
+	cudaFree(devRp);
+
+	cudaMalloc((void**)&devHellCm, hackSize*hellHeight*sizeof(testType));
+	cudaMalloc((void**)&devHellRp, hackSize*hellHeight*sizeof(int));
+	cudaMalloc((void**)&devHackOffsets, ((rowsCount+hackSize-1)/hackSize)*sizeof(int));
+
+	cudaMemcpy(devHellCm, hellValues, hackSize*hellHeight*sizeof(testType), cudaMemcpyHostToDevice);
+	cudaMemcpy(devHellRp, hellIndices, hackSize*hellHeight*sizeof(int), cudaMemcpyHostToDevice);
+	cudaMemcpy(devHackOffsets, hackOffsets, ((rowsCount+hackSize-1)/hackSize)*sizeof(int), cudaMemcpyHostToDevice);
+
+	printf("Testing OHELL format\n");
+
+#ifdef TEST_DOUBLE
+	spgpuDhellspmv (spgpuHandle, devZ, devY, ALPHA, devHellCm, devHellRp, hackSize, devHackOffsets, devRs, devRidx, ellMaxRowSize, rowsCount, devX, BETA, 0);
+	//cublasDdot(cublasHandle,rowsCount,devZ, 1, devZ, 1, &dotRes);
+	dotRes = spgpuDdot(spgpuHandle, rowsCount, devZ, devZ);
+#else
+	spgpuShellspmv (spgpuHandle, devZ, devY, (float)ALPHA, devHellCm, devHellRp, hackSize, devHackOffsets, devRs, devRidx, ellMaxRowSize, rowsCount, devX, (float)BETA, 0);
+	//cublasSdot(cublasHandle,rowsCount,devZ, 1, devZ, 1, &dotRes);
+	dotRes = spgpuSdot(spgpuHandle, rowsCount, devZ, devZ);
+#endif
+
+	
+	cudaDeviceSynchronize();
+
+	printf("dot res: %e\n", dotRes);
+
+	printf("Timing OHELL format\n");
+
+	start = timer.getTime();
+
+	for (int i=0; i<NUM_TESTS; ++i)
+	{
+#ifdef TEST_DOUBLE
+		spgpuDhellspmv (spgpuHandle, devZ, devY, ALPHA, devHellCm, devHellRp, hackSize, devHackOffsets, devRs, devRidx, ellMaxRowSize, rowsCount, devX, BETA, 0);
+#else
+		spgpuShellspmv (spgpuHandle, devZ, devY, (float)ALPHA, devHellCm, devHellRp, hackSize, devHackOffsets, devRs, devRidx, ellMaxRowSize, rowsCount, devX, (float)BETA, 0);
+#endif
+	}
+	cudaDeviceSynchronize();
+
+	time = (timer.getTime() - start)/NUM_TESTS;
+	printf("elapsed time: %f seconds\n", time);
+
+	gflops = (((nonZerosCount*2-1)) / time)*0.000000001f;
+	printf("GFlop/s: %f\n", gflops);
+
+	cudaFree(devHellCm);
+	cudaFree(devHellRp);
+	cudaFree(devHackOffsets);
+	
+	
+	
+	///////////////////////////////////////////////////////////////////////////
 
 
 
