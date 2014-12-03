@@ -115,9 +115,17 @@ get_sub_tree(subtree ${CMAKE_CURRENT_SOURCE_DIR})
 add_include_dirs(${subtree})
 add_include_dirs(${CMAKE_CURRENT_SOURCE_DIR})
 
-
-
 find_package(CUDA)
+
+# Set CUDA_cusparse_LIBRARY if not defined
+SET(CUDA_lib_directory "${CUDA_TOOLKIT_ROOT_DIR}/lib/")
+if (CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "x86_64")
+	SET(CUDA_lib_directory "${CUDA_TOOLKIT_ROOT_DIR}/lib64/")
+endif(CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "x86_64")
+	
+IF(NOT DEFINED CUDA_cusparse_LIBRARY)
+	SET(CUDA_cusparse_LIBRARY "${CUDA_lib_directory}libcusparse.so")
+ENDIF(NOT DEFINED CUDA_cusparse_LIBRARY)
 
 # include directories
 include_directories (${GLOBAL_INCLUDES})
@@ -172,6 +180,7 @@ target_link_libraries(cusparsePerf_s spgpu)
 target_link_libraries(cusparsePerf_s ${CUDA_cusparse_LIBRARY})
 target_link_libraries(cusparsePerf_d spgpu)
 target_link_libraries(cusparsePerf_d ${CUDA_cusparse_LIBRARY})
+
 
 
 
