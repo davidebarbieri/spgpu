@@ -79,6 +79,85 @@ void cooToEll(
 	free(currentPos);
 }
 
+
+
+
+void merge(int *app_dstRs, int *app_rIdx, int *dstRs, int *rIdx, int start, int center, int end, int size) {
+	int i, j, k; 
+
+	i = start;
+	j = center+1;
+	k = 0;
+ 
+	while ((i<=center) && (j<=end)) {
+	
+		if(dstRs[i] > dstRs[j]) {
+			app_dstRs[k] = dstRs[i];
+			app_rIdx[k] = rIdx[i];
+			
+			++k; ++i;
+		} else {
+			app_dstRs[k] = dstRs[j];
+			app_rIdx[k] = rIdx[j];
+			
+			++k; ++j;
+		}
+	}
+ 
+	while (i<=center) 
+	{
+		app_dstRs[k] = dstRs[i];
+		app_rIdx[k] = rIdx[i];
+			
+		++k; ++i;
+	}
+ 
+	while (j<=end) 
+	{
+		app_dstRs[k] = dstRs[j];
+		app_rIdx[k] = rIdx[j];
+			
+		++k; ++j;
+	}
+ 
+	for (k=start; k<=end; k++)
+	{
+		dstRs[k] = app_dstRs[k-start];
+		rIdx[k] = app_rIdx[k-start];
+	}
+}
+ 
+void mergesort(int *dstRs, int *rIdx, int size) {
+	int sizetomerge=size-1;
+	size--;
+	int i;
+	int n=2;
+ 
+	int* app_dstRs = (int*)malloc(size*sizeof(int));
+	int* app_rIdx = (int*)malloc(size*sizeof(int));
+
+	while (n<sizetomerge*2) {
+		for (i=0; (i+n-1)<=sizetomerge; i+=n) {
+			merge(app_dstRs, app_rIdx, dstRs, rIdx, i,(i+i+n-1)/2,i+(n-1),sizetomerge); 
+		}
+ 
+		i--;
+		if ((sizetomerge+1)%n!=0) {
+			if (size>sizetomerge)
+				merge (app_dstRs, app_rIdx, dstRs, rIdx, sizetomerge -((sizetomerge)%n),sizetomerge,size,size);
+			sizetomerge=sizetomerge-((sizetomerge+1)%n);}
+		n=n*2;
+	}
+ 
+	if (size>sizetomerge) 
+		merge (app_dstRs, app_rIdx, dstRs,rIdx,0,size-(size-sizetomerge),size,size);
+		
+	free(app_dstRs);
+	free(app_rIdx);
+}
+
+
+
 void ellToOell(
 	int *rIdx,
 	void *dstEllValues,
@@ -101,23 +180,9 @@ void ellToOell(
 		rIdx[i] = i;
 		dstRs[i] = srcRs[i];
 	}
-	// simple bubble sort..
-	for(i=1;i<rowsCount;i++) 
-	{ 
-		for(j=0;j<rowsCount-i;j++) 
-		{ 
-			if(dstRs[j] > dstRs[j+1]) 
-			{ 
-				int temp=dstRs[j]; 
-				dstRs[j]=dstRs[j+1]; 
-				dstRs[j+1]=temp; 
-
-				temp=rIdx[j]; 
-				rIdx[j]=rIdx[j+1]; 
-				rIdx[j+1]=temp; 
-			} 
-		} 
-	} 
+	// sort..
+	mergesort(dstRs, rIdx, rowsCount);
+	
 	for(i=0;i<rowsCount;i++) 
 	{ 
 		//Copy a row
