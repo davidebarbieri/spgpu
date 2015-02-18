@@ -105,7 +105,9 @@ list(APPEND SM13_SRCS "${CMAKE_CURRENT_SOURCE_DIR}/core/kernels/zscatgath.cu")
 list(APPEND SM13_SRCS "${CMAKE_CURRENT_SOURCE_DIR}/core/kernels/dgeins.cu")
 list(APPEND SM13_SRCS "${CMAKE_CURRENT_SOURCE_DIR}/core/kernels/sgeins.cu")
 list(APPEND SM13_SRCS "${CMAKE_CURRENT_SOURCE_DIR}/core/kernels/damax.cu")
+list(APPEND SM13_SRCS "${CMAKE_CURRENT_SOURCE_DIR}/core/kernels/zamax.cu")
 list(APPEND SM13_SRCS "${CMAKE_CURRENT_SOURCE_DIR}/core/kernels/dasum.cu")
+list(APPEND SM13_SRCS "${CMAKE_CURRENT_SOURCE_DIR}/core/kernels/zasum.cu")
 
 
 list (REMOVE_ITEM CUDA_SOURCES ${SM13_SRCS}) # compile just for sm13
@@ -115,9 +117,17 @@ get_sub_tree(subtree ${CMAKE_CURRENT_SOURCE_DIR})
 add_include_dirs(${subtree})
 add_include_dirs(${CMAKE_CURRENT_SOURCE_DIR})
 
-
-
 find_package(CUDA)
+
+# Set CUDA_cusparse_LIBRARY if not defined
+SET(CUDA_lib_directory "${CUDA_TOOLKIT_ROOT_DIR}/lib/")
+if (CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "x86_64")
+	SET(CUDA_lib_directory "${CUDA_TOOLKIT_ROOT_DIR}/lib64/")
+endif(CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "x86_64")
+	
+IF(NOT DEFINED CUDA_cusparse_LIBRARY)
+	SET(CUDA_cusparse_LIBRARY "${CUDA_lib_directory}libcusparse.so")
+ENDIF(NOT DEFINED CUDA_cusparse_LIBRARY)
 
 # include directories
 include_directories (${GLOBAL_INCLUDES})
@@ -145,14 +155,19 @@ add_executable(ctest ${CMAKE_CURRENT_SOURCE_DIR}/tests/ctest.c)
 add_executable(testSpVec_s ${CMAKE_CURRENT_SOURCE_DIR}/tests/testSparseVector.c)
 add_executable(testSpVec_d ${CMAKE_CURRENT_SOURCE_DIR}/tests/testSparseVector.c)
 add_executable(testDeVec_s ${CMAKE_CURRENT_SOURCE_DIR}/tests/testDenseVector.c)
+add_executable(cusparsePerf_s ${CMAKE_CURRENT_SOURCE_DIR}/tests/cusparsePerf.cpp)
+add_executable(cusparsePerf_d ${CMAKE_CURRENT_SOURCE_DIR}/tests/cusparsePerf.cpp)
 set_target_properties(hellperf_d PROPERTIES COMPILE_FLAGS -DTEST_DOUBLE)
 set_target_properties(diaPerf_d PROPERTIES COMPILE_FLAGS -DTEST_DOUBLE)
 set_target_properties(bdiaPerf_d PROPERTIES COMPILE_FLAGS -DTEST_DOUBLE)
 set_target_properties(testSpVec_d PROPERTIES COMPILE_FLAGS -DTEST_DOUBLE)
+set_target_properties(cusparsePerf_d PROPERTIES COMPILE_FLAGS -DTEST_DOUBLE)
 
 CUDA_ADD_CUBLAS_TO_TARGET(hellperf_s)
 CUDA_ADD_CUBLAS_TO_TARGET(hellperf_d)
 CUDA_ADD_CUBLAS_TO_TARGET(testDeVec_s)
+CUDA_ADD_CUBLAS_TO_TARGET(cusparsePerf_s)
+CUDA_ADD_CUBLAS_TO_TARGET(cusparsePerf_d)
 target_link_libraries(hellperf_s spgpu)
 target_link_libraries(hellperf_d spgpu)
 target_link_libraries(diaPerf_s spgpu)
@@ -163,6 +178,10 @@ target_link_libraries(ctest spgpu)
 target_link_libraries(testSpVec_s spgpu)
 target_link_libraries(testSpVec_d spgpu)
 target_link_libraries(testDeVec_s spgpu)
+target_link_libraries(cusparsePerf_s spgpu)
+target_link_libraries(cusparsePerf_s ${CUDA_cusparse_LIBRARY})
+target_link_libraries(cusparsePerf_d spgpu)
+target_link_libraries(cusparsePerf_d ${CUDA_cusparse_LIBRARY})
 
 
 

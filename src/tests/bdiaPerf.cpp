@@ -19,6 +19,7 @@
 #include <stdlib.h>
 
 #include "mmread.hpp"
+#include "mmutils.hpp"
 #include "debug.h"
 #include "timing.hpp"
 #include "cuda_runtime.h"
@@ -72,7 +73,7 @@ int main(int argc, char** argv)
 	int columnsCount;
 	int nonZerosCount;
 	bool isStoredSparse;
-	int  matrixStorage;
+	int matrixStorage;
 	int matrixType;
 
 #ifdef TEST_DOUBLE
@@ -106,6 +107,28 @@ int main(int argc, char** argv)
 	 fclose(file);
 
 	 __assert(rRes == MATRIX_READ_SUCCESS, "Error on file read");
+
+	 // Deal with the symmetric property of the matrix
+	if (matrixType == MATRIX_TYPE_SYMMETRIC)
+	{
+		int unfoldedNonZerosCount = 0;
+		getUnfoldedMmSymmetricSize(&unfoldedNonZerosCount, values, rows, cols, nonZerosCount);
+		
+		int *unfoldedRows = (int*) malloc(unfoldedNonZerosCount*sizeof(int));
+		int *unfoldedCols = (int*) malloc(unfoldedNonZerosCount*sizeof(int));
+		testType *unfoldedValues = (testType*) malloc(unfoldedNonZerosCount*sizeof(testType));
+		
+		unfoldMmSymmetricReal(unfoldedRows, unfoldedCols, unfoldedValues, rows, cols, values, nonZerosCount);
+		
+		free(rows);
+		free(cols);
+		free(values);
+		
+		nonZerosCount = unfoldedNonZerosCount;
+		rows = unfoldedRows;
+		cols = unfoldedCols;
+		values = unfoldedValues;
+	}
 
 	spgpuHandle_t spgpuHandle;
 	spgpuCreate(&spgpuHandle, 0);
@@ -164,6 +187,8 @@ int main(int argc, char** argv)
 	int *bCols = (int*) malloc(blockedNonZerosCount*sizeof(int));
 	testType *bValues = (testType*) malloc(blockedNonZerosCount*blockSize*sizeof(testType));
 
+	memset(bValues, 0, blockedNonZerosCount*blockSize*sizeof(testType));
+
 	// column-major format for blocks
 	cooToBcoo(bRows, bCols, bValues, blockRows, blockCols, rows, cols, values, nonZerosCount, valuesTypeCode);
 	
@@ -196,6 +221,8 @@ int main(int argc, char** argv)
 	
 	testType *bhdiaValues = (testType*) malloc(hackSize*allocationHeight*blockSize*sizeof(testType));
 	int *hdiaOffsets = (int*) malloc(allocationHeight*sizeof(int));
+	
+	memset(bhdiaValues, 0, hackSize*allocationHeight*blockSize*sizeof(testType));
 	
 	bcooToBhdia(
 		bhdiaValues,
