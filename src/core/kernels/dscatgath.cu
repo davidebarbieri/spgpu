@@ -32,7 +32,7 @@ __global__ void discat_gpu_kern(double* vector, int count, const int* indexes, c
 	if (id < count)
 	{	
 		int pos = indexes[id]-firstIndex;
-		if (beta != 0.0l)
+		if (beta != 0.0f)
 			vector[pos] = beta*vector[pos]+values[id];
 		else
 			vector[pos] = values[id];
