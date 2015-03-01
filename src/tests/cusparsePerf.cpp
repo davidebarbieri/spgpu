@@ -110,15 +110,15 @@ void merge(int *rows, int *cols, testType *vals, int start, int center, int end,
 	}
 }
  
-void mergecoosort(int *rows, int *cols, testType *vals, int size) {
+void mergecoosort(int *rows, int *cols, testType *vals, int size) { 
+	app_rows = (int*)malloc(size*sizeof(int));
+	app_cols = (int*)malloc(size*sizeof(int));
+	app_vals = (testType*)malloc(size*sizeof(testType));
+
 	int sizetomerge=size-1;
 	size--;
 	int i;
 	int n=2;
- 
-	app_rows = (int*)malloc(size*sizeof(int));
-	app_cols = (int*)malloc(size*sizeof(int));
-	app_vals = (testType*)malloc(size*sizeof(testType));
 
 	while (n<sizetomerge*2) {
 		for (i=0; (i+n-1)<=sizetomerge; i+=n) {
@@ -136,9 +136,11 @@ void mergecoosort(int *rows, int *cols, testType *vals, int size) {
 	if (size>sizetomerge) 
 		merge (rows,cols,vals,0,size-(size-sizetomerge),size,size);
 		
+
 	free(app_rows);
 	free(app_cols);
 	free(app_vals);
+
 }
 
 
@@ -217,14 +219,16 @@ int main(int argc, char** argv)
 	// Sort COO for cusparse ////////////////////
 	
 	printf("Sorting COO for cusparse\n");
-	mergecoosort(rows, cols, values, nonZerosCount);
-	
-
 	printf("Input matrix is %s:\n", input);
 	printf("rows: %i:\n", rowsCount);
 	printf("columns: %i\n", columnsCount);
 	printf("symmetric: %s\n", matrixType == MATRIX_TYPE_SYMMETRIC ? "true" : "false");
 	printf("non zeros: %i\n", nonZerosCount);
+
+
+	mergecoosort(rows, cols, values, nonZerosCount);
+	
+
 	
 	
 	printf("Compute on GPU..\n");
