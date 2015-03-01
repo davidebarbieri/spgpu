@@ -608,6 +608,9 @@ int main(int argc, char** argv)
 	int *colsDev;
 	testType* valuesDev;
 	
+	printf("CSR needs %li bytes\n", ((long int)(rowsCount+1) + 2l * (long int)nonZerosCount)*sizeof(int) 
+		+ (long int)nonZerosCount*sizeof(testType));
+
 	cudaMalloc((void**)&csrRowPtrDev, (rowsCount+1)*sizeof(int));
 	cudaMalloc((void**)&rowsDev, nonZerosCount*sizeof(int));
 	cudaMalloc((void**)&colsDev, nonZerosCount*sizeof(int));
