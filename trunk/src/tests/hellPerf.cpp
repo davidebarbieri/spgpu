@@ -103,6 +103,7 @@ int main(int argc, char** argv)
 	// Deal with the symmetric property of the matrix
 	if (matrixType == MATRIX_TYPE_SYMMETRIC)
 	{
+		printf("Matrix is symmetric.. doubling..\n");
 		int unfoldedNonZerosCount = 0;
 		getUnfoldedMmSymmetricSize(&unfoldedNonZerosCount, values, rows, cols, nonZerosCount);
 		
@@ -141,18 +142,21 @@ int main(int argc, char** argv)
 
 	int ellPitch = computeEllAllocPitch(rowsCount);
 
+	printf("Conversion complete: ELL format is %li Bytes.\n", (long int)ellMaxRowSize*(ellPitch*sizeof(testType) + ellPitch*sizeof(int)) + rowsCount*sizeof(int));
+	printf("Max non zeroes per row: %i\n", ellMaxRowSize);
+
 	ellValues = (testType*)malloc(ellMaxRowSize*ellPitch*sizeof(testType));
 	ellIndices = (int*)malloc(ellMaxRowSize*ellPitch*sizeof(int));
 
 	memset((void*)ellValues, 0, ellMaxRowSize*ellPitch*sizeof(testType));
 	memset((void*)ellIndices, 0, ellMaxRowSize*ellPitch*sizeof(int));
 
+	printf("Converting COO to ELL...\n");
 	cooToEll(ellValues, ellIndices, ellPitch, ellPitch, ellMaxRowSize, 0,
 		 rowsCount, nonZerosCount, rows, cols, values, 0, valuesTypeCode);
 
-	printf("Conversion complete: ELL format is %li Bytes.\n", (long int)ellMaxRowSize*(ellPitch*sizeof(testType) + ellPitch*sizeof(int)) + rowsCount*sizeof(int));
-	printf("Max non zeroes per row: %i\n", ellMaxRowSize);
 
+	printf("Conversion complete.\n");
 	printf("Compute on GPU..\n");
 	printf("Testing with alpha = %f and beta = %f\n", (float)ALPHA, (float)BETA);
 

@@ -177,7 +177,16 @@ int main(int argc, char** argv)
 
 	printf("DIA format needs %li Bytes.\n", (long int)diagsCount*(long int)diaPitch*sizeof(testType) + diagsCount*sizeof(int));
 
-	diaValues = (testType*)malloc(diagsCount*diaPitch*sizeof(testType));
+	long int diavsize = (long int)diagsCount*(long int)diaPitch*sizeof(testType);
+
+	printf("%li\n", diavsize);
+	if (diavsize > 4000000000l)
+	{
+		diaValues = 0;
+	}
+	else
+	{
+	diaValues = (testType*)malloc(diavsize);
 	
 	if (diaValues)
 	{
@@ -242,6 +251,7 @@ int main(int argc, char** argv)
 	}
 	else
 		printf("Error on DIA format allocation..\n");
+	}
 
 	printf("Converting to HDIA..\n");
 
@@ -262,7 +272,7 @@ int main(int argc, char** argv)
 		cols
 		);
 			
-	printf("HDIA format needs %li Bytes.\n", hackSize*allocationHeight*sizeof(testType) + (allocationHeight
+	printf("HDIA format needs %li Bytes.\n", (long int)hackSize*(long int)allocationHeight*sizeof(testType) + (allocationHeight
 		+ (hacksCount+1))*sizeof(int));
 	
 	testType *hdiaValues = (testType*) malloc(hackSize*allocationHeight*sizeof(testType));
@@ -343,8 +353,12 @@ int main(int argc, char** argv)
 	cudaFree(devHdiaOffsets);
 	cudaFree(devHackOffsets);
 
-	free(diaValues);
-	free(diaOffsets);
+	if (diaValues)
+	{
+		free(diaValues);
+		free(diaOffsets);
+	}
+
 	free(hackOffsets);
 	free(hdiaValues);
 	free(hdiaOffsets);
