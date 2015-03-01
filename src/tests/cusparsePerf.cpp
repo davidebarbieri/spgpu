@@ -218,39 +218,7 @@ int main(int argc, char** argv)
 	
 	printf("Sorting COO for cusparse\n");
 	mergecoosort(rows, cols, values, nonZerosCount);
-	/*
-	{
-		int i,j,min;
-		int tempRow;
-		int tempCol;
-		testType tempVal;
-		 
-		for(i=0; i<nonZerosCount-1; i++)
-		{
-			min = i;
-			
-			for(j=i+1; j<nonZerosCount; j++)
-		 	{
-		 		if((rows[j] < rows[min]) ||
-		 		((rows[j] == rows[min]) && cols[j] < cols[min]))
-				     min = j;
-			}
-			
-			// Swap
-			tempRow=rows[min];
-			tempCol=cols[min];
-			tempVal=values[min];
-			rows[min]=rows[i];
-			cols[min]=cols[i];
-			values[min]=values[i];
-			rows[i]=tempRow;
-			cols[i]=tempCol;
-			values[i]=tempVal;
-		}
-	}
-	*/
 	
-	/////////////////////7
 
 	printf("Input matrix is %s:\n", input);
 	printf("rows: %i:\n", rowsCount);
@@ -258,30 +226,7 @@ int main(int argc, char** argv)
 	printf("symmetric: %s\n", matrixType == MATRIX_TYPE_SYMMETRIC ? "true" : "false");
 	printf("non zeros: %i\n", nonZerosCount);
 	
-	printf("Converting to ELL..\n");
-
-	testType *ellValues;
-	int *ellIndices;
-	int ellMaxRowSize;
-
-	int *ellRowLengths = (int*)malloc(rowsCount*sizeof(int));
-
-	computeEllRowLenghts(ellRowLengths, &ellMaxRowSize, rowsCount, nonZerosCount, rows, 0);
-
-	int ellPitch = computeEllAllocPitch(rowsCount);
-
-	ellValues = (testType*)malloc(ellMaxRowSize*ellPitch*sizeof(testType));
-	ellIndices = (int*)malloc(ellMaxRowSize*ellPitch*sizeof(int));
-
-	memset((void*)ellValues, 0, ellMaxRowSize*ellPitch*sizeof(testType));
-	memset((void*)ellIndices, 0, ellMaxRowSize*ellPitch*sizeof(int));
-
-	cooToEll(ellValues, ellIndices, ellPitch, ellPitch, ellMaxRowSize, 0,
-		 rowsCount, nonZerosCount, rows, cols, values, 0, valuesTypeCode);
-
-	printf("Conversion complete: ELL format is %li Bytes.\n", (long int)ellMaxRowSize*(ellPitch*sizeof(testType) + ellPitch*sizeof(int)) + rowsCount*sizeof(int));
-	printf("Max non zeroes per row: %i\n", ellMaxRowSize);
-
+	
 	printf("Compute on GPU..\n");
 	printf("Testing with alpha = %f and beta = %f\n", (float)ALPHA, (float)BETA);
 
@@ -299,40 +244,22 @@ int main(int argc, char** argv)
 	}
 
 	testType *devX, *devY, *devZ;
-	testType *devCm;
-	int *devRp, *devRs, *devRidx;
-
+	
 	cudaMalloc((void**)&devX,columnsCount*sizeof(testType));
 	cudaMalloc((void**)&devY,rowsCount*sizeof(testType));
 	cudaMalloc((void**)&devZ,rowsCount*sizeof(testType));
-	cudaMalloc((void**)&devRs,rowsCount*sizeof(int));
-	cudaMalloc((void**)&devRidx,rowsCount*sizeof(int));
 
 	cudaMemcpy(devX, x, columnsCount*sizeof(testType), cudaMemcpyHostToDevice);
 	cudaMemcpy(devY, y, rowsCount*sizeof(testType), cudaMemcpyHostToDevice);
-	cudaMemcpy(devRs, ellRowLengths, rowsCount*sizeof(int), cudaMemcpyHostToDevice);
-
-	cudaMalloc((void**)&devCm, ellMaxRowSize*ellPitch*sizeof(testType));
-	cudaMalloc((void**)&devRp, ellMaxRowSize*ellPitch*sizeof(int));
-
-	cudaMemcpy(devCm, ellValues, ellMaxRowSize*ellPitch*sizeof(testType), cudaMemcpyHostToDevice);
-	cudaMemcpy(devRp, ellIndices, ellMaxRowSize*ellPitch*sizeof(int), cudaMemcpyHostToDevice);
-
-	spgpuHandle_t spgpuHandle;
+	
+		spgpuHandle_t spgpuHandle;
 	spgpuCreate(&spgpuHandle, 0);
-
 	cudaDeviceProp deviceProp;
 	cudaGetDeviceProperties(&deviceProp, 0);
 	printf("Computing on %s\n", deviceProp.name);
 	Clock timer;
 
-	printf("Testing ELL format\n");
 	
-#ifdef TEST_DOUBLE
-	spgpuDellspmv (spgpuHandle, devZ, devY, ALPHA, devCm, devRp, ellPitch, ellPitch, devRs, NULL, ellMaxRowSize, rowsCount, devX, BETA, 0);
-#else
-	spgpuSellspmv (spgpuHandle, devZ, devY, (float)ALPHA, devCm, devRp, ellPitch, ellPitch, devRs, NULL, ellMaxRowSize, rowsCount, devX, (float)BETA, 0);
-#endif
 	
 	
 	cublasHandle_t cublasHandle;
@@ -345,249 +272,7 @@ int main(int argc, char** argv)
 	testType start;
 
 	
-#ifdef TEST_DOUBLE
-	//cublasDdot(cublasHandle, rowsCount, devZ, 1, devZ, 1, &dotRes);
-	dotRes = spgpuDdot(spgpuHandle, rowsCount, devZ, devZ);
-#else
-	//cublasSdot(cublasHandle, rowsCount, devZ, 1, devZ, 1, &dotRes);
-	dotRes = spgpuSdot(spgpuHandle, rowsCount, devZ, devZ);
-#endif
-	cudaDeviceSynchronize();
 
-	printf("dot res: %e\n", dotRes);
-
-	start = timer.getTime();
-
-	for (int i=0; i<NUM_TESTS; ++i)
-	{
-#ifdef TEST_DOUBLE
-		spgpuDellspmv (spgpuHandle, devZ, devY, ALPHA, devCm, devRp, ellPitch, ellPitch, devRs, NULL, ellMaxRowSize, rowsCount, devX, BETA, 0);		
-#else
-		spgpuSellspmv (spgpuHandle, devZ, devY, (float)ALPHA, devCm, devRp, ellPitch, ellPitch, devRs, NULL, ellMaxRowSize, rowsCount, devX, (float)BETA, 0);
-#endif	
-	}
-	cudaDeviceSynchronize();
-
-	time = (timer.getTime() - start)/NUM_TESTS;
-	printf("elapsed time: %f seconds\n", time);
-
-	gflops = (((nonZerosCount*2-1)) / time)*0.000000001f;
-	printf("GFlop/s: %f\n", gflops);
-	
-	int hackSize = 32;
-	int hellHeight;
-	computeHellAllocSize(&hellHeight, hackSize, rowsCount,ellRowLengths);
-
-	testType* hellValues = (testType*) malloc(hackSize*hellHeight*sizeof(testType));
-	int* hellIndices = (int*) malloc(hackSize*hellHeight*sizeof(int));
-	int* hackOffsets =  (int*) malloc(((rowsCount+hackSize-1)/hackSize)*sizeof(int));
-
-	printf("Converting to HELL format..\n");
-	ellToHell(hellValues, hellIndices, hackOffsets, hackSize, ellValues, ellIndices,
-		ellPitch, ellPitch, ellRowLengths, rowsCount, valuesTypeCode);
-
-	printf("Conversion complete: HELL format is %li Bytes.\n", hackSize*hellHeight*(sizeof(testType) + sizeof(int)) + ((rowsCount+hackSize-1)/hackSize)*sizeof(int) + rowsCount*sizeof(int));
-
-	testType* devHellCm;
-	int* devHellRp, *devHackOffsets;
-
-	cudaFree(devCm);
-	cudaFree(devRp);
-
-	cudaMalloc((void**)&devHellCm, hackSize*hellHeight*sizeof(testType));
-	cudaMalloc((void**)&devHellRp, hackSize*hellHeight*sizeof(int));
-	cudaMalloc((void**)&devHackOffsets, ((rowsCount+hackSize-1)/hackSize)*sizeof(int));
-
-	cudaMemcpy(devHellCm, hellValues, hackSize*hellHeight*sizeof(testType), cudaMemcpyHostToDevice);
-	cudaMemcpy(devHellRp, hellIndices, hackSize*hellHeight*sizeof(int), cudaMemcpyHostToDevice);
-	cudaMemcpy(devHackOffsets, hackOffsets, ((rowsCount+hackSize-1)/hackSize)*sizeof(int), cudaMemcpyHostToDevice);
-
-	printf("Testing HELL format\n");
-
-#ifdef TEST_DOUBLE
-	spgpuDhellspmv (spgpuHandle, devZ, devY, ALPHA, devHellCm, devHellRp, hackSize, devHackOffsets, devRs, NULL, ellMaxRowSize, rowsCount, devX, BETA, 0);
-	//cublasDdot(cublasHandle,rowsCount,devZ, 1, devZ, 1, &dotRes);
-	dotRes = spgpuDdot(spgpuHandle, rowsCount, devZ, devZ);
-#else
-	spgpuShellspmv (spgpuHandle, devZ, devY, (float)ALPHA, devHellCm, devHellRp, hackSize, devHackOffsets, devRs, NULL, ellMaxRowSize, rowsCount, devX, (float)BETA, 0);
-	//cublasSdot(cublasHandle,rowsCount,devZ, 1, devZ, 1, &dotRes);
-	dotRes = spgpuSdot(spgpuHandle, rowsCount, devZ, devZ);
-#endif
-
-	
-	cudaDeviceSynchronize();
-
-	printf("dot res: %e\n", dotRes);
-
-	printf("Timing HELL format\n");
-
-	start = timer.getTime();
-
-	for (int i=0; i<NUM_TESTS; ++i)
-	{
-#ifdef TEST_DOUBLE
-		spgpuDhellspmv (spgpuHandle, devZ, devY, ALPHA, devHellCm, devHellRp, hackSize, devHackOffsets, devRs, NULL, ellMaxRowSize, rowsCount, devX, BETA, 0);
-#else
-		spgpuShellspmv (spgpuHandle, devZ, devY, (float)ALPHA, devHellCm, devHellRp, hackSize, devHackOffsets, devRs, NULL, ellMaxRowSize, rowsCount, devX, (float)BETA, 0);
-#endif
-	}
-	cudaDeviceSynchronize();
-
-	time = (timer.getTime() - start)/NUM_TESTS;
-	printf("elapsed time: %f seconds\n", time);
-
-	gflops = (((nonZerosCount*2-1)) / time)*0.000000001f;
-	printf("GFlop/s: %f\n", gflops);
-
-	cudaFree(devHellCm);
-	cudaFree(devHellRp);
-	cudaFree(devHackOffsets);
-
-	// Convert to ordered matrix!
-	printf("Converting to Ordered Ellpack..\n");
-	int *oellRowIds = (int*)malloc(rowsCount*sizeof(int));
-	int *oellRowLengths = (int*)malloc(rowsCount*sizeof(int));
-
-	testType* oellValues = (testType*)malloc(ellMaxRowSize*ellPitch*sizeof(testType));
-	int* oellIndices = (int*)malloc(ellMaxRowSize*ellPitch*sizeof(int));
-
-	memset((void*)oellValues, 0, ellMaxRowSize*ellPitch*sizeof(testType));
-	memset((void*)oellIndices, 0, ellMaxRowSize*ellPitch*sizeof(int));
-
-	ellToOell(oellRowIds, oellValues, oellIndices, oellRowLengths,
-		ellValues, ellIndices, ellRowLengths, ellPitch, ellPitch, rowsCount, valuesTypeCode);
-
-	printf("Conversion Complete!\n");
-
-	cudaMalloc((void**)&devCm, ellMaxRowSize*ellPitch*sizeof(testType));
-	cudaMalloc((void**)&devRp, ellMaxRowSize*ellPitch*sizeof(int));
-
-	cudaMemcpy(devRidx, oellRowIds, rowsCount*sizeof(int), cudaMemcpyHostToDevice);
-	cudaMemcpy(devRs, oellRowLengths, rowsCount*sizeof(int), cudaMemcpyHostToDevice);
-	cudaMemcpy(devCm, oellValues, ellMaxRowSize*ellPitch*sizeof(testType), cudaMemcpyHostToDevice);
-	cudaMemcpy(devRp, oellIndices, ellMaxRowSize*ellPitch*sizeof(int), cudaMemcpyHostToDevice);
-
-
-
-	printf("Testing OELL format\n");
-
-#ifdef TEST_DOUBLE
-	spgpuDellspmv (spgpuHandle, devZ, devY, ALPHA, devCm, devRp, ellPitch, ellPitch, devRs, devRidx, ellMaxRowSize, rowsCount, devX, BETA, 0);
-	dotRes = spgpuDdot(spgpuHandle, rowsCount, devZ, devZ);
-#else
-	spgpuSellspmv (spgpuHandle, devZ, devY, (float)ALPHA, devCm, devRp, ellPitch, ellPitch, devRs, devRidx, ellMaxRowSize, rowsCount, devX, (float)BETA, 0);
-	dotRes = spgpuSdot(spgpuHandle, rowsCount, devZ, devZ);
-#endif
-	cudaDeviceSynchronize();
-
-	printf("dot res: %e\n", dotRes);
-
-	start = timer.getTime();
-
-	for (int i=0; i<NUM_TESTS; ++i)
-	{
-#ifdef TEST_DOUBLE
-		spgpuDellspmv (spgpuHandle, devZ, devY, ALPHA, devCm, devRp, ellPitch, ellPitch, devRs, devRidx, ellMaxRowSize, rowsCount, devX, BETA, 0);
-#else
-		spgpuSellspmv (spgpuHandle, devZ, devY, (float)ALPHA, devCm, devRp, ellPitch, ellPitch, devRs, devRidx, ellMaxRowSize, rowsCount, devX, (float)BETA, 0);
-#endif
-
-	}
-	cudaDeviceSynchronize();
-
-	time = (timer.getTime() - start)/NUM_TESTS;
-	printf("elapsed time: %f seconds\n", time);
-
-	gflops = (((nonZerosCount*2-1)) / time)*0.000000001f;
-	printf("GFlop/s: %f\n", gflops);
-
-	cudaThreadSynchronize();
-
-	cudaError_t lastError = cudaGetLastError();
-	
-	if (lastError != 0)
-	{ 
-	printf("Error: %i (%s)\n",lastError,cudaGetErrorString(lastError));
-	}
-
-
-
-
-	///////////////////////////////////////////////////////////////////////////
-
-	free(hellValues);
-	free(hellIndices);
-	free(hackOffsets);
-
-	printf("Converting to OHELL format..\n");
-
-	computeHellAllocSize(&hellHeight, hackSize, rowsCount, oellRowLengths);
-
-	hellValues = (testType*) malloc(hackSize*hellHeight*sizeof(testType));
-	hellIndices = (int*) malloc(hackSize*hellHeight*sizeof(int));
-	hackOffsets =  (int*) malloc(((rowsCount+hackSize-1)/hackSize)*sizeof(int));
-	
-	
-	ellToHell(hellValues, hellIndices, hackOffsets, hackSize, oellValues, oellIndices,
-		ellPitch, ellPitch, oellRowLengths, rowsCount, valuesTypeCode);
-
-	printf("Conversion complete: OHELL format is %li Bytes.\n", hackSize*hellHeight*(sizeof(testType) + sizeof(int)) + ((rowsCount+hackSize-1)/hackSize)*sizeof(int) + rowsCount*sizeof(int));
-
-
-	cudaFree(devCm);
-	cudaFree(devRp);
-
-	cudaMalloc((void**)&devHellCm, hackSize*hellHeight*sizeof(testType));
-	cudaMalloc((void**)&devHellRp, hackSize*hellHeight*sizeof(int));
-	cudaMalloc((void**)&devHackOffsets, ((rowsCount+hackSize-1)/hackSize)*sizeof(int));
-
-	cudaMemcpy(devHellCm, hellValues, hackSize*hellHeight*sizeof(testType), cudaMemcpyHostToDevice);
-	cudaMemcpy(devHellRp, hellIndices, hackSize*hellHeight*sizeof(int), cudaMemcpyHostToDevice);
-	cudaMemcpy(devHackOffsets, hackOffsets, ((rowsCount+hackSize-1)/hackSize)*sizeof(int), cudaMemcpyHostToDevice);
-
-	printf("Testing OHELL format\n");
-
-#ifdef TEST_DOUBLE
-	spgpuDhellspmv (spgpuHandle, devZ, devY, ALPHA, devHellCm, devHellRp, hackSize, devHackOffsets, devRs, devRidx, ellMaxRowSize, rowsCount, devX, BETA, 0);
-	//cublasDdot(cublasHandle,rowsCount,devZ, 1, devZ, 1, &dotRes);
-	dotRes = spgpuDdot(spgpuHandle, rowsCount, devZ, devZ);
-#else
-	spgpuShellspmv (spgpuHandle, devZ, devY, (float)ALPHA, devHellCm, devHellRp, hackSize, devHackOffsets, devRs, devRidx, ellMaxRowSize, rowsCount, devX, (float)BETA, 0);
-	//cublasSdot(cublasHandle,rowsCount,devZ, 1, devZ, 1, &dotRes);
-	dotRes = spgpuSdot(spgpuHandle, rowsCount, devZ, devZ);
-#endif
-
-	
-	cudaDeviceSynchronize();
-
-	printf("dot res: %e\n", dotRes);
-
-	printf("Timing OHELL format\n");
-
-	start = timer.getTime();
-
-	for (int i=0; i<NUM_TESTS; ++i)
-	{
-#ifdef TEST_DOUBLE
-		spgpuDhellspmv (spgpuHandle, devZ, devY, ALPHA, devHellCm, devHellRp, hackSize, devHackOffsets, devRs, devRidx, ellMaxRowSize, rowsCount, devX, BETA, 0);
-#else
-		spgpuShellspmv (spgpuHandle, devZ, devY, (float)ALPHA, devHellCm, devHellRp, hackSize, devHackOffsets, devRs, devRidx, ellMaxRowSize, rowsCount, devX, (float)BETA, 0);
-#endif
-	}
-	cudaDeviceSynchronize();
-
-	time = (timer.getTime() - start)/NUM_TESTS;
-	printf("elapsed time: %f seconds\n", time);
-
-	gflops = (((nonZerosCount*2-1)) / time)*0.000000001f;
-	printf("GFlop/s: %f\n", gflops);
-
-	cudaFree(devHellCm);
-	cudaFree(devHellRp);
-	cudaFree(devHackOffsets);
-	
-	
-	
 	///////////////////////////////////////////////////////////////////////////
 
 
@@ -787,14 +472,9 @@ int main(int argc, char** argv)
 	cusparseDestroy(cusparseHandle);
 
 	cublasDestroy(cublasHandle);
-	spgpuDestroy(spgpuHandle);
 	
+	spgpuDestroy(spgpuHandle);
 
-	free(ellRowLengths);
-	free(ellValues);
-	free(ellIndices);
-	free(oellValues);
-	free(oellIndices);
 
 	return 0;
 }
