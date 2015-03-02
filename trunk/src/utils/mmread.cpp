@@ -85,7 +85,13 @@ void loadMmMatrixToCooReal(
 		int row;
 		int column;
 
-		fscanf(file, "%d %d %lg\n", &row, &column, &value);
+		int r = fscanf(file, "%d %d %lg\n", &row, &column, &value);
+
+		if (r < 3)
+		{
+			printf("Error, file has not %i but just %i elements.\n", nonZerosCount, i);
+			return;
+		}		
 
 		/* adjust from 1-based to 0-based */
 		--row;  

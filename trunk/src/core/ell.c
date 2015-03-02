@@ -128,14 +128,14 @@ void merge(int *app_dstRs, int *app_rIdx, int *dstRs, int *rIdx, int start, int 
 }
  
 void mergesort(int *dstRs, int *rIdx, int size) {
+	int* app_dstRs = (int*)malloc(size*sizeof(int));
+	int* app_rIdx = (int*)malloc(size*sizeof(int));
+
 	int sizetomerge=size-1;
 	size--;
 	int i;
 	int n=2;
  
-	int* app_dstRs = (int*)malloc(size*sizeof(int));
-	int* app_rIdx = (int*)malloc(size*sizeof(int));
-
 	while (n<sizetomerge*2) {
 		for (i=0; (i+n-1)<=sizetomerge; i+=n) {
 			merge(app_dstRs, app_rIdx, dstRs, rIdx, i,(i+i+n-1)/2,i+(n-1),sizetomerge); 
