@@ -283,17 +283,17 @@ CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _krn_ridx_noRs)
 	}
 	
 	if (blockDim.y == 1)
-		CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx)
+		CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx_noRs)
 			(i, yVal, outRow, z, y, alpha, cM, rP, cMPitch, rPPitch, maxNnzPerRow, rows, x, beta, baseIndex);
 	else //if (blockDim.y == 2)
 	
-		CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx_2)
+		CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx_2_noRs)
 			(i, yVal, outRow, z, y, alpha, cM, rP, cMPitch, rPPitch, maxNnzPerRow, rows, x, beta, baseIndex);
 	/*
 	else if (blockDim.y == 4)
 	
 	 
-		CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx_4)
+		CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx_4_noRs)
 			(i, yVal, outRow, z, y, alpha, cM, rP, cMPitch, rPPitch, maxNnzPerRow, rows, x, beta, baseIndex);
 			*/
 }
@@ -315,17 +315,17 @@ CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _noRs)
 	}
 	
 	if (blockDim.y == 1)
-		CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx)
+		CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx_noRs)
 			(i, yVal, i, z, y, alpha, cM, rP, cMPitch, rPPitch, maxNnzPerRow, rows, x, beta, baseIndex);
 	
 	else //if (blockDim.y == 2)
 	
-		CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx_2)
+		CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx_2_noRs)
 			(i, yVal, i, z, y, alpha, cM, rP, cMPitch, rPPitch, maxNnzPerRow, rows, x, beta, baseIndex);
 	/*
 	else if (blockDim.y == 4)
 	
-		CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx_4)
+		CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx_4_noRs)
 			(i, yVal, i, z, y, alpha, cM, rP, cMPitch, rPPitch, maxNnzPerRow, rows, x, beta, baseIndex);
 			*/
 			
@@ -336,7 +336,7 @@ __global__ void
 CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _krn_b0_noRs) 
 (VALUE_TYPE *z, const VALUE_TYPE *y, VALUE_TYPE alpha, const VALUE_TYPE* cM, const int* rP, int cMPitch, int rPPitch, int maxNnzPerRow, int rows, const VALUE_TYPE *x, int baseIndex)
 {
-	CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _)
+	CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _noRs)
 		(z, y, alpha, cM, rP, cMPitch, rPPitch, maxNnzPerRow, rows, x, CONCAT(zero_,VALUE_TYPE)(), baseIndex);
 }
 
@@ -344,6 +344,6 @@ __global__ void
 CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _krn_noRs)
 (VALUE_TYPE *z, const VALUE_TYPE *y, VALUE_TYPE alpha, const VALUE_TYPE* cM, const int* rP, int cMPitch, int rPPitch, int maxNnzPerRow, int rows, const VALUE_TYPE *x, VALUE_TYPE beta, int baseIndex)
 {
-	CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _)
+	CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _noRs)
 		(z, y, alpha, cM, rP, cMPitch, rPPitch, maxNnzPerRow, rows, x, beta, baseIndex);
 }
