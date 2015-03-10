@@ -455,10 +455,10 @@ CONCAT(_,GEN_SPGPU_ELL_NAME(TYPE_SYMBOL))
 		else
 		{
 			if (CONCAT(VALUE_TYPE, _isNotZero(beta)))
-					CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _krn) 
+					CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _krn_noRs) 
 						<<< grid, block, 0, handle->currentStream >>> (z, y, alpha, cM, rP, cMPitch, rPPitch, maxNnzPerRow, rows, x, beta, baseIndex);
 				else
-					CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _krn_b0)
+					CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _krn_b0_noRs)
 						<<< grid, block, 0, handle->currentStream >>> (z, y, alpha, cM, rP, cMPitch, rPPitch, maxNnzPerRow, rows, x, baseIndex);
 		}
 	}
