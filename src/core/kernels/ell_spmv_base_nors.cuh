@@ -43,13 +43,13 @@ CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx_4_noRs)
 			VALUE_TYPE value;
 			VALUE_TYPE fetch;
 		
-			pointer = rP[0] - baseIndex;
 			value = cM[0];
 			cM += 4*cMPitch;
-			rP += 4*rPPitch; 
 
 			if (CONCAT(VALUE_TYPE, _isNotZero(value)))
 			{
+				pointer = rP[0] - baseIndex;
+			
 #ifdef ENABLE_CACHE
 				fetch = fetchTex(pointer);
 #else
@@ -59,7 +59,7 @@ CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx_4_noRs)
 				// avoid MAD on pre-Fermi
 				zProd = CONCAT(VALUE_TYPE, _fma)(value, fetch, zProd);
 			}
-			
+			rP += 4*rPPitch;
 		}
 
 		// Reduction
@@ -130,16 +130,14 @@ CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx_2_noRs)
 			VALUE_TYPE value;
 			VALUE_TYPE fetch;
 
-			pointer = rP[0] - baseIndex;
 			value = cM[0];
 			
 			cM += cMPitch;
 			cM += cMPitch;
-			rP += rPPitch; 
-			rP += rPPitch;
 
 			if (CONCAT(VALUE_TYPE, _isNotZero(value)))
-			{
+			{		
+				pointer = rP[0] - baseIndex;
 #ifdef ENABLE_CACHE
 				fetch = fetchTex(pointer);
 #else
@@ -149,6 +147,8 @@ CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx_2_noRs)
 				// avoid MAD on pre-Fermi
 				zProd = CONCAT(VALUE_TYPE, _fma)(value, fetch, zProd);
 			}
+			rP += rPPitch; 
+			rP += rPPitch;
 		}
 
 		// Reduction
@@ -192,11 +192,6 @@ CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx_noRs)
 			int pointers1, pointers2;
 			VALUE_TYPE values1, values2;
 			VALUE_TYPE fetches1, fetches2;
-
-			pointers1 = rP[0] - baseIndex;
-			rP += rPPitch; 
-			pointers2 = rP[0] - baseIndex;
-			rP += rPPitch; 
 				
 			values1 = cM[0];
 			cM += cMPitch;
@@ -206,6 +201,8 @@ CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx_noRs)
 
 			if (CONCAT(VALUE_TYPE, _isNotZero(values1)) || CONCAT(VALUE_TYPE, _isNotZero(values2)))
 			{
+				pointers1 = rP[0] - baseIndex;
+				pointers2 = rP[rPPitch] - baseIndex;
 #ifdef ENABLE_CACHE
 				fetches1 = fetchTex(pointers1);
 				fetches2 = fetchTex(pointers2);
@@ -218,21 +215,26 @@ CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx_noRs)
 				zProd = CONCAT(VALUE_TYPE, _fma)(values1, fetches1, zProd);
 				zProd = CONCAT(VALUE_TYPE, _fma)(values2, fetches2, zProd);
 			}
+			rP += rPPitch; 
+			rP += rPPitch; 
 		}
 
 		// odd row size
 		if (maxNnzPerRow % 2)
 	    	{
-	     		int pointer = rP[0] - baseIndex;
 	      		VALUE_TYPE value = cM[0];
 			VALUE_TYPE fetch;
-	      		
+			
+			if (CONCAT(VALUE_TYPE, _isNotZero(value)))
+	      		{      		
+		     		int pointer = rP[0] - baseIndex;
 #ifdef ENABLE_CACHE
-			fetch = fetchTex (pointer);
+				fetch = fetchTex (pointer);
 #else
-			fetch = x[pointer];
+				fetch = x[pointer];
 #endif
-			zProd = CONCAT(VALUE_TYPE, _fma)(value, fetch, zProd);
+				zProd = CONCAT(VALUE_TYPE, _fma)(value, fetch, zProd);
+			}
 	   	}
 #else
 		for (int j = 0; j < maxNnzPerRow; j++)
@@ -241,18 +243,20 @@ CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx_noRs)
 			VALUE_TYPE value;
 			VALUE_TYPE fetch;
 		
-			pointer = rP[0] - baseIndex;
-			rP += rPPitch;
-
 			value = cM[0];
 			cM += cMPitch;
 
+			if (CONCAT(VALUE_TYPE, _isNotZero(value)))
+	      		{ 
+				pointer = rP[0] - baseIndex;
 #ifdef ENABLE_CACHE
-			fetch = fetchTex (pointer);
+				fetch = fetchTex (pointer);
 #else
-			fetch = x[pointer];
+				fetch = x[pointer];
 #endif
-			zProd = CONCAT(VALUE_TYPE, _fma)(value, fetch, zProd);
+				zProd = CONCAT(VALUE_TYPE, _fma)(value, fetch, zProd);
+			}
+			rP += rPPitch;
 	   	}
 #endif	   	
 
