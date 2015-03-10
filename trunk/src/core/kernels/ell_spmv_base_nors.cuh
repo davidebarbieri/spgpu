@@ -26,7 +26,7 @@ CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx_4_noRs)
 	
 	if (i < rows)
 	{
-		rS += i; rP += i; cM += i;
+		rP += i; cM += i;
 
 		int rowSizeM = maxNnzPerRow / 4;
 		
