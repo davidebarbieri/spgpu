@@ -100,8 +100,6 @@ CONCAT(GEN_SPGPU_HELL_NAME(TYPE_SYMBOL), _ridx_2)
 	
 	if (i < rows)
 	{
-		rS += i; 
-		
 		int hackId = i / hackSize;
 		int hackLaneId = i % hackSize;
 		
@@ -126,7 +124,7 @@ CONCAT(GEN_SPGPU_HELL_NAME(TYPE_SYMBOL), _ridx_2)
 		rP += hackOffset; 
 		cM += hackOffset; 
 
-		int rowSize = rS[0];
+		int rowSize = rS[i]; 
 		int rowSizeM = rowSize / 2;
 		
 		if (threadIdx.y == 0)
@@ -198,7 +196,6 @@ CONCAT(GEN_SPGPU_HELL_NAME(TYPE_SYMBOL), _ridx)
 
 	if (i < rows)
 	{
-		rS += i; 
 		
 		int hackId = i / hackSize;
 		int hackLaneId = i % hackSize;
@@ -224,7 +221,7 @@ CONCAT(GEN_SPGPU_HELL_NAME(TYPE_SYMBOL), _ridx)
 		rP += hackOffset; 
 		cM += hackOffset; 
 
-		int rowSize = rS[0];
+		int rowSize = rS[i];
 
 #ifdef USE_PREFETCHING		
 		for (int j = 0; j < rowSize / 2; j++)
@@ -423,7 +420,7 @@ GEN_SPGPU_HELL_NAME(TYPE_SYMBOL)
 	const __device int* hackOffsets, 
 	const __device int* rS,
 	const __device int* rIdx, 
-	int maxNnzPerRow,
+	int avgNnzPerRow,	
 	int rows, 
 	const VALUE_TYPE *x, 
 	VALUE_TYPE beta, 
@@ -434,7 +431,7 @@ GEN_SPGPU_HELL_NAME(TYPE_SYMBOL)
 
 	while (rows > maxNForACall) //managing large vectors
 	{
-		CONCAT(_,GEN_SPGPU_HELL_NAME(TYPE_SYMBOL)) (handle, z, y, alpha, cM, rP, hackSize, hackOffsets, rS, rIdx, maxNnzPerRow, maxNForACall, x, beta, baseIndex);
+		CONCAT(_,GEN_SPGPU_HELL_NAME(TYPE_SYMBOL)) (handle, z, y, alpha, cM, rP, hackSize, hackOffsets, rS, rIdx, avgNnzPerRow, maxNForACall, x, beta, baseIndex);
 
 		y = y + maxNForACall;
 		z = z + maxNForACall;
@@ -445,7 +442,7 @@ GEN_SPGPU_HELL_NAME(TYPE_SYMBOL)
 		rows -= maxNForACall;
 	}
 	
-	CONCAT(_,GEN_SPGPU_HELL_NAME(TYPE_SYMBOL)) (handle, z, y, alpha, cM, rP, hackSize, hackOffsets, rS, rIdx, maxNnzPerRow, rows, x, beta, baseIndex);
+	CONCAT(_,GEN_SPGPU_HELL_NAME(TYPE_SYMBOL)) (handle, z, y, alpha, cM, rP, hackSize, hackOffsets, rS, rIdx, avgNnzPerRow, rows, x, beta, baseIndex);
 	
 	cudaCheckError("CUDA error on hell_spmv");
 }

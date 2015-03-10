@@ -112,7 +112,7 @@ int main(int argc, char** argv)
 
 	printf("Testing ELL format\n");
 
-	spgpuSellspmv (spgpuHandle, devZ, devY, 2.0f, devCm, devRp, ellPitch, ellPitch, devRs, NULL, ellMaxRowSize, rowsCount, devX, -3.0f, 0);
+	spgpuSellspmv (spgpuHandle, devZ, devY, 2.0f, devCm, devRp, ellPitch, ellPitch, devRs, NULL, ellMaxRowSize, ellMaxRowSize, rowsCount, devX, -3.0f, 0);
 	
 
 	
@@ -121,7 +121,7 @@ int main(int argc, char** argv)
 
 	printf("dot res: %e\n", dotRes);
 
-	spgpuSellspmv (spgpuHandle, devZ, devY, 2.0f, devCm, devRp, ellPitch, ellPitch, devRs, NULL, ellMaxRowSize, rowsCount, devX, -3.0f, 0);
+	spgpuSellspmv (spgpuHandle, devZ, devY, 2.0f, devCm, devRp, ellPitch, ellPitch, devRs, NULL, ellMaxRowSize, ellMaxRowSize, rowsCount, devX, -3.0f, 0);
 		
 	cudaDeviceSynchronize();
 	
