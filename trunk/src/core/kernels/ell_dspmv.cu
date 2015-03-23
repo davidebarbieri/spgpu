@@ -25,7 +25,10 @@ extern "C"
 
 #include "debug.h"
 
-#undef USE_PREFETCHING
+// Use cache for scattered accesses
+//#define ENABLE_CACHE
+// Use prefetching for large avgNnz
+//#define USE_PREFETCHING
 #define VALUE_TYPE double
 #define TYPE_SYMBOL D
 #define TEX_FETCH_TYPE int2

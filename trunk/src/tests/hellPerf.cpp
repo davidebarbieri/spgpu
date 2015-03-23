@@ -139,6 +139,7 @@ int main(int argc, char** argv)
 	testType *ellValues;
 	int *ellIndices;
 	int ellMaxRowSize;
+	int ellAvgRowSize = nonZerosCount/rowsCount;
 
 	int *ellRowLengths = (int*)malloc(rowsCount*sizeof(int));
 
@@ -148,6 +149,7 @@ int main(int argc, char** argv)
 
 	printf("Conversion complete: ELL format is %li Bytes.\n", (long int)ellMaxRowSize*(ellPitch*sizeof(testType) + ellPitch*sizeof(int)) + rowsCount*sizeof(int));
 	printf("Max non zeroes per row: %i\n", ellMaxRowSize);
+	printf("Avg non zeroes per row: %i\n", ellAvgRowSize);
 
 	ellValues = (testType*)malloc(ellMaxRowSize*ellPitch*sizeof(testType));
 	ellIndices = (int*)malloc(ellMaxRowSize*ellPitch*sizeof(int));
@@ -214,9 +216,9 @@ int main(int argc, char** argv)
 	printf("Testing ELL format\n");
 	
 #ifdef TEST_DOUBLE
-	spgpuDellspmv (spgpuHandle, devZ, devY, ALPHA, devCm, devRp, ellPitch, ellPitch, devEllRs, NULL, ellMaxRowSize, ellMaxRowSize, rowsCount, devX, BETA, 0);
+	spgpuDellspmv (spgpuHandle, devZ, devY, ALPHA, devCm, devRp, ellPitch, ellPitch, devEllRs, NULL, ellAvgRowSize, ellMaxRowSize, rowsCount, devX, BETA, 0);
 #else
-	spgpuSellspmv (spgpuHandle, devZ, devY, (float)ALPHA, devCm, devRp, ellPitch, ellPitch, devEllRs, NULL, ellMaxRowSize, ellMaxRowSize, rowsCount, devX, (float)BETA, 0);
+	spgpuSellspmv (spgpuHandle, devZ, devY, (float)ALPHA, devCm, devRp, ellPitch, ellPitch, devEllRs, NULL, ellAvgRowSize, ellMaxRowSize, rowsCount, devX, (float)BETA, 0);
 #endif
 	
 	
@@ -246,9 +248,9 @@ int main(int argc, char** argv)
 	for (int i=0; i<NUM_TESTS; ++i)
 	{
 #ifdef TEST_DOUBLE
-		spgpuDellspmv (spgpuHandle, devZ, devY, ALPHA, devCm, devRp, ellPitch, ellPitch, devEllRs, NULL, ellMaxRowSize, ellMaxRowSize, rowsCount, devX, BETA, 0);		
+		spgpuDellspmv (spgpuHandle, devZ, devY, ALPHA, devCm, devRp, ellPitch, ellPitch, devEllRs, NULL, ellAvgRowSize, ellMaxRowSize, rowsCount, devX, BETA, 0);		
 #else
-		spgpuSellspmv (spgpuHandle, devZ, devY, (float)ALPHA, devCm, devRp, ellPitch, ellPitch, devEllRs, NULL, ellMaxRowSize, ellMaxRowSize, rowsCount, devX, (float)BETA, 0);
+		spgpuSellspmv (spgpuHandle, devZ, devY, (float)ALPHA, devCm, devRp, ellPitch, ellPitch, devEllRs, NULL, ellAvgRowSize, ellMaxRowSize, rowsCount, devX, (float)BETA, 0);
 #endif	
 	}
 	cudaDeviceSynchronize();
@@ -356,10 +358,10 @@ int main(int argc, char** argv)
 	printf("Testing OELL format\n");
 
 #ifdef TEST_DOUBLE
-	spgpuDellspmv (spgpuHandle, devZ, devY, ALPHA, devCm, devRp, ellPitch, ellPitch, devEllRs, devRidx, ellMaxRowSize, ellMaxRowSize, rowsCount, devX, BETA, 0);
+	spgpuDellspmv (spgpuHandle, devZ, devY, ALPHA, devCm, devRp, ellPitch, ellPitch, devEllRs, devRidx, ellAvgRowSize, ellMaxRowSize, rowsCount, devX, BETA, 0);
 	dotRes = spgpuDdot(spgpuHandle, rowsCount, devZ, devZ);
 #else
-	spgpuSellspmv (spgpuHandle, devZ, devY, (float)ALPHA, devCm, devRp, ellPitch, ellPitch, devEllRs, devRidx, ellMaxRowSize, ellMaxRowSize, rowsCount, devX, (float)BETA, 0);
+	spgpuSellspmv (spgpuHandle, devZ, devY, (float)ALPHA, devCm, devRp, ellPitch, ellPitch, devEllRs, devRidx, ellAvgRowSize, ellMaxRowSize, rowsCount, devX, (float)BETA, 0);
 	dotRes = spgpuSdot(spgpuHandle, rowsCount, devZ, devZ);
 #endif
 	cudaDeviceSynchronize();
@@ -371,9 +373,9 @@ int main(int argc, char** argv)
 	for (int i=0; i<NUM_TESTS; ++i)
 	{
 #ifdef TEST_DOUBLE
-		spgpuDellspmv (spgpuHandle, devZ, devY, ALPHA, devCm, devRp, ellPitch, ellPitch, devEllRs, devRidx, ellMaxRowSize, ellMaxRowSize, rowsCount, devX, BETA, 0);
+		spgpuDellspmv (spgpuHandle, devZ, devY, ALPHA, devCm, devRp, ellPitch, ellPitch, devEllRs, devRidx, ellAvgRowSize, ellMaxRowSize, rowsCount, devX, BETA, 0);
 #else
-		spgpuSellspmv (spgpuHandle, devZ, devY, (float)ALPHA, devCm, devRp, ellPitch, ellPitch, devEllRs, devRidx, ellMaxRowSize, ellMaxRowSize, rowsCount, devX, (float)BETA, 0);
+		spgpuSellspmv (spgpuHandle, devZ, devY, (float)ALPHA, devCm, devRp, ellPitch, ellPitch, devEllRs, devRidx, ellAvgRowSize, ellMaxRowSize, rowsCount, devX, (float)BETA, 0);
 #endif
 
 	}

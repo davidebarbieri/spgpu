@@ -26,6 +26,7 @@ extern "C"
 
 #include "debug.h"
 
+#define ENABLE_CACHE
 #define USE_PREFETCHING
 #define VALUE_TYPE cuFloatComplex
 #define TYPE_SYMBOL C

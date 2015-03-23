@@ -115,8 +115,12 @@ spgpuDhdiaspmv_ (double *z, const double *y, double alpha, const double* dM, con
 				// prefetch 3 values
 				int column1 = offsetsChunk[j] + i;
 				int column2 = offsetsChunk[j+1] + i;			
-				
+
+#ifdef ENABLE_CACHE				
 				int2 xValue1, xValue2;
+#else
+				double xValue1, xValue2;
+#endif
 				double mValue1, mValue2;
 				
 				bool inside1 = column1 >= 0 && column1 < cols;
