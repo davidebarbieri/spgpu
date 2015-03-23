@@ -3,7 +3,7 @@
 /*
  * spGPU - Sparse matrices on GPU library.
  * 
- * Copyright (C) 2010 - 2013
+ * Copyright (C) 2010 - 2015
  *     Davide Barbieri - University of Rome Tor Vergata
  *
  * This program is free software; you can redistribute it and/or
@@ -31,7 +31,7 @@
  * sh configure.sh\n
  * make
  * \section cr_sec Copyright
- * Copyright (C) 2010 - 2013\n
+ * Copyright (C) 2010 - 2015\n
  *     Davide Barbieri - University of Rome Tor Vergata\n
  *     Valeria Cardellini - University of Rome Tor Vergata\n
  *     Salvatore Filippone - University of Rome Tor Vergata
@@ -98,6 +98,9 @@ typedef struct spgpuHandleStruct {
 	int maxGridSizeY;
 	/// the max size for the Z coordinate of the grid dimensions
 	int maxGridSizeZ;
+	// compute capability
+	int capabilityMajor;
+	int capabilityMinor;
 } SpgpuHandleStruct;
 
 /// A spGPU handle represents a single CUDA device on your platform.

@@ -14,10 +14,14 @@
  * GNU General Public License for more details.
  */
 
+#define THREAD_BLOCK 128
+
+#include "ell_spmv_base_nors.cuh"
+
 __device__ void
-CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx_4_noRs)
+CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx_4)
 (int i, VALUE_TYPE yVal, int outRow,
-	VALUE_TYPE *z, const VALUE_TYPE *y, VALUE_TYPE alpha, const VALUE_TYPE* cM, const int* rP, int cMPitch, int rPPitch, int rows, int maxNnzPerRow, const VALUE_TYPE *x, VALUE_TYPE beta, int baseIndex)
+	VALUE_TYPE *z, const VALUE_TYPE *y, VALUE_TYPE alpha, const VALUE_TYPE* cM, const int* rP, int cMPitch, int rPPitch, const int* rS, int rows, const VALUE_TYPE *x, VALUE_TYPE beta, int baseIndex)
 {
 	VALUE_TYPE zProd = CONCAT(zero_,VALUE_TYPE)();
 
@@ -25,12 +29,13 @@ CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx_4_noRs)
 	
 	if (i < rows)
 	{
-		rP += i; cM += i;
+		rS += i; rP += i; cM += i;
 
-		int rowSizeM = maxNnzPerRow / 4;
+		int rowSize = rS[0];
+		int rowSizeM = rowSize / 4;
 		
 				
-		if ((maxNnzPerRow % 4) > threadIdx.y)
+		if ((rowSize % 4) > threadIdx.y)
 			++rowSizeM;
 		
 		rP += threadIdx.y*rPPitch; 
@@ -95,9 +100,9 @@ CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx_4_noRs)
 }
 
 __device__ void
-CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx_2_noRs)
+CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx_2)
 (int i, VALUE_TYPE yVal, int outRow,
-	VALUE_TYPE *z, const VALUE_TYPE *y, VALUE_TYPE alpha, const VALUE_TYPE* cM, const int* rP, int cMPitch, int rPPitch, int maxNnzPerRow, const int rows, const VALUE_TYPE *x, VALUE_TYPE beta, int baseIndex)
+	VALUE_TYPE *z, const VALUE_TYPE *y, VALUE_TYPE alpha, const VALUE_TYPE* cM, const int* rP, int cMPitch, int rPPitch, const int* rS, int rows, const VALUE_TYPE *x, VALUE_TYPE beta, int baseIndex)
 {
 	VALUE_TYPE zProd = CONCAT(zero_,VALUE_TYPE)();
 
@@ -105,13 +110,14 @@ CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx_2_noRs)
 	
 	if (i < rows)
 	{
-		rP += i; cM += i;
+		rS += i; rP += i; cM += i;
 
-		int rowSizeM = maxNnzPerRow / 2;
+		int rowSize = rS[0];
+		int rowSizeM = rowSize / 2;
 		
 		if (threadIdx.y == 0)
 		{
-			if (maxNnzPerRow % 2)
+			if (rowSize % 2)
 				++rowSizeM;
 		}
 		else
@@ -170,18 +176,20 @@ CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx_2_noRs)
 }	
 
 __device__ void
-CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx_noRs)
+CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx)
 (int i, VALUE_TYPE yVal, int outRow,
-	VALUE_TYPE *z, const VALUE_TYPE *y, VALUE_TYPE alpha, const VALUE_TYPE* cM, const int* rP, int cMPitch, int rPPitch, int maxNnzPerRow, int rows, const VALUE_TYPE *x, VALUE_TYPE beta, int baseIndex)
+	VALUE_TYPE *z, const VALUE_TYPE *y, VALUE_TYPE alpha, const VALUE_TYPE* cM, const int* rP, int cMPitch, int rPPitch, const int* rS, int rows, const VALUE_TYPE *x, VALUE_TYPE beta, int baseIndex)
 {
 	VALUE_TYPE zProd = CONCAT(zero_,VALUE_TYPE)();
 
 	if (i < rows)
 	{
-		rP += i; cM += i;
+		rS += i; rP += i; cM += i;
+
+		int rowSize = rS[0];
 
 #ifdef USE_PREFETCHING		
-		for (int j = 0; j < maxNnzPerRow / 2; j++)
+		for (int j = 0; j < rowSize / 2; j++)
 		{
 			int pointers1, pointers2;
 			VALUE_TYPE values1, values2;
@@ -212,7 +220,7 @@ CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx_noRs)
 		}
 
 		// odd row size
-		if (maxNnzPerRow % 2)
+		if (rowSize % 2)
 	    	{
 	     		int pointer = rP[0] - baseIndex;
 	      		VALUE_TYPE value = cM[0];
@@ -226,7 +234,7 @@ CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx_noRs)
 			zProd = CONCAT(VALUE_TYPE, _fma)(value, fetch, zProd);
 	   	}
 #else
-		for (int j = 0; j < maxNnzPerRow; j++)
+		for (int j = 0; j < rowSize; j++)
 		{
 			int pointer;
 			VALUE_TYPE value;
@@ -258,8 +266,8 @@ CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx_noRs)
 }
 
 __global__ void
-CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _krn_ridx_noRs)
-(VALUE_TYPE *z, const VALUE_TYPE *y, VALUE_TYPE alpha, const VALUE_TYPE* cM, const int* rP, int cMPitch, int rPPitch, const int* rIdx, int maxNnzPerRow, int rows, const VALUE_TYPE *x, VALUE_TYPE beta, int baseIndex)
+CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _krn_ridx)
+(VALUE_TYPE *z, const VALUE_TYPE *y, VALUE_TYPE alpha, const VALUE_TYPE* cM, const int* rP, int cMPitch, int rPPitch, const int* rS, const int* rIdx, int rows, const VALUE_TYPE *x, VALUE_TYPE beta, int baseIndex)
 {
 	int i = threadIdx.x + blockIdx.x * (THREAD_BLOCK);
 	
@@ -274,25 +282,25 @@ CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _krn_ridx_noRs)
 	}
 	
 	if (blockDim.y == 1)
-		CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx_noRs)
-			(i, yVal, outRow, z, y, alpha, cM, rP, cMPitch, rPPitch, maxNnzPerRow, rows, x, beta, baseIndex);
+		CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx)
+			(i, yVal, outRow, z, y, alpha, cM, rP, cMPitch, rPPitch, rS, rows, x, beta, baseIndex);
 	else //if (blockDim.y == 2)
 	
-		CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx_2_noRs)
-			(i, yVal, outRow, z, y, alpha, cM, rP, cMPitch, rPPitch, maxNnzPerRow, rows, x, beta, baseIndex);
+		CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx_2)
+			(i, yVal, outRow, z, y, alpha, cM, rP, cMPitch, rPPitch, rS, rows, x, beta, baseIndex);
 	/*
 	else if (blockDim.y == 4)
 	
 	 
-		CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx_4_noRs)
-			(i, yVal, outRow, z, y, alpha, cM, rP, cMPitch, rPPitch, maxNnzPerRow, rows, x, beta, baseIndex);
+		CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx_4)
+			(i, yVal, outRow, z, y, alpha, cM, rP, cMPitch, rPPitch, rS, rows, x, beta, baseIndex);
 			*/
 }
 
 
 __device__ void
-CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _noRs)
-(VALUE_TYPE *z, const VALUE_TYPE *y, VALUE_TYPE alpha, const VALUE_TYPE* cM, const int* rP, int cMPitch, int rPPitch, int maxNnzPerRow,  int rows, const VALUE_TYPE *x, VALUE_TYPE beta, int baseIndex)
+CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _)
+(VALUE_TYPE *z, const VALUE_TYPE *y, VALUE_TYPE alpha, const VALUE_TYPE* cM, const int* rP, int cMPitch, int rPPitch, const int* rS, int rows, const VALUE_TYPE *x, VALUE_TYPE beta, int baseIndex)
 {
 	int i = threadIdx.x + blockIdx.x * (THREAD_BLOCK);
 	
@@ -306,35 +314,96 @@ CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _noRs)
 	}
 	
 	if (blockDim.y == 1)
-		CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx_noRs)
-			(i, yVal, i, z, y, alpha, cM, rP, cMPitch, rPPitch, maxNnzPerRow, rows, x, beta, baseIndex);
+		CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx)
+			(i, yVal, i, z, y, alpha, cM, rP, cMPitch, rPPitch, rS, rows, x, beta, baseIndex);
 	
 	else //if (blockDim.y == 2)
 	
-		CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx_2_noRs)
-			(i, yVal, i, z, y, alpha, cM, rP, cMPitch, rPPitch, maxNnzPerRow, rows, x, beta, baseIndex);
+		CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx_2)
+			(i, yVal, i, z, y, alpha, cM, rP, cMPitch, rPPitch, rS, rows, x, beta, baseIndex);
 	/*
 	else if (blockDim.y == 4)
 	
-		CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx_4_noRs)
-			(i, yVal, i, z, y, alpha, cM, rP, cMPitch, rPPitch, maxNnzPerRow, rows, x, beta, baseIndex);
+		CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _ridx_4)
+			(i, yVal, i, z, y, alpha, cM, rP, cMPitch, rPPitch, rS, rows, x, beta, baseIndex);
 			*/
 			
 }
 
 // Force to recompile and optimize with llvm
 __global__ void
-CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _krn_b0_noRs) 
-(VALUE_TYPE *z, const VALUE_TYPE *y, VALUE_TYPE alpha, const VALUE_TYPE* cM, const int* rP, int cMPitch, int rPPitch, int maxNnzPerRow, int rows, const VALUE_TYPE *x, int baseIndex)
+CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _krn_b0) 
+(VALUE_TYPE *z, const VALUE_TYPE *y, VALUE_TYPE alpha, const VALUE_TYPE* cM, const int* rP, int cMPitch, int rPPitch, const int* rS, int rows, const VALUE_TYPE *x, int baseIndex)
 {
-	CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _noRs)
-		(z, y, alpha, cM, rP, cMPitch, rPPitch, maxNnzPerRow, rows, x, CONCAT(zero_,VALUE_TYPE)(), baseIndex);
+	CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _)
+		(z, y, alpha, cM, rP, cMPitch, rPPitch, rS, rows, x, CONCAT(zero_,VALUE_TYPE)(), baseIndex);
 }
 
 __global__ void
-CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _krn_noRs)
-(VALUE_TYPE *z, const VALUE_TYPE *y, VALUE_TYPE alpha, const VALUE_TYPE* cM, const int* rP, int cMPitch, int rPPitch, int maxNnzPerRow, int rows, const VALUE_TYPE *x, VALUE_TYPE beta, int baseIndex)
+CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _krn)
+(VALUE_TYPE *z, const VALUE_TYPE *y, VALUE_TYPE alpha, const VALUE_TYPE* cM, const int* rP, int cMPitch, int rPPitch, const int* rS, int rows, const VALUE_TYPE *x, VALUE_TYPE beta, int baseIndex)
 {
-	CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _noRs)
-		(z, y, alpha, cM, rP, cMPitch, rPPitch, maxNnzPerRow, rows, x, beta, baseIndex);
+	CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _)
+		(z, y, alpha, cM, rP, cMPitch, rPPitch, rS, rows, x, beta, baseIndex);
 }
+
+void
+CONCAT(_,GEN_SPGPU_ELL_NAME(TYPE_SYMBOL))
+(spgpuHandle_t handle, VALUE_TYPE* z, const VALUE_TYPE *y, VALUE_TYPE alpha, 
+	const VALUE_TYPE* cM, const int* rP, int cMPitch, int rPPitch, const int* rS,  
+	const __device int* rIdx, int avgNnzPerRow, int maxNnzPerRow, int rows, const VALUE_TYPE *x, VALUE_TYPE beta, int baseIndex)
+{
+
+	int avgThreshold;
+
+	if (handle->capabilityMajor >= 2)
+		avgThreshold = 20;
+	else
+		avgThreshold = 60;
+
+	dim3 block (THREAD_BLOCK, avgNnzPerRow >= avgThreshold ? 2 : 1);
+	
+	dim3 grid ((rows + THREAD_BLOCK - 1) / THREAD_BLOCK);
+
+#ifdef ENABLE_CACHE
+	bind_tex_x ((const TEX_FETCH_TYPE *) x);
+#endif
+
+	if (rIdx)
+	{
+		if (rS)
+			CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _krn_ridx)
+			<<< grid, block, 0, handle->currentStream >>> (z, y, alpha, cM, rP, cMPitch, rPPitch, rS, rIdx, rows, x, beta, baseIndex);
+		else
+			CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _krn_ridx_noRs)
+			<<< grid, block, 0, handle->currentStream >>> (z, y, alpha, cM, rP, cMPitch, rPPitch, rIdx, maxNnzPerRow, rows, x, beta, baseIndex);
+	}
+	else
+	{
+		if (rS)
+		{
+		
+			if (CONCAT(VALUE_TYPE, _isNotZero(beta)))
+				CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _krn) 
+					<<< grid, block, 0, handle->currentStream >>> (z, y, alpha, cM, rP, cMPitch, rPPitch, rS, rows, x, beta, baseIndex);
+			else
+				CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _krn_b0)
+					<<< grid, block, 0, handle->currentStream >>> (z, y, alpha, cM, rP, cMPitch, rPPitch, rS, rows, x, baseIndex);
+		}
+		else
+		{
+			if (CONCAT(VALUE_TYPE, _isNotZero(beta)))
+					CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _krn_noRs) 
+						<<< grid, block, 0, handle->currentStream >>> (z, y, alpha, cM, rP, cMPitch, rPPitch, maxNnzPerRow, rows, x, beta, baseIndex);
+				else
+					CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _krn_b0_noRs)
+						<<< grid, block, 0, handle->currentStream >>> (z, y, alpha, cM, rP, cMPitch, rPPitch, maxNnzPerRow, rows, x, baseIndex);
+		}
+	}
+
+#ifdef ENABLE_CACHE
+  	unbind_tex_x ((const TEX_FETCH_TYPE *) x);
+#endif
+
+}
+

@@ -83,11 +83,13 @@ __device__ static cuDoubleComplex readValue_cuDoubleComplex(int4 fetch)
 }
 #endif
 
+#ifdef ENABLE_CACHE
 __device__ static VALUE_TYPE fetchTex(int pointer)
 {
 	TEX_FETCH_TYPE fetch = tex1Dfetch (X_TEX, pointer);
 	return CONCAT(readValue_,VALUE_TYPE) (fetch);
 }
+#endif
 
 __device__ void
 CONCAT(GEN_SPGPU_HELL_NAME(TYPE_SYMBOL), _ridx_2)
@@ -373,17 +375,20 @@ CONCAT(_,GEN_SPGPU_HELL_NAME(TYPE_SYMBOL))
 	const VALUE_TYPE* cM, const int* rP, int hackSize, const int* hackOffsets, const int* rS,  
 	const __device int* rIdx, int avgNnzPerRow, int rows, const VALUE_TYPE *x, VALUE_TYPE beta, int baseIndex)
 {
-	dim3 block (THREAD_BLOCK, avgNnzPerRow >= 64 ? 2 : 1);
+	dim3 block (THREAD_BLOCK, avgNnzPerRow >= 20 ? 2 : 1);
 
 	dim3 grid ((rows + THREAD_BLOCK - 1) / THREAD_BLOCK);
 
 	int shrMemSize;
-#if __CUDA_ARCH__ < 300
-       	int warpsPerBlock = THREAD_BLOCK/handle->warpSize;
-        shrMemSize = warpsPerBlock*sizeof(int);
-#else
-       	shrMemSize = 0;
-#endif
+	if (handle->capabilityMajor < 3)
+	{
+       		int warpsPerBlock = THREAD_BLOCK/handle->warpSize;
+	        shrMemSize = warpsPerBlock*sizeof(int);
+	}
+	else
+       	{
+		shrMemSize = 0;
+	}
 
 #ifdef ENABLE_CACHE
 	bind_tex_x ((const TEX_FETCH_TYPE *) x);

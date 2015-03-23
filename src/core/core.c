@@ -38,6 +38,8 @@ spgpuStatus_t spgpuCreate(spgpuHandle_t* pHandle, int device)
 	handle->maxGridSizeX = deviceProperties.maxGridSize[0];
 	handle->maxGridSizeY = deviceProperties.maxGridSize[1];
 	handle->maxGridSizeZ = deviceProperties.maxGridSize[2];
+	handle->capabilityMajor = deviceProperties.major;
+	handle->capabilityMinor = deviceProperties.minor;
 	
 	*pHandle = handle;
 
