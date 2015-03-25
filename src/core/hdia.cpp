@@ -166,7 +166,8 @@ void computeHdiaHackOffsetsFromCoo(
 	int columnsCount,
 	int nonZerosCount,
 	const int* cooRowIndices,
-	const int* cooColsIndices
+	const int* cooColsIndices,
+	int cooBaseIndex
 	)
 {	
 
@@ -183,7 +184,7 @@ void computeHdiaHackOffsetsFromCoo(
 		int rowIdx = cooRowIndices[i];
 			
 		// It is inside current hack
-		int h = rowIdx/hackSize;
+		int h = (rowIdx-cooBaseIndex)/hackSize;
 		rowsPerHack[h].push_back(i);
 	}
 			
@@ -206,7 +207,7 @@ void computeHdiaHackOffsetsFromCoo(
 			i = hackRows->at(j);
 			int rowIdx = cooRowIndices[i];
 			int colIdx = cooColsIndices[i];
-			int diagId = colIdx - (rowIdx % hackSize);
+			int diagId = (colIdx-cooBaseIndex) - ((rowIdx-cooBaseIndex) % hackSize);
 			int diagPos = hackSize - 1 + diagId;
 		
 			std::map<int,int>::iterator it = diagIdsToPos.find(diagPos);
@@ -237,6 +238,7 @@ void cooToHdia_size(
 	const int* cooRowIndices,
 	const int* cooColsIndices,
 	const void* cooValues,
+	int cooBaseIndex,
 	size_t elementSize
 	)
 {	
@@ -252,7 +254,7 @@ void cooToHdia_size(
 		int rowIdx = cooRowIndices[i];
 			
 		// It is inside current hack
-		int h = rowIdx/hackSize;
+		int h = (rowIdx-cooBaseIndex)/hackSize;
 		rowsPerHack[h].push_back(i);
 	}
 		
@@ -275,7 +277,7 @@ void cooToHdia_size(
 			int rowIdx = cooRowIndices[i];
 			int colIdx = cooColsIndices[i];
 			int globalDiagId = colIdx - rowIdx;
-			int diagId = colIdx - (rowIdx % hackSize);
+			int diagId = (colIdx - cooBaseIndex) - ((rowIdx - cooBaseIndex) % hackSize);
 			int diagPos = hackSize - 1 + diagId;
 		
 			std::map<int,int>::iterator it = hackDiagIdsToPos.find(diagPos);
@@ -306,12 +308,12 @@ void cooToHdia_size(
 			i = hackRows->at(j);
 			int rowIdx = cooRowIndices[i];
 			int colIdx = cooColsIndices[i];
-			int diagId = colIdx - (rowIdx % hackSize);
+			int diagId = (colIdx - cooBaseIndex) - ((rowIdx - cooBaseIndex) % hackSize);
 		
 			int diagPosInsideOffsets = hackDiagIdsToPos[hackSize - 1 + diagId];
 		
 			char* valAddr = (char*)hdiaValues + 
-				elementSize*((rowIdx % hackSize) 
+				elementSize*(((rowIdx - cooBaseIndex) % hackSize) 
 					+ hackSize* (hackOffsets[h] + diagPosInsideOffsets));
 		
 			memcpy(valAddr, (const char*)cooValues + i*elementSize, elementSize);
@@ -334,6 +336,7 @@ void cooToHdia(
 	const int* cooRowIndices,
 	const int* cooColsIndices,
 	const void* cooValues,
+	int cooBaseIndex,
 	spgpuType_t valuesType
 	)
 {
@@ -342,7 +345,7 @@ void cooToHdia(
 	cooToHdia_size(hdiaValues, hdiaOffsets,
 		hackOffsets, hackSize, rowsCount,
 		columnsCount, nonZerosCount, 
-		cooRowIndices, cooColsIndices, cooValues, elementSize);
+		cooRowIndices, cooColsIndices, cooValues, cooBaseIndex, elementSize);
 }
 
 void bcooToBhdia(
@@ -365,6 +368,6 @@ void bcooToBhdia(
 	cooToHdia_size(hdiaValues, hdiaOffsets,
 		hackOffsets, hackSize, rowsCount,
 		columnsCount, nonZerosCount, 
-		cooRowIndices, cooColsIndices, cooValues, elementSize);
+		cooRowIndices, cooColsIndices, cooValues, cooBaseIndex, elementSize);
 }
 
