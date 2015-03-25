@@ -60,7 +60,8 @@ void computeHdiaHackOffsetsFromCoo(
 	int columnsCount,
 	int nonZerosCount,
 	const int* cooRowIndices,
-	const int* cooColsIndices
+	const int* cooColsIndices,
+	int cooBaseIndex
 	);
 
 void cooToHdia(
@@ -74,6 +75,7 @@ void cooToHdia(
 	const int* cooRowIndices,
 	const int* cooColsIndices,
 	const void* cooValues,
+	int cooBaseIndex,
 	spgpuType_t valuesType
 	);
 
@@ -88,6 +90,7 @@ void bcooToBhdia(
 	const int* cooRowIndices,
 	const int* cooColsIndices,
 	const void* cooValues,
+	int cooBaseIndex,
 	spgpuType_t valuesType,
 	int blockSize);
 	

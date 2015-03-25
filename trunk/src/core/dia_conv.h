@@ -46,6 +46,7 @@ void coo2dia(
 	const int* cooRowIndices,
 	const int* cooColsIndices,
 	const void* cooValues,
+	int cooBaseIndex,
 	spgpuType_t valuesType);
 	
 	

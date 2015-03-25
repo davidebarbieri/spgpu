@@ -48,6 +48,7 @@ void coo2dia(
 	const int* cooRowIndices,
 	const int* cooColsIndices,
 	const void* cooValues,
+	int cooBaseIndex,
 	spgpuType_t valuesType)
 {
 	int* diagIdsToPos = (int*)malloc((rowsCount + columnsCount - 1)*sizeof(int));
@@ -94,7 +95,7 @@ void coo2dia(
 		
 		size_t elementSize = spgpuSizeOf(valuesType);
 		
-		void* valAddr = values + elementSize*rowIdx + diagPosInsideOffsets*elementSize*valuesPitch;
+		void* valAddr = values + elementSize*(rowIdx-cooBaseIndex) + diagPosInsideOffsets*elementSize*valuesPitch;
 		
 		memcpy(valAddr, (const char*)cooValues + i*elementSize, elementSize);
 	}

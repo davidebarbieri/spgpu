@@ -199,7 +199,7 @@ int main(int argc, char** argv)
 		memset((void*)diaOffsets, 0, diagsCount*sizeof(int));
 
 		coo2dia(diaValues, diaOffsets, diaPitch, diagsCount, rowsCount,
-		columnsCount, nonZerosCount, rows, cols, values, valuesTypeCode);
+		columnsCount, nonZerosCount, rows, cols, values, 0, valuesTypeCode);
 
 		printf("Conversion complete.\n");
 
@@ -269,7 +269,8 @@ int main(int argc, char** argv)
 		columnsCount, 
 		nonZerosCount,
 		rows, 
-		cols
+		cols,
+		0
 		);
 			
 	printf("HDIA format needs %li Bytes.\n", (long int)hackSize*(long int)allocationHeight*sizeof(testType) + (allocationHeight
@@ -289,6 +290,7 @@ int main(int argc, char** argv)
 		rows,
 		cols,
 		values,
+		0,
 		valuesTypeCode
 	);
 	
