@@ -359,6 +359,7 @@ void bcooToBhdia(
 	const int* cooRowIndices,
 	const int* cooColsIndices,
 	const void* cooValues,
+	int cooBaseIndex,
 	spgpuType_t valuesType,
 	int blockSize
 	)
