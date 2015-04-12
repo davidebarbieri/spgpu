@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['clock',['Clock',['../class_clock.html',1,'Clock'],['../class_clock.html#a8199467e290645b8fb26a3b003559bb4',1,'Clock::Clock()']]],
+  ['capabilitymajor',['capabilityMajor',['../structspgpu_handle_struct.html#a9fb301bdf42c6a76e97851b4d2bd7c48',1,'spgpuHandleStruct']]],
+  ['capabilityminor',['capabilityMinor',['../structspgpu_handle_struct.html#a5fe57b6c5abb854f1b355c59f91425ee',1,'spgpuHandleStruct']]],
   ['currentstream',['currentStream',['../structspgpu_handle_struct.html#aff650a94324d48a9dcf57012ffd587be',1,'spgpuHandleStruct']]]
 ];

@@ -63,6 +63,21 @@ void spgpuSmdot(spgpuHandle_t handle,
 
 
 /** 
+* \fn void spgpuSabs (spgpuHandle_t handle, __device float* y, int n, float alpha, __device float* x)
+ * Computes single precision (y = alpha * abs(x)) for each element in x.
+ * \param handle The spgpu handle used to call this routine
+ * \param y the resulting vector (could be x)
+ * \param n the vectors length
+ * \param alpha the alpha value
+ * \param x the input vector
+ */
+void spgpuSabs(spgpuHandle_t handle, 
+	__device float* y, 
+	int n, 
+	float alpha,
+	__device float* x);
+	
+/** 
 * \fn float spgpuSnrm2(spgpuHandle_t handle, int n, __device float* x)
  * Computes the single precision Euclidean vector norm of x. 
  * \param handle the spgpu handle used to call this routine
@@ -324,6 +339,21 @@ void spgpuDscal(spgpuHandle_t handle,
 	__device double* a, 
 	__device double* b);
 
+/** 
+* \fn void spgpuDabs (spgpuHandle_t handle, __device double* y, int n, double alpha, __device double* x)
+ * Computes double precision (y = alpha * abs(x)) for each element in x.
+ * \param handle The spgpu handle used to call this routine
+ * \param y the resulting vector (could be x)
+ * \param n the vectors length
+ * \param alpha the alpha value
+ * \param x the input vector
+ */
+void spgpuDabs(spgpuHandle_t handle, 
+	__device double* y, 
+	int n, 
+	double alpha,
+	__device double* x);
+	
 /** 
 * \fn float spgpuDmdot (spgpuHandle_t handle, double* y, int n, __device double* a, __device double* b, int count, int pitch)
  * Computes double precision dot product of a and b multivectors.
@@ -593,6 +623,21 @@ void spgpuCmdot(spgpuHandle_t handle,
 	int pitch);
 
 
+/** 
+* \fn void spgpuCabs (spgpuHandle_t handle, __device float* y, int n, float alpha, __device cuFloatComplex* x)
+ * Computes single precision complex (y = alpha * abs(x)) for each element in x.
+ * \param handle The spgpu handle used to call this routine
+ * \param y the resulting vector (could be x)
+ * \param n the vectors length
+ * \param alpha the alpha value
+ * \param x the input vector
+ */
+void spgpuCabs(spgpuHandle_t handle, 
+	__device float* y, 
+	int n, 
+	float float,
+	__device cuFloatComplex* x);
+	
 /** 
 * \fn float spgpuCnrm2(spgpuHandle_t handle, int n, __device cuFloatComplex* x)
  * Computes the single precision complex Euclidean vector norm of x. 
@@ -872,6 +917,20 @@ void spgpuZmdot(spgpuHandle_t handle,
 	int count, 
 	int pitch);
 
+/** 
+* \fn void spgpuZabs (spgpuHandle_t handle, __device double* y, int n, double alpha, __device cuDoubleComplex* x)
+ * Computes double precision complex (y = alpha * abs(x)) for each element in x.
+ * \param handle The spgpu handle used to call this routine
+ * \param y the resulting vector (could be x)
+ * \param n the vectors length
+ * \param alpha the alpha value
+ * \param x the input vector
+ */
+void spgpuZabs(spgpuHandle_t handle, 
+	__device double* y, 
+	int n, 
+	double alpha,
+	__device cuDoubleComplex* x);
 
 /** 
 * \fn double spgpuZnrm2(spgpuHandle_t handle, int n, __device cuDoubleComplex* x)
