@@ -1,7 +1,7 @@
 /*
  * spGPU - Sparse matrices on GPU library.
  * 
- * Copyright (C) 2010 - 2014
+ * Copyright (C) 2010 - 2015
  *     Davide Barbieri - University of Rome Tor Vergata
  *
  * This program is free software; you can redistribute it and/or
@@ -13,20 +13,20 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
-
+ 
 #include "cudadebug.h"
 #include "cudalang.h"
+#include "cuComplex.h"
 
 extern "C"
 {
 #include "core.h"
-#include "ell.h"
+#include "hdia.h"
 }
 
 #include "debug.h"
 
-#define VALUE_TYPE double
-#define TYPE_SYMBOL D
-#define TEX_FETCH_TYPE int2
-#include "ell_spmv_base.cuh"
-
+#define VALUE_TYPE cuFloatComplex
+#define TYPE_SYMBOL C
+#define TEX_FETCH_TYPE cuFloatComplex
+#include "hdia_spmv_base.cuh"

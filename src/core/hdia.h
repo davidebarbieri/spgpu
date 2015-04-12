@@ -88,6 +88,68 @@ spgpuDhdiaspmv (spgpuHandle_t handle,
 	int cols, 
 	const double *x, 
 	double beta);
+
+
+/** 
+* \fn spgpuChdiaspmv (spgpuHandle_t handle, cuFloatComplex* z, const cuFloatComplex *y, cuFloatComplex alpha, const cuFloatComplex* dM, const int* offsets, int hackSize, const int* hackOffsets, int rows, int cols, const cuFloatComplex *x, cuFloatComplex beta)
+ * Computes single precision complex z = alpha*A*x + beta*y, with A stored in Hacked Diagonal Format on GPU.
+ * \param handle The spgpu handle used to call this routine
+ * \param z The output vector of the routine. z could be y, but not y + k (i.e. an overlapping area over y, but starting from a base index different from y).
+ * \param y The y input vector
+ * \param alpha The alpha scalar
+ * \param dM The stacked HDIA non zero values allocation pointer
+ * \param offsets The stacked HDIA diagonals offsets vector
+ * \param hackSize The constant size of every hack (must be a multiple of 32) 
+ * \param hackOffsets the array of base index offset for every hack of HDIA offsets vector, plus a last value equal to the size of the offsets vector
+ * \param rows the rows count
+ * \param cols the columns count
+ * \param x the x vector
+ * \param beta the beta scalar
+ */
+void 
+spgpuChdiaspmv (spgpuHandle_t handle, 
+	cuFloatComplex* z, 
+	const cuFloatComplex *y, 
+	cuFloatComplex alpha, 
+	const cuFloatComplex* dM, 
+	const int* offsets, 
+	int hackSize, 
+	const int* hackOffsets,
+	int rows,
+	int cols, 
+	const cuFloatComplex *x, 
+	cuFloatComplex beta);
+
+
+/** 
+* \fn spgpuZhdiaspmv (spgpuHandle_t handle, cuDoubleComplex* z, const cuDoubleComplex *y, cuDoubleComplex alpha, const cuDoubleComplex* dM, const int* offsets, int hackSize, const int* hackOffsets, int rows, int cols, const cuDoubleComplex *x, cuDoubleComplex beta)
+ * Computes double precision complex z = alpha*A*x + beta*y, with A stored in Hacked Diagonal Format on GPU.
+ * \param handle The spgpu handle used to call this routine
+ * \param z The output vector of the routine. z could be y, but not y + k (i.e. an overlapping area over y, but starting from a base index different from y).
+ * \param y The y input vector
+ * \param alpha The alpha scalar
+ * \param dM The stacked HDIA non zero values allocation pointer
+ * \param offsets The stacked HDIA diagonals offsets vector
+ * \param hackSize The constant size of every hack (must be a multiple of 32) 
+ * \param hackOffsets the array of base index offset for every hack of HDIA offsets vector, plus a last value equal to the size of the offsets vector
+ * \param rows the rows count
+ * \param cols the columns count
+ * \param x the x vector
+ * \param beta the beta scalar
+ */
+void 
+spgpuZhdiaspmv (spgpuHandle_t handle, 
+	cuDoubleComplex* z, 
+	const cuDoubleComplex *y, 
+	cuDoubleComplex alpha, 
+	const cuDoubleComplex* dM, 
+	const int* offsets, 
+	int hackSize, 
+	const int* hackOffsets,
+	int rows,
+	int cols, 
+	const cuDoubleComplex *x, 
+	cuDoubleComplex beta);
 		
 /** @}*/
 

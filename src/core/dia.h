@@ -91,12 +91,10 @@ void spgpuDdiaspmv (spgpuHandle_t handle,
 	int diags,
 	const __device double *x, 
 	double beta);
-	
-/** @}*/
 
 
 /** 
-* \fn void spgpuCdiaspmv (spgpuHandle_t handle,__device cuFloatComplex *z,const __device cuFloatComplex *y, float alpha, const __device cuFloatComplex* dM, const __device int* offsets, int dMPitch, int rows, int cols, int diags, const __device cuFloatComplex *x, cuFloatComplex beta)
+* \fn void spgpuCdiaspmv (spgpuHandle_t handle,__device cuFloatComplex *z,const __device cuFloatComplex *y, cuFloatComplex alpha, const __device cuFloatComplex* dM, const __device int* offsets, int dMPitch, int rows, int cols, int diags, const __device cuFloatComplex *x, cuFloatComplex beta)
  * Computes single precision complex z = alpha*A*x + beta*y, with A stored in Diagonal Format on GPU.
  * \param handle The spgpu handle used to call this routine
  * \param z The output vector of the routine. z could be y, but not y + k (i.e. an overlapping area over y, but starting from a base index different from y).
