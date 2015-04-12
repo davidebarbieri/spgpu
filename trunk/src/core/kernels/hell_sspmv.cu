@@ -25,8 +25,6 @@ extern "C"
 
 #include "debug.h"
 
-#define ENABLE_CACHE
-#define USE_PREFETCHING
 #define VALUE_TYPE float
 #define TYPE_SYMBOL S
 #define TEX_FETCH_TYPE float

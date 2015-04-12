@@ -64,7 +64,6 @@ CONCAT(GEN_SPGPU_DIA_NAME(TYPE_SYMBOL), _)
 
 				// Anticipate global memory read
 				
-				
 				VALUE_TYPE xValue1, xValue2, xValue3;
 				VALUE_TYPE mValue1, mValue2, mValue3;
 				

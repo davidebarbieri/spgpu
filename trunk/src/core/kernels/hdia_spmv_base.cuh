@@ -18,7 +18,7 @@
 #define PRE_CONCAT(A, B) A ## B
 #define CONCAT(A, B) PRE_CONCAT(A, B)
 
-#undef GEN_SPGPU_DIA_NAME
+#undef GEN_SPGPU_HDIA_NAME
 #undef X_TEX
 #define X_TEX CONCAT(x_tex_, FUNC_SUFFIX)
 
@@ -74,70 +74,73 @@ fetchTex (int pointer)
 	return CONCAT(readValue_,VALUE_TYPE) (fetch);
 }
 
-#define GEN_SPGPU_DIA_NAME(x) CONCAT(CONCAT(spgpu,x),diaspmv_vanilla)
-#define GEN_SPGPU_DIA_NAME_VANILLA(x) CONCAT(CONCAT(spgpu,x),diaspmv_vanilla)
-#include "dia_spmv_base_template.cuh"
-#undef GEN_SPGPU_DIA_NAME
-#define GEN_SPGPU_DIA_NAME(x) CONCAT(CONCAT(spgpu,x),diaspmv_prefetch)
-#define GEN_SPGPU_DIA_NAME_PREFETCH(x) CONCAT(CONCAT(spgpu,x),diaspmv_prefetch)
+#define GEN_SPGPU_HDIA_NAME(x) CONCAT(CONCAT(spgpu,x),hdiaspmv_vanilla)
+#define GEN_SPGPU_HDIA_NAME_VANILLA(x) CONCAT(CONCAT(spgpu,x),hdiaspmv_vanilla)
+#include "hdia_spmv_base_template.cuh"
+#undef GEN_SPGPU_HDIA_NAME
+#define GEN_SPGPU_HDIA_NAME(x) CONCAT(CONCAT(spgpu,x),hdiaspmv_prefetch)
+#define GEN_SPGPU_HDIA_NAME_PREFETCH(x) CONCAT(CONCAT(spgpu,x),hdiaspmv_prefetch)
 #undef USE_PREFETCHING
 #define USE_PREFETCHING
-#include "dia_spmv_base_template.cuh"
+#include "hdia_spmv_base_template.cuh"
 #define ENABLE_CACHE
-#undef GEN_SPGPU_DIA_NAME
-#define GEN_SPGPU_DIA_NAME(x) CONCAT(CONCAT(spgpu,x),diaspmv_texcache_prefetch)
-#define GEN_SPGPU_DIA_NAME_TEX_PREFETCH(x) CONCAT(CONCAT(spgpu,x),diaspmv_texcache_prefetch)
-#include "dia_spmv_base_template.cuh"
-#undef GEN_SPGPU_DIA_NAME
+#undef GEN_SPGPU_HDIA_NAME
+#define GEN_SPGPU_HDIA_NAME(x) CONCAT(CONCAT(spgpu,x),hdiaspmv_texcache_prefetch)
+#define GEN_SPGPU_HDIA_NAME_TEX_PREFETCH(x) CONCAT(CONCAT(spgpu,x),hdiaspmv_texcache_prefetch)
+#include "hdia_spmv_base_template.cuh"
+#undef GEN_SPGPU_HDIA_NAME
 #undef USE_PREFETCHING
-#define GEN_SPGPU_DIA_NAME(x) CONCAT(CONCAT(spgpu,x),diaspmv_texcache)
-#define GEN_SPGPU_DIA_NAME_TEX(x) CONCAT(CONCAT(spgpu,x),diaspmv_texcache)
-#include "dia_spmv_base_template.cuh"
-#undef GEN_SPGPU_DIA_NAME
-#define GEN_SPGPU_DIA_NAME(x) CONCAT(CONCAT(spgpu,x),diaspmv)
+#define GEN_SPGPU_HDIA_NAME(x) CONCAT(CONCAT(spgpu,x),hdiaspmv_texcache)
+#define GEN_SPGPU_HDIA_NAME_TEX(x) CONCAT(CONCAT(spgpu,x),hdiaspmv_texcache)
+#include "hdia_spmv_base_template.cuh"
+#undef GEN_SPGPU_HDIA_NAME
+#define GEN_SPGPU_HDIA_NAME(x) CONCAT(CONCAT(spgpu,x),hdiaspmv)
 
 void
-GEN_SPGPU_DIA_NAME(TYPE_SYMBOL)
+GEN_SPGPU_HDIA_NAME(TYPE_SYMBOL)
 (spgpuHandle_t handle, 
 	VALUE_TYPE* z, 
 	const VALUE_TYPE *y, 
 	VALUE_TYPE alpha, 
 	const VALUE_TYPE* dM, 
 	const int* offsets, 
-	int dMPitch, 
+	int hackSize, 
+	const int* hackOffsets,
 	int rows,
 	int cols, 
-	int diags,
 	const VALUE_TYPE *x, 
 	VALUE_TYPE beta)
 {
 	int maxNForACall = max(handle->maxGridSizeX, THREAD_BLOCK*handle->maxGridSizeX);
 
+	// maxNForACall should be a multiple of hackSize
+	maxNForACall = (maxNForACall/hackSize)*hackSize;
+
 	while (rows > maxNForACall) //managing large vectors
 	{
-		//if (diags < 10 && handle->capabilityMajor > 1)
-		//	CONCAT(_,GEN_SPGPU_DIA_NAME_VANILLA(TYPE_SYMBOL)) (handle, z, y, alpha, dM, offsets, dMPitch, maxNForACall, cols, diags, x, beta);
+		//if (avgDiags < 10 && handle->capabilityMajor > 1)
+		//	CONCAT(_,GEN_SPGPU_HDIA_NAME_VANILLA(TYPE_SYMBOL)) (handle, z, y, alpha, dM, offsets, hackSize, hackOffsets, maxNForACall, cols, x, beta);
 		//else 
-		if (diags < 20)
-			CONCAT(_,GEN_SPGPU_DIA_NAME_TEX(TYPE_SYMBOL)) (handle, z, y, alpha, dM, offsets, dMPitch, maxNForACall, cols, diags, x, beta);
-		else
-			CONCAT(_,GEN_SPGPU_DIA_NAME_TEX_PREFETCH(TYPE_SYMBOL)) (handle, z, y, alpha, dM, offsets, dMPitch, maxNForACall, cols, diags, x, beta);
+		//if (avgDiags < 20)
+		//	CONCAT(_,GEN_SPGPU_HDIA_NAME_TEX(TYPE_SYMBOL)) (handle, z, y, alpha, dM, offsets, hackSize, hackOffsets, maxNForACall, cols, x, beta);
+		//else
+			CONCAT(_,GEN_SPGPU_HDIA_NAME_TEX_PREFETCH(TYPE_SYMBOL)) (handle, z, y, alpha, dM, offsets, hackSize, hackOffsets, maxNForACall, cols, x, beta);
 
 		y = y + maxNForACall;
 		z = z + maxNForACall;
-		dM = dM + maxNForACall;
+		hackOffsets += maxNForACall/hackSize;
 		
 		rows -= maxNForACall;
 	}
 	
-	//if (diags < 10 && handle->capabilityMajor > 1)
-	//	CONCAT(_,GEN_SPGPU_DIA_NAME_VANILLA(TYPE_SYMBOL)) (handle, z, y, alpha, dM, offsets, dMPitch, rows, cols, diags, x, beta);
+	//if (avgDiags < 10 && handle->capabilityMajor > 1)
+	//	CONCAT(_,GEN_SPGPU_HDIA_NAME_VANILLA(TYPE_SYMBOL)) (handle, z, y, alpha, dM, offsets, dMPitch, rows, cols, diags, x, beta);
 	//else 
-	if (diags < 20)
-		CONCAT(_,GEN_SPGPU_DIA_NAME_TEX(TYPE_SYMBOL)) (handle, z, y, alpha, dM, offsets, dMPitch, rows, cols, diags, x, beta);
-	else
-		CONCAT(_,GEN_SPGPU_DIA_NAME_TEX_PREFETCH(TYPE_SYMBOL)) (handle, z, y, alpha, dM, offsets, dMPitch, rows, cols, diags, x, beta);
+	//if (avgDiags < 20)
+	//	CONCAT(_,GEN_SPGPU_HDIA_NAME_TEX(TYPE_SYMBOL)) (handle, z, y, alpha, dM, offsets, hackSize, hackOffsets, rows, cols, x, beta);
+	//else
+		CONCAT(_,GEN_SPGPU_HDIA_NAME_TEX_PREFETCH(TYPE_SYMBOL)) (handle, z, y, alpha, dM, offsets, hackSize, hackOffsets, rows, cols, x, beta);
 
-	cudaCheckError("CUDA error on dia_spmv");
+	cudaCheckError("CUDA error on hdia_spmv");
 }
 

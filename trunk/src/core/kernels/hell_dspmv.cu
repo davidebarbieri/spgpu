@@ -25,8 +25,6 @@ extern "C"
 
 #include "debug.h"
 
-#define ENABLE_CACHE
-//#define USE_PREFETCHING
 #define VALUE_TYPE double
 #define TYPE_SYMBOL D
 #define TEX_FETCH_TYPE int2
