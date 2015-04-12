@@ -107,6 +107,8 @@ list(APPEND SM13_SRCS "${CMAKE_CURRENT_SOURCE_DIR}/core/kernels/damax.cu")
 list(APPEND SM13_SRCS "${CMAKE_CURRENT_SOURCE_DIR}/core/kernels/zamax.cu")
 list(APPEND SM13_SRCS "${CMAKE_CURRENT_SOURCE_DIR}/core/kernels/dasum.cu")
 list(APPEND SM13_SRCS "${CMAKE_CURRENT_SOURCE_DIR}/core/kernels/zasum.cu")
+list(APPEND SM13_SRCS "${CMAKE_CURRENT_SOURCE_DIR}/core/kernels/dabs.cu")
+list(APPEND SM13_SRCS "${CMAKE_CURRENT_SOURCE_DIR}/core/kernels/zabs.cu")
 
 
 list (REMOVE_ITEM CUDA_SOURCES ${SM13_SRCS}) # compile just for sm13
