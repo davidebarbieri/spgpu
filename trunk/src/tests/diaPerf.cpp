@@ -33,7 +33,9 @@
 #include "core/hdia.h"
 #include "vector.h"
 
-#define NUM_TESTS 200
+#define ALPHA 1.0
+#define BETA 0.0
+#define NUM_TESTS 10000
 
 #ifdef TEST_DOUBLE
 #define testType double
@@ -179,10 +181,15 @@ int main(int argc, char** argv)
 
 	long int diavsize = (long int)diagsCount*(long int)diaPitch*sizeof(testType);
 
-	printf("%li\n", diavsize);
-	if (diavsize > 4000000000l)
+	size_t freeMem;
+	size_t totMem;
+
+	cudaMemGetInfo(&freeMem, &totMem);
+
+	if (diavsize > freeMem)
 	{
 		diaValues = 0;
+		printf("DIA format needs too much memory! (free memory on device: %li MB)\n", freeMem/1000000);
 	}
 	else
 	{
@@ -204,6 +211,7 @@ int main(int argc, char** argv)
 		printf("Conversion complete.\n");
 
 		printf("Compute on GPU..\n");
+		printf("Testing with alpha = %f and beta = %f\n", (float)ALPHA, (float)BETA);
 	
 		cudaMalloc((void**)&devOffsets,diagsCount*sizeof(int));
 		cudaMalloc((void**)&devDm, diagsCount*diaPitch*sizeof(testType));
@@ -214,9 +222,9 @@ int main(int argc, char** argv)
 		printf("Testing DIA format\n");
 
 #ifdef TEST_DOUBLE
-		spgpuDdiaspmv (spgpuHandle, devZ, devY, 2.0, devDm, devOffsets, diaPitch, rowsCount, columnsCount, diagsCount, devX, -3.0);
+		spgpuDdiaspmv (spgpuHandle, devZ, devY, ALPHA, devDm, devOffsets, diaPitch, rowsCount, columnsCount, diagsCount, devX, BETA);
 #else
-		spgpuSdiaspmv (spgpuHandle, devZ, devY, 2.0f, devDm, devOffsets, diaPitch, rowsCount, columnsCount, diagsCount, devX, -3.0f);
+		spgpuSdiaspmv (spgpuHandle, devZ, devY, ALPHA, devDm, devOffsets, diaPitch, rowsCount, columnsCount, diagsCount, devX, (float)BETA);
 #endif
 	
 	#ifdef TEST_DOUBLE
@@ -233,9 +241,9 @@ int main(int argc, char** argv)
 		for (int i=0; i<NUM_TESTS; ++i)
 		{
 #ifdef TEST_DOUBLE
-			spgpuDdiaspmv (spgpuHandle, devZ, devY, 2.0, devDm, devOffsets, diaPitch, rowsCount, columnsCount, diagsCount, devX, -3.0);
+			spgpuDdiaspmv (spgpuHandle, devZ, devY, ALPHA, devDm, devOffsets, diaPitch, rowsCount, columnsCount, diagsCount, devX, BETA);
 #else
-			spgpuSdiaspmv (spgpuHandle, devZ, devY, 2.0f, devDm, devOffsets, diaPitch, rowsCount, columnsCount, diagsCount, devX, -3.0f);
+			spgpuSdiaspmv (spgpuHandle, devZ, devY, (float)ALPHA, devDm, devOffsets, diaPitch, rowsCount, columnsCount, diagsCount, devX, (float)BETA);
 #endif		
 		}
 		cudaDeviceSynchronize();
@@ -308,9 +316,9 @@ int main(int argc, char** argv)
 	cudaMemcpy(devHackOffsets, hackOffsets, (hacksCount+1)*sizeof(int), cudaMemcpyHostToDevice);
 
 #ifdef TEST_DOUBLE
-	spgpuDhdiaspmv (spgpuHandle, devZ, devY, 2.0, devHdiaDm, devHdiaOffsets, hackSize, devHackOffsets, rowsCount, columnsCount, devX, -3.0);
+	spgpuDhdiaspmv (spgpuHandle, devZ, devY, ALPHA, devHdiaDm, devHdiaOffsets, hackSize, devHackOffsets, rowsCount, columnsCount, devX, BETA);
 #else
-	spgpuShdiaspmv (spgpuHandle, devZ, devY, 2.0f, devHdiaDm, devHdiaOffsets, hackSize, devHackOffsets, rowsCount, columnsCount, devX, -3.0f);
+	spgpuShdiaspmv (spgpuHandle, devZ, devY, (float)ALPHA, devHdiaDm, devHdiaOffsets, hackSize, devHackOffsets, rowsCount, columnsCount, devX, (float)BETA);
 #endif
 	
 #ifdef TEST_DOUBLE
@@ -327,9 +335,9 @@ int main(int argc, char** argv)
 	for (int i=0; i<NUM_TESTS; ++i)
 	{
 #ifdef TEST_DOUBLE
-		spgpuDhdiaspmv (spgpuHandle, devZ, devY, 2.0, devHdiaDm, devHdiaOffsets, hackSize, devHackOffsets, rowsCount, columnsCount, devX, -3.0);	
+		spgpuDhdiaspmv (spgpuHandle, devZ, devY, ALPHA, devHdiaDm, devHdiaOffsets, hackSize, devHackOffsets, rowsCount, columnsCount, devX, BETA);	
 #else
-		spgpuShdiaspmv (spgpuHandle, devZ, devY, 2.0f, devHdiaDm, devHdiaOffsets, hackSize, devHackOffsets, rowsCount, columnsCount, devX, -3.0f);
+		spgpuShdiaspmv (spgpuHandle, devZ, devY, (float)ALPHA, devHdiaDm, devHdiaOffsets, hackSize, devHackOffsets, rowsCount, columnsCount, devX, (float)BETA);
 #endif
 		
 	}
