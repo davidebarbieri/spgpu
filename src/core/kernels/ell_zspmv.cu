@@ -26,7 +26,6 @@ extern "C"
 
 #include "debug.h"
 
-//#define USE_PREFETCHING
 #define VALUE_TYPE cuDoubleComplex
 #define TYPE_SYMBOL Z
 #define TEX_FETCH_TYPE int4
