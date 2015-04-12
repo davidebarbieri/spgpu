@@ -25,8 +25,6 @@
 #define PREC_FMUL(a,b) __fmul_rn((a),(b))
 #endif
 
-//#define ENABLE_CACHE
-
 #define PREC_DADD(a,b) ((a) + (b))
 #define PREC_DMUL(a,b) ((a) * (b))
 

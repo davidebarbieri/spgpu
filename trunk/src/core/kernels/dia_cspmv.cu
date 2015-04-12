@@ -16,6 +16,7 @@
 
 #include "cudadebug.h"
 #include "cudalang.h"
+#include "cuComplex.h"
 
 extern "C"
 {
@@ -25,8 +26,8 @@ extern "C"
 
 #include "debug.h"
 
-#define VALUE_TYPE double
-#define TYPE_SYMBOL D
-#define TEX_FETCH_TYPE int2
+#define VALUE_TYPE cuFloatComplex
+#define TYPE_SYMBOL C
+#define TEX_FETCH_TYPE cuFloatComplex
 #include "dia_spmv_base.cuh"
 

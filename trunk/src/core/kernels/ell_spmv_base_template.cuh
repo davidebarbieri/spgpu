@@ -354,6 +354,7 @@ CONCAT(_,GEN_SPGPU_ELL_NAME(TYPE_SYMBOL))
 	const __device int* rIdx, int avgNnzPerRow, int maxNnzPerRow, int rows, const VALUE_TYPE *x, VALUE_TYPE beta, int baseIndex)
 {
 
+
 	int avgThreshold;
 
 	if (handle->capabilityMajor >= 2)
@@ -371,6 +372,9 @@ CONCAT(_,GEN_SPGPU_ELL_NAME(TYPE_SYMBOL))
 
 	if (rIdx)
 	{
+		cudaFuncSetCacheConfig(CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _krn_ridx), cudaFuncCachePreferL1);
+		cudaFuncSetCacheConfig(CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _krn_ridx_noRs), cudaFuncCachePreferL1);
+
 		if (rS)
 			CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _krn_ridx)
 			<<< grid, block, 0, handle->currentStream >>> (z, y, alpha, cM, rP, cMPitch, rPPitch, rS, rIdx, rows, x, beta, baseIndex);
@@ -380,8 +384,12 @@ CONCAT(_,GEN_SPGPU_ELL_NAME(TYPE_SYMBOL))
 	}
 	else
 	{
+
+
 		if (rS)
 		{
+			cudaFuncSetCacheConfig(CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _krn), cudaFuncCachePreferL1);
+			cudaFuncSetCacheConfig(CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _krn_b0), cudaFuncCachePreferL1);
 		
 			if (CONCAT(VALUE_TYPE, _isNotZero(beta)))
 				CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _krn) 
@@ -392,6 +400,9 @@ CONCAT(_,GEN_SPGPU_ELL_NAME(TYPE_SYMBOL))
 		}
 		else
 		{
+			cudaFuncSetCacheConfig(CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _krn_noRs), cudaFuncCachePreferL1);
+			cudaFuncSetCacheConfig(CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _krn_b0_noRs), cudaFuncCachePreferL1);
+
 			if (CONCAT(VALUE_TYPE, _isNotZero(beta)))
 					CONCAT(GEN_SPGPU_ELL_NAME(TYPE_SYMBOL), _krn_noRs) 
 						<<< grid, block, 0, handle->currentStream >>> (z, y, alpha, cM, rP, cMPitch, rPPitch, maxNnzPerRow, rows, x, beta, baseIndex);
