@@ -635,7 +635,7 @@ void spgpuCmdot(spgpuHandle_t handle,
 void spgpuCabs(spgpuHandle_t handle, 
 	__device float* y, 
 	int n, 
-	float float,
+	float alpha,
 	__device cuFloatComplex* x);
 	
 /** 
