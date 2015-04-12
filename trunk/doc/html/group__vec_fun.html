@@ -116,7 +116,7 @@ Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__vec_fun.html#gaa9866709ad8b89ba4b90e7d59667e0df">spgpuDmamax</a> (<a class="el" href="group__core_fun.html#ga5d4825ac610d6524df843758da392dec">spgpuHandle_t</a> handle, double *y, int n, double *x, int count, int pitch)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">cuFloatComplex&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__vec_fun.html#ga51a54b8ad3e3661c62354272308b26f9">spgpuCdot</a> (<a class="el" href="group__core_fun.html#ga5d4825ac610d6524df843758da392dec">spgpuHandle_t</a> handle, int n, <a class="el" href="group__core_fun.html#ga208309018bbf41da4094eb99cf27210c">__device</a> cuFloatComplex *a, <a class="el" href="group__core_fun.html#ga208309018bbf41da4094eb99cf27210c">__device</a> cuFloatComplex *b)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__vec_fun.html#ga663613d44ab615bab25ac88b4c88dc3c">spgpuCmdot</a> (<a class="el" href="group__core_fun.html#ga5d4825ac610d6524df843758da392dec">spgpuHandle_t</a> handle, cuFloatComplex *y, int n, <a class="el" href="group__core_fun.html#ga208309018bbf41da4094eb99cf27210c">__device</a> cuFloatComplex *a, <a class="el" href="group__core_fun.html#ga208309018bbf41da4094eb99cf27210c">__device</a> cuFloatComplex *b, int count, int pitch)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__vec_fun.html#ga5d04371205d52a90f51a34f586eeed42">spgpuCabs</a> (<a class="el" href="group__core_fun.html#ga5d4825ac610d6524df843758da392dec">spgpuHandle_t</a> handle, <a class="el" href="group__core_fun.html#ga208309018bbf41da4094eb99cf27210c">__device</a> float *y, int n, float float, <a class="el" href="group__core_fun.html#ga208309018bbf41da4094eb99cf27210c">__device</a> cuFloatComplex *x)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__vec_fun.html#gab5f23833aedff52c2f3e6e53d01493dd">spgpuCabs</a> (<a class="el" href="group__core_fun.html#ga5d4825ac610d6524df843758da392dec">spgpuHandle_t</a> handle, <a class="el" href="group__core_fun.html#ga208309018bbf41da4094eb99cf27210c">__device</a> float *y, int n, float alpha, <a class="el" href="group__core_fun.html#ga208309018bbf41da4094eb99cf27210c">__device</a> cuFloatComplex *x)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__vec_fun.html#gac194549aefaf2b4f01e68d81be4a9a25">spgpuCnrm2</a> (<a class="el" href="group__core_fun.html#ga5d4825ac610d6524df843758da392dec">spgpuHandle_t</a> handle, int n, <a class="el" href="group__core_fun.html#ga208309018bbf41da4094eb99cf27210c">__device</a> cuFloatComplex *x)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__vec_fun.html#ga35365ca7bd1e082fbad912f70b29372a">spgpuCmnrm2</a> (<a class="el" href="group__core_fun.html#ga5d4825ac610d6524df843758da392dec">spgpuHandle_t</a> handle, float *y, int n, <a class="el" href="group__core_fun.html#ga208309018bbf41da4094eb99cf27210c">__device</a> cuFloatComplex *x, int count, int pitch)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__vec_fun.html#gac26a3f48dcfe2104931e209bf6ed62f2">spgpuCscal</a> (<a class="el" href="group__core_fun.html#ga5d4825ac610d6524df843758da392dec">spgpuHandle_t</a> handle, <a class="el" href="group__core_fun.html#ga208309018bbf41da4094eb99cf27210c">__device</a> cuFloatComplex *y, int n, cuFloatComplex alpha, <a class="el" href="group__core_fun.html#ga208309018bbf41da4094eb99cf27210c">__device</a> cuFloatComplex *x)</td></tr>
@@ -152,12 +152,12 @@ Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__vec_fun.html#ga71f0e88bc812a9d74398a1eab4802663">spgpuZmamax</a> (<a class="el" href="group__core_fun.html#ga5d4825ac610d6524df843758da392dec">spgpuHandle_t</a> handle, double *y, int n, cuDoubleComplex *x, int count, int pitch)</td></tr>
 </table>
 <hr/><h2>Function Documentation</h2>
-<a class="anchor" id="ga5d04371205d52a90f51a34f586eeed42"></a><!-- doxytag: member="vector.h::spgpuCabs" ref="ga5d04371205d52a90f51a34f586eeed42" args="(spgpuHandle_t handle, __device float *y, int n, float float, __device cuFloatComplex *x)" -->
+<a class="anchor" id="gab5f23833aedff52c2f3e6e53d01493dd"></a><!-- doxytag: member="vector.h::spgpuCabs" ref="gab5f23833aedff52c2f3e6e53d01493dd" args="(spgpuHandle_t handle, __device float *y, int n, float alpha, __device cuFloatComplex *x)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="group__vec_fun.html#ga5d04371205d52a90f51a34f586eeed42">spgpuCabs</a> </td>
+          <td class="memname">void <a class="el" href="group__vec_fun.html#gab5f23833aedff52c2f3e6e53d01493dd">spgpuCabs</a> </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="group__core_fun.html#ga5d4825ac610d6524df843758da392dec">spgpuHandle_t</a>&#160;</td>
           <td class="paramname"><em>handle</em>, </td>
@@ -4574,7 +4574,7 @@ Functions</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Sun Apr 12 2015 04:43:07 for spGpu library by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sun Apr 12 2015 04:47:36 for spGpu library by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>
