@@ -264,6 +264,9 @@ spgpuDhdiaspmv (spgpuHandle_t handle,
     	int threadCount = 128;
 
 	int maxNForACall = max(handle->maxGridSizeX, threadCount*handle->maxGridSizeX);
+
+	// maxNForACall should be a multiple of hackSize
+	maxNForACall = (maxNForACall/hackSize)*hackSize;
 	
 	while (rows > maxNForACall) //managing large vectors
 	{
