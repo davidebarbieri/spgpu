@@ -353,14 +353,14 @@ CONCAT(_,GEN_SPGPU_ELL_NAME(TYPE_SYMBOL))
 	const VALUE_TYPE* cM, const int* rP, int cMPitch, int rPPitch, const int* rS,  
 	const __device int* rIdx, int avgNnzPerRow, int maxNnzPerRow, int rows, const VALUE_TYPE *x, VALUE_TYPE beta, int baseIndex)
 {
-
-
 	int avgThreshold;
 
-	if (handle->capabilityMajor >= 2)
-		avgThreshold = 20;
+	if (handle->capabilityMajor < 2)
+		avgThreshold = 8;
+	else if (handle->capabilityMajor < 3)
+		avgThreshold = 16;
 	else
-		avgThreshold = 60;
+		avgThreshold = 32;
 
 	dim3 block (THREAD_BLOCK, avgNnzPerRow >= avgThreshold ? 2 : 1);
 	
