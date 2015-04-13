@@ -361,8 +361,14 @@ CONCAT(_,GEN_SPGPU_ELL_NAME(TYPE_SYMBOL))
 		avgThreshold = 16;
 	else
 		avgThreshold = 32;
-
+		
+#if defined(ELL_FORCE_THREADS_1)
+	dim3 block (THREAD_BLOCK, 1);
+#elif defined(ELL_FORCE_THREADS_2)
+	dim3 block (THREAD_BLOCK, 2);
+#else
 	dim3 block (THREAD_BLOCK, avgNnzPerRow >= avgThreshold ? 2 : 1);
+#endif
 	
 	dim3 grid ((rows + THREAD_BLOCK - 1) / THREAD_BLOCK);
 

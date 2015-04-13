@@ -309,7 +309,13 @@ CONCAT(_,GEN_SPGPU_HELL_NAME(TYPE_SYMBOL))
 	else
 		avgThreshold = 32;
 
+#if defined(HELL_FORCE_THREADS_1)
+	dim3 block (THREAD_BLOCK, 1);
+#elif defined(HELL_FORCE_THREADS_2)
+	dim3 block (THREAD_BLOCK, 2);
+#else
 	dim3 block (THREAD_BLOCK, avgNnzPerRow >= avgThreshold ? 2 : 1);
+#endif
 
 	dim3 grid ((rows + THREAD_BLOCK - 1) / THREAD_BLOCK);
 
