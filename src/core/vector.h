@@ -1190,6 +1190,13 @@ void spgpuZmamax(spgpuHandle_t handle,
 	
 /** @}*/
 
+void spgpuIsetscal(spgpuHandle_t handle,
+		   int first,
+		   int last,
+		   int baseIndex,
+		   int val,
+		   __device int *y);
+
 void spgpuSsetscal(spgpuHandle_t handle,
 		   int first,
 		   int last,
