@@ -4,6 +4,10 @@ __device__ __host__ static float zero_float() { return 0.0f; }
 __device__ __host__ static cuFloatComplex zero_cuFloatComplex() { return make_cuFloatComplex(0.0, 0.0); }
 __device__ __host__ static bool float_isNotZero(float x) { return x != 0.0f; }
 __device__ __host__ static bool float_isZero(float x) { return x == 0.0f; }
+__device__ __host__ static bool int_isZero(int x) { return x == 0; }
+__device__ __host__ static bool int_isNotZero(int x) { return x != 0; }
+
+__device__ static int int_fma(int a, int b, int c) { return ((a*b)+c); }
 
 __device__ static float float_fma(float a, float b, float c) { return PREC_FADD(PREC_FMUL (a, b), c); }
 __device__ static float float_add(float a, float b) { return PREC_FADD (a, b); }
