@@ -29,6 +29,46 @@ extern "C" {
 #endif
 
 /** 
+* \fn void spgpuIgath(spgpuHandle_t handle, __device int *xValues, int xNnz, const __device int *xIndices, int xBaseIndex, const __device int* y)
+ * Integer gather from y to sparse(x). Computes the integer gather from y to xValues (using xIndices).
+ * \param handle the spgpu handle used to call this routine
+ * \param xValues the destination array for gathered values
+ * \param xNnz the number of elements to gather
+ * \param xIndices the array of indices for the elements to be gathered
+ * \param xBaseIndex the base index used in xIndices (i.e. 0 for C, 1 for Fortran).
+ * \param y the source vector (from which the elements will be gathered)
+ */
+void spgpuIgath(spgpuHandle_t handle,
+	__device int *xValues,
+	int xNnz,
+	const __device int *xIndices,
+	int xBaseIndex,
+	const __device int* y);
+	
+/** 
+* \fn void spgpuIscat(spgpuHandle_t handle, __device int* y, int xNnz, const __device int *xValues, const __device int *xIndices, int xBaseIndex, int beta)
+ * Integer scatter from sparse(x) to y. Computes the integer scatter from xValues to y (using xIndices).
+ * The scattered element will be, for i in [0,xNnz), y[xIndices[i]] = beta*y[xIndices[i]] + xValues[i] (to be noted that
+ * y values will be multiplied with beta just for scattered values).
+ * \param handle the spgpu handle used to call this routine
+ * \param y the destination vector (to which the elements will be scattered)
+ * \param xNnz the number of elements to scatter
+ * \param xValues the source array from which the values will be read
+ * \param xIndices the array of indices for the elements to be scattered
+ * \param xBaseIndex the base index used in xIndices (i.e. 0 for C, 1 for Fortran).
+ * \param beta the beta value
+ */
+void spgpuIscat(spgpuHandle_t handle,
+	__device int* y,
+	int xNnz,
+	const __device int *xValues,
+	const __device int *xIndices,
+	int xBaseIndex, int beta);	
+
+
+
+
+/** 
 * \fn float spgpuSdot (spgpuHandle_t handle, int n, __device float* a, __device float* b)
  * Computes single precision dot product of a and b vectors.
  * \param handle The spgpu handle used to call this routine
@@ -1119,7 +1159,7 @@ void spgpuZgath(spgpuHandle_t handle,
  * \param beta the beta value
  */
 void spgpuZscat(spgpuHandle_t handle,
-	__device cuDoubleComplex* y,
+		__device cuDoubleComplex* y,
 	int xNnz,
 	const __device cuDoubleComplex *xValues,
 	const __device int *xIndices,
@@ -1149,6 +1189,35 @@ void spgpuZmamax(spgpuHandle_t handle,
 	int pitch);	
 	
 /** @}*/
+
+void spgpuSsetscal(spgpuHandle_t handle,
+		   int first,
+		   int last,
+		   int baseIndex,
+		   float val,
+		   __device float *y);
+
+void spgpuDsetscal(spgpuHandle_t handle,
+		   int first,
+		   int last,
+		   int baseIndex,
+		   float val,
+		   __device float *y);
+
+void spgpuCsetscal(spgpuHandle_t handle,
+		   int first,
+		   int last,
+		   int baseIndex,
+		   cuFloatComplex val,
+		   __device cuFloatComplex* y);
+
+void spgpuZsetscal(spgpuHandle_t handle,
+		   int first,
+		   int last,
+		   int baseIndex,
+		   cuDoubleComplex val,
+		   __device cuDoubleComplex* y);
+  
 		
 #ifdef __cplusplus
 }
