@@ -1,6 +1,6 @@
 # Introduction
 
-spGPU is a set of custom matrix storages and CUDA kernels for sparse linear algebra computing on GPU. It isn't a replacement for cuBLAS/cuSPARSE that should be used for a full featured linear algebra environment on GPU.
+**spGPU** is a set of custom matrix storages and CUDA kernels for sparse linear algebra computing on GPU. It isn't a replacement for cuBLAS/cuSPARSE that should be used for a full featured linear algebra environment on GPU.
 
 The main matrix storage used by spGPU is a GPU-friendly ELLpack format, as well as our HELL (Hacked ELLpack) and our HDIA formats, two enhanced versions of ELLpack and DIA with some interesting memory saving properties.
 
