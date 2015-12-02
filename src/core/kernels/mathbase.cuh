@@ -17,7 +17,9 @@ __device__ static float float_abs(float a) { return fabsf(a); }
 __device__ static cuFloatComplex cuFloatComplex_fma(cuFloatComplex a, cuFloatComplex b, cuFloatComplex c) { return cuCfmaf(a, b, c); } 
 __device__ static cuFloatComplex cuFloatComplex_add(cuFloatComplex a, cuFloatComplex b) { return cuCaddf(a, b); }
 __device__ static cuFloatComplex cuFloatComplex_mul(cuFloatComplex a, cuFloatComplex b) { return cuCmulf(a, b); }
-__device__ static float cuFloatComplex_abs(cuFloatComplex a) { return cuCabsf(a); }
+__device__ static cuFloatComplex cuFloatComplex_abs(cuFloatComplex a) { return make_cuFloatComplex(cuCabsf(a),0); }
+
+//__device__ static float cuFloatComplex_abs(cuFloatComplex a) { return cuCabsf(a); }
 
 __device__ static float readValue_float(float fetch) { return fetch; }
 __device__ static cuFloatComplex readValue_cuFloatComplex(cuFloatComplex fetch) { return fetch; }
@@ -37,7 +39,8 @@ __device__ static double double_abs(double a) { return fabs (a); }
 __device__ static cuDoubleComplex cuDoubleComplex_fma(cuDoubleComplex a, cuDoubleComplex b, cuDoubleComplex c) { return cuCfma(a, b, c); }
 __device__ static cuDoubleComplex cuDoubleComplex_add(cuDoubleComplex a, cuDoubleComplex b) { return cuCadd(a, b); }
 __device__ static cuDoubleComplex cuDoubleComplex_mul(cuDoubleComplex a, cuDoubleComplex b) { return cuCmul(a, b); }
-__device__ static double cuDoubleComplex_abs(cuDoubleComplex a) { return cuCabs(a); }
+__device__ static cuDoubleComplex cuDoubleComplex_abs(cuDoubleComplex a) { return make_cuDoubleComplex(cuCabs(a),0); }
+//__device__ static double cuDoubleComplex_abs(cuDoubleComplex a) { return cuCabs(a); }
 
 __device__ static double readValue_double(int2 fetch) { return __hiloint2double (fetch.y, fetch.x); }
 __device__ static cuDoubleComplex readValue_cuDoubleComplex(int4 fetch) 

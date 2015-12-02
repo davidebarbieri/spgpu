@@ -27,7 +27,7 @@ extern "C"
 #include "debug.h"
 
 #define VALUE_TYPE cuFloatComplex
-#define RES_VALUE_TYPE float
+#define RES_VALUE_TYPE cuFloatComplex
 #define TYPE_SYMBOL C
 #include "abs_base.cuh"
 

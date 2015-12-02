@@ -673,9 +673,9 @@ void spgpuCmdot(spgpuHandle_t handle,
  * \param x the input vector
  */
 void spgpuCabs(spgpuHandle_t handle, 
-	__device float* y, 
+	__device cuFloatComplex* y, 
 	int n, 
-	float alpha,
+        cuFloatComplex alpha,
 	__device cuFloatComplex* x);
 	
 /** 
@@ -967,9 +967,9 @@ void spgpuZmdot(spgpuHandle_t handle,
  * \param x the input vector
  */
 void spgpuZabs(spgpuHandle_t handle, 
-	__device double* y, 
+	__device cuDoubleComplex* y, 
 	int n, 
-	double alpha,
+	cuDoubleComplex alpha,
 	__device cuDoubleComplex* x);
 
 /** 
@@ -1208,8 +1208,8 @@ void spgpuDsetscal(spgpuHandle_t handle,
 		   int first,
 		   int last,
 		   int baseIndex,
-		   float val,
-		   __device float *y);
+		   double val,
+		   __device double *y);
 
 void spgpuCsetscal(spgpuHandle_t handle,
 		   int first,

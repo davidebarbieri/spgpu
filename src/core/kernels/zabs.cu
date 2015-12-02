@@ -27,7 +27,7 @@ extern "C"
 #include "debug.h"
 
 #define VALUE_TYPE cuDoubleComplex
-#define RES_VALUE_TYPE double
+#define RES_VALUE_TYPE cuDoubleComplex
 #define TYPE_SYMBOL Z
 #include "abs_base.cuh"
 

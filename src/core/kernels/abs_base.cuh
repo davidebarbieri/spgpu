@@ -30,6 +30,16 @@
 
 #include "mathbase.cuh"
 
+__device__ __host__ static inline bool is_one_float(float x) { return (x==1.0f); }
+__device__ __host__ static inline bool is_one_cuFloatComplex(cuFloatComplex x) { return ((x.x==1.0f)&&(x.y==0.0f));}
+
+
+#if (__CUDA_ARCH__ >= 130) || (!__CUDA_ARCH__)
+__device__ __host__ static inline bool is_one_double(double x) { return (x==1.0); }
+__device__ __host__ static inline bool is_one_cuDoubleComplex(cuDoubleComplex x) { return ((x.x==1.0)&&(x.y==0.0));}
+#endif
+
+
 __global__ void 
 CONCAT(GEN_SPGPU_FUNC_NAME(TYPE_SYMBOL),_kern_alpha)
 	(RES_VALUE_TYPE *y, int n, RES_VALUE_TYPE alpha, VALUE_TYPE* x)
@@ -68,8 +78,9 @@ CONCAT(GEN_SPGPU_FUNC_NAME(TYPE_SYMBOL),_)
 
 	dim3 block(BLOCK_SIZE);
 	dim3 grid(msize);
+	
 
-	if (alpha == 1)
+	if (CONCAT(is_one_,RES_VALUE_TYPE)(alpha))
 		CONCAT(GEN_SPGPU_FUNC_NAME(TYPE_SYMBOL),_kern)<<<grid, block, 0, handle->currentStream>>>(y, n, x);
 	else
 		CONCAT(GEN_SPGPU_FUNC_NAME(TYPE_SYMBOL),_kern_alpha)<<<grid, block, 0, handle->currentStream>>>(y, n, alpha, x);
