@@ -132,12 +132,16 @@ float spgpuCnrm2(spgpuHandle_t handle, int n, __device cuFloatComplex* x)
 #else
 	float res = 0;
 
+#if 0 	
 	int device;
-	cudaGetDevice(&device); 
+	cudaGetDevice(&device);
 	struct cudaDeviceProp prop;
 	cudaGetDeviceProperties(&prop,device);	
 
 	int blocks = min(128, min(prop.multiProcessorCount, (n+BLOCK_SIZE-1)/BLOCK_SIZE));
+#else
+	int blocks = min(128, min(handle->multiProcessorCount, (n+BLOCK_SIZE-1)/BLOCK_SIZE));
+#endif
 	
 	float tRes[128];
 

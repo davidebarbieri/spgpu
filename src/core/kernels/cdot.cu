@@ -121,12 +121,17 @@ cuFloatComplex spgpuCdot(spgpuHandle_t handle, int n, __device cuFloatComplex* a
 #else
 	cuFloatComplex res = make_cuFloatComplex(0.0f, 0.0f);
 
+#if 0 	
 	int device;
-	cudaGetDevice(&device); 
+	cudaGetDevice(&device);
 	struct cudaDeviceProp prop;
 	cudaGetDeviceProperties(&prop,device);	
 
 	int blocks = min(128, min(prop.multiProcessorCount, (n+BLOCK_SIZE-1)/BLOCK_SIZE));
+#else
+	int blocks = min(128, min(handle->multiProcessorCount, (n+BLOCK_SIZE-1)/BLOCK_SIZE));
+#endif
+
 	
 	cuFloatComplex tRes[128];
 

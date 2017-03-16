@@ -35,6 +35,7 @@ spgpuStatus_t spgpuCreate(spgpuHandle_t* pHandle, int device)
 	handle->device = device;
 	handle->warpSize = deviceProperties.warpSize;
 	handle->maxThreadsPerBlock = deviceProperties.maxThreadsPerBlock;
+	handle->multiProcessorCount = deviceProperties.multiProcessorCount;
 	handle->maxGridSizeX = deviceProperties.maxGridSize[0];
 	handle->maxGridSizeY = deviceProperties.maxGridSize[1];
 	handle->maxGridSizeZ = deviceProperties.maxGridSize[2];

@@ -98,6 +98,8 @@ typedef struct spgpuHandleStruct {
 	int maxGridSizeY;
 	/// the max size for the Z coordinate of the grid dimensions
 	int maxGridSizeZ;
+        /// Number of SM
+        int multiProcessorCount;
 	// compute capability
 	int capabilityMajor;
 	int capabilityMinor;

@@ -201,12 +201,16 @@ GEN_SPGPU_ASUM_NAME(TYPE_SYMBOL)
 #else
 	CONCAT(absType_,VALUE_TYPE) res = 0;
 
+#if 0 	
 	int device;
-	cudaGetDevice(&device); 
+	cudaGetDevice(&device);
 	struct cudaDeviceProp prop;
 	cudaGetDeviceProperties(&prop,device);	
 
 	int blocks = min(128, min(prop.multiProcessorCount, (n+BLOCK_SIZE-1)/BLOCK_SIZE));
+#else
+	int blocks = min(128, min(handle->multiProcessorCount, (n+BLOCK_SIZE-1)/BLOCK_SIZE));
+#endif
 	
 	CONCAT(absType_,VALUE_TYPE) tRes[128];
 

@@ -138,12 +138,16 @@ float spgpuSdot(spgpuHandle_t handle, int n, __device float* a, __device float* 
 #else
 	float res = 0;
 
+#if 0 	
 	int device;
-	cudaGetDevice(&device); 
+	cudaGetDevice(&device);
 	struct cudaDeviceProp prop;
 	cudaGetDeviceProperties(&prop,device);	
 
 	int blocks = min(128, min(prop.multiProcessorCount, (n+BLOCK_SIZE-1)/BLOCK_SIZE));
+#else
+	int blocks = min(128, min(handle->multiProcessorCount, (n+BLOCK_SIZE-1)/BLOCK_SIZE));
+#endif
 	
 	float tRes[128];
 	spgpuSdot_kern<<<blocks, (BLOCK_SIZE), 0, handle->currentStream>>>(n, a, b);
