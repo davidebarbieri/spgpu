@@ -42,10 +42,14 @@ CONCAT(GEN_SPGPU_HELL_NAME(TYPE_SYMBOL), _ridx_2)
               		warpHackOffset[warpId] = hackOffsets[hackId];
 
         	hackOffset = warpHackOffset[warpId] + hackLaneId;
-#else
+#elif __CUDA_ARCH__ < 700
      		if (laneId == 0)
                 	hackOffset = hackOffsets[hackId];
         	hackOffset = __shfl(hackOffset, 0) + hackLaneId;
+#else
+     		if (laneId == 0)
+                	hackOffset = hackOffsets[hackId];
+        	hackOffset = __shfl_sync(0xFFFFFFFF,hackOffset, 0) + hackLaneId;		
 #endif
 
 		rP += hackOffset; 
@@ -139,10 +143,14 @@ CONCAT(GEN_SPGPU_HELL_NAME(TYPE_SYMBOL), _ridx)
               		warpHackOffset[warpId] = hackOffsets[hackId];
 
         	hackOffset = warpHackOffset[warpId] + hackLaneId;
-#else
+#elif __CUDA_ARCH__ < 700
      		if (laneId == 0)
                 	hackOffset = hackOffsets[hackId];
         	hackOffset = __shfl(hackOffset, 0) + hackLaneId;
+#else
+     		if (laneId == 0)
+                	hackOffset = hackOffsets[hackId];
+        	hackOffset = __shfl_sync(0xFFFFFFFF,hackOffset, 0) + hackLaneId;		
 #endif
 
 		rP += hackOffset; 

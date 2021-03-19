@@ -57,7 +57,7 @@ CONCAT(GEN_SPGPU_HDIA_NAME(TYPE_SYMBOL), _)
 	hackOffset = warpHackOffset[warpId];
 	nextOffset = warpHackOffset[warpId + blockDim.x / warpSize];
 	__syncthreads();
-#else
+#elif __CUDA_ARCH__ < 700
 	if (laneId == 0 && i < rows)
 	{
 		hackOffset = hackOffsets[hackId];
@@ -66,6 +66,16 @@ CONCAT(GEN_SPGPU_HDIA_NAME(TYPE_SYMBOL), _)
 	
 	hackOffset = __shfl(hackOffset, 0);	
 	nextOffset = __shfl(nextOffset, 0);
+#else
+	if (laneId == 0 && i < rows)
+	{
+		hackOffset = hackOffsets[hackId];
+		nextOffset = hackOffsets[hackId+1];
+	}
+	
+	hackOffset = __shfl_sync(0xFFFFFFFF,hackOffset, 0);	
+	nextOffset = __shfl_sync(0xFFFFFFFF,nextOffset, 0);
+	
 #endif
 	
 	if (hackId >= hackCount)
