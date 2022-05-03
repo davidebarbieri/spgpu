@@ -1,6 +1,6 @@
 /*
  * spGPU - Sparse matrices on GPU library.
- * 
+ *  
  * Copyright (C) 2010 - 2015
  *     Davide Barbieri - University of Rome Tor Vergata
  *
@@ -126,27 +126,31 @@ GEN_SPGPU_HELL_NAME(TYPE_SYMBOL)
 
 	while (rows > maxNForACall) //managing large vectors
 	{
-		if (avgNnzPerRow < 10 && handle->capabilityMajor > 1)
-			CONCAT(_,GEN_SPGPU_HELL_NAME_VANILLA(TYPE_SYMBOL)) (handle, z, y, alpha, cM, rP, hackSize, hackOffsets, rS, rIdx, avgNnzPerRow, maxNForACall, x, beta, baseIndex);
-		else if (avgNnzPerRow < 20)
-			CONCAT(_,GEN_SPGPU_HELL_NAME_TEX(TYPE_SYMBOL)) (handle, z, y, alpha, cM, rP, hackSize, hackOffsets, rS, rIdx, avgNnzPerRow, maxNForACall, x, beta, baseIndex);
-		else
-			CONCAT(_,GEN_SPGPU_HELL_NAME_TEX_PREFETCH(TYPE_SYMBOL)) (handle, z, y, alpha, cM, rP, hackSize, hackOffsets, rS, rIdx, avgNnzPerRow, maxNForACall, x, beta, baseIndex);
-
-		y = y + maxNForACall;
-		z = z + maxNForACall;
-		hackOffsets = hackOffsets + maxNForACall/hackSize;
-		rS = rS + maxNForACall;
-		
-		rows -= maxNForACall;
+	  
+	  CONCAT(_,GEN_SPGPU_HELL_NAME_VANILLA(TYPE_SYMBOL)) (handle, z, y, alpha, cM, rP, hackSize, hackOffsets, rS, rIdx, avgNnzPerRow, maxNForACall, x, beta, baseIndex);
+	  /* if (avgNnzPerRow < 10 && handle->capabilityMajor > 1) */
+		/* 	CONCAT(_,GEN_SPGPU_HELL_NAME_VANILLA(TYPE_SYMBOL)) (handle, z, y, alpha, cM, rP, hackSize, hackOffsets, rS, rIdx, avgNnzPerRow, maxNForACall, x, beta, baseIndex); */
+		/* else if (avgNnzPerRow < 20) */
+		/* 	CONCAT(_,GEN_SPGPU_HELL_NAME_TEX(TYPE_SYMBOL)) (handle, z, y, alpha, cM, rP, hackSize, hackOffsets, rS, rIdx, avgNnzPerRow, maxNForACall, x, beta, baseIndex); */
+		/* else */
+		/* 	CONCAT(_,GEN_SPGPU_HELL_NAME_TEX_PREFETCH(TYPE_SYMBOL)) (handle, z, y, alpha, cM, rP, hackSize, hackOffsets, rS, rIdx, avgNnzPerRow, maxNForACall, x, beta, baseIndex); */
+	  
+	  y = y + maxNForACall;
+	  z = z + maxNForACall;
+	  hackOffsets = hackOffsets + maxNForACall/hackSize;
+	  rS = rS + maxNForACall;
+	  
+	  rows -= maxNForACall;
 	}
 	
-	if (avgNnzPerRow < 10 && handle->capabilityMajor > 1)
-		CONCAT(_,GEN_SPGPU_HELL_NAME_VANILLA(TYPE_SYMBOL)) (handle, z, y, alpha, cM, rP, hackSize, hackOffsets, rS, rIdx, avgNnzPerRow, rows, x, beta, baseIndex);
-	else if (avgNnzPerRow < 20)
-		CONCAT(_,GEN_SPGPU_HELL_NAME_TEX(TYPE_SYMBOL)) (handle, z, y, alpha, cM, rP, hackSize, hackOffsets, rS, rIdx, avgNnzPerRow, rows, x, beta, baseIndex);
-	else
-		CONCAT(_,GEN_SPGPU_HELL_NAME_TEX_PREFETCH(TYPE_SYMBOL)) (handle, z, y, alpha, cM, rP, hackSize, hackOffsets, rS, rIdx, avgNnzPerRow, rows, x, beta, baseIndex);
+	CONCAT(_,GEN_SPGPU_HELL_NAME_VANILLA(TYPE_SYMBOL)) (handle, z, y, alpha, cM, rP, hackSize, hackOffsets, rS, rIdx, avgNnzPerRow, rows, x, beta, baseIndex);
+
+	/* if (avgNnzPerRow < 10 && handle->capabilityMajor > 1) */
+	/* 	CONCAT(_,GEN_SPGPU_HELL_NAME_VANILLA(TYPE_SYMBOL)) (handle, z, y, alpha, cM, rP, hackSize, hackOffsets, rS, rIdx, avgNnzPerRow, rows, x, beta, baseIndex); */
+	/* else if (avgNnzPerRow < 20) */
+	/* 	CONCAT(_,GEN_SPGPU_HELL_NAME_TEX(TYPE_SYMBOL)) (handle, z, y, alpha, cM, rP, hackSize, hackOffsets, rS, rIdx, avgNnzPerRow, rows, x, beta, baseIndex); */
+	/* else */
+	/* 	CONCAT(_,GEN_SPGPU_HELL_NAME_TEX_PREFETCH(TYPE_SYMBOL)) (handle, z, y, alpha, cM, rP, hackSize, hackOffsets, rS, rIdx, avgNnzPerRow, rows, x, beta, baseIndex); */
 	
 	cudaCheckError("CUDA error on hell_spmv");
 }
