@@ -1,4 +1,4 @@
-/*
+/* 
  * spGPU - Sparse matrices on GPU library.
  * 
  * Copyright (C) 2010 - 2015

@@ -141,10 +141,24 @@ cuda_include_directories (${GLOBAL_INCLUDES})
 link_directories (${GLOBAL_LIBRARIES}) 
 IF (CUDA_VERSION_MAJOR LESS 7)
 set(GENCODE -gencode=arch=compute_13,code=sm_13 -gencode=arch=compute_20,code=sm_20 -gencode=arch=compute_30,code=sm_30 -gencode=arch=compute_50,code=sm_50 )
-set(GENCODE_DOUBLE -gencode=arch=compute_13,code=sm_13 -gencode=arch=compute_20,code=sm_20 -gencode=arch=compute_30,code=sm_30 -gencode=arch=compute_50,code=sm_50)
-ELSE (CUDA_VERSION_MAJOR LESS 7)
-set(GENCODE  -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_75,code=sm_75 )
-set(GENCODE_DOUBLE -gencode=arch=compute_50,code=sm_50  -gencode=arch=compute_75,code=sm_75 )
+set(GENCODE_DOUBLE -gencode=arch=compute_13,code=sm_13
+-gencode=arch=compute_20,code=sm_20
+-gencode=arch=compute_30,code=sm_30
+-gencode=arch=compute_50,code=sm_50)
+ELSEIF (CUDA_VERSION_MAJOR LESS 11)
+set(GENCODE -gencode=arch=compute_30,code=sm_30
+-gencode=arch=compute_35,code=sm_35
+-gencode=arch=compute_50,code=sm_50 ) 
+set(GENCODE_DOUBLE -gencode=arch=compute_30,code=sm_30
+-gencode=arch=compute_35,code=sm_35
+-gencode=arch=compute_50,code=sm_50)
+ELSE (CUDA_VERSION_MAJOR LESS 11)
+set(GENCODE  -gencode=arch=compute_60,code=sm_60
+-gencode=arch=compute_70,code=sm_70
+-gencode=arch=compute_75,code=sm_75 ) 
+set(GENCODE_DOUBLE -gencode=arch=compute_60,code=sm_60
+-gencode=arch=compute_70,code=sm_70
+-gencode=arch=compute_75,code=sm_75 ) 
 ENDIF (CUDA_VERSION_MAJOR LESS 7)
 
 #set(ADDITIONAL_CUDA_OPTIONS -DDEBUG -G)
