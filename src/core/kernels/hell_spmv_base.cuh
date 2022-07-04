@@ -81,6 +81,7 @@ extern __shared__ int dynShrMem[];
 #define GEN_SPGPU_HELL_NAME(x) CONCAT(CONCAT(spgpu,x),hellspmv_vanilla)
 #define GEN_SPGPU_HELL_NAME_VANILLA(x) CONCAT(CONCAT(spgpu,x),hellspmv_vanilla)
 #include "hell_spmv_base_template.cuh"
+#if 0
 #undef GEN_SPGPU_HELL_NAME
 #define GEN_SPGPU_HELL_NAME(x) CONCAT(CONCAT(spgpu,x),hellspmv_prefetch)
 #define GEN_SPGPU_HELL_NAME_PREFETCH(x) CONCAT(CONCAT(spgpu,x),hellspmv_prefetch)
@@ -97,6 +98,7 @@ extern __shared__ int dynShrMem[];
 #define GEN_SPGPU_HELL_NAME(x) CONCAT(CONCAT(spgpu,x),hellspmv_texcache)
 #define GEN_SPGPU_HELL_NAME_TEX(x) CONCAT(CONCAT(spgpu,x),hellspmv_texcache)
 #include "hell_spmv_base_template.cuh"
+#endif
 #undef GEN_SPGPU_HELL_NAME
 #define GEN_SPGPU_HELL_NAME(x) CONCAT(CONCAT(spgpu,x),hellspmv)
 
@@ -123,7 +125,8 @@ GEN_SPGPU_HELL_NAME(TYPE_SYMBOL)
 
 	// maxNForACall should be a multiple of hackSize
 	maxNForACall = (maxNForACall/hackSize)*hackSize;
-
+	//fprintf(stderr,"Entering kernel  %d maxNForACall\n",maxNForACall);
+	
 	while (rows > maxNForACall) //managing large vectors
 	{
 	  
@@ -142,9 +145,9 @@ GEN_SPGPU_HELL_NAME(TYPE_SYMBOL)
 	  
 	  rows -= maxNForACall;
 	}
-	
+	//fprintf(stderr,"Calling kernel on %d rows\n",rows);
 	CONCAT(_,GEN_SPGPU_HELL_NAME_VANILLA(TYPE_SYMBOL)) (handle, z, y, alpha, cM, rP, hackSize, hackOffsets, rS, rIdx, avgNnzPerRow, rows, x, beta, baseIndex);
-
+	//fprintf(stderr,"Done kernel on %d rows\n",rows);
 	/* if (avgNnzPerRow < 10 && handle->capabilityMajor > 1) */
 	/* 	CONCAT(_,GEN_SPGPU_HELL_NAME_VANILLA(TYPE_SYMBOL)) (handle, z, y, alpha, cM, rP, hackSize, hackOffsets, rS, rIdx, avgNnzPerRow, rows, x, beta, baseIndex); */
 	/* else if (avgNnzPerRow < 20) */
