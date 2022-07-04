@@ -13,7 +13,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
-#undef IDX2
+#define IDX2
 #define THREAD_BLOCK 128
 
 __device__ void
@@ -25,81 +25,78 @@ CONCAT(GEN_SPGPU_HELL_NAME(TYPE_SYMBOL), _ridx_2)
   
   __shared__ VALUE_TYPE temp[THREAD_BLOCK];
   
-  if (i < rows)
-    {
-      int hackId = i / hackSize;
-      int hackLaneId = i % hackSize;
-      
-      int hackOffset;
-      unsigned int laneId = threadIdx.x % 32;
+  if (i < rows) {
+    int hackId = i / hackSize;
+    int hackLaneId = i % hackSize;
+    
+    int hackOffset;
+    unsigned int laneId = threadIdx.x % 32;
 #if __CUDA_ARCH__ < 300
-      // "volatile" used to avoid __syncthreads()
-      volatile int* warpHackOffset = dynShrMem;
-      
-      unsigned int warpId = threadIdx.x / 32;
-      
-      if (laneId == 0)
-	warpHackOffset[warpId] = hackOffsets[hackId];
-      
-      hackOffset = warpHackOffset[warpId] + hackLaneId;
+    // "volatile" used to avoid __syncthreads()
+    volatile int* warpHackOffset = dynShrMem;
+    
+    unsigned int warpId = threadIdx.x / 32;
+    
+    if (laneId == 0)
+      warpHackOffset[warpId] = hackOffsets[hackId];
+    
+    hackOffset = warpHackOffset[warpId] + hackLaneId;
 #elif __CUDA_ARCH__ < 700
-      if (laneId == 0)
-	hackOffset = hackOffsets[hackId];
-      //__syncthreads();
-      hackOffset = __shfl(hackOffset, 0) + hackLaneId;
+    if (laneId == 0)
+      hackOffset = hackOffsets[hackId];
+    //__syncthreads();
+    hackOffset = __shfl(hackOffset, 0) + hackLaneId;
 #else
-      if (laneId == 0)
-	hackOffset = hackOffsets[hackId];
-      //__syncthreads();
-      hackOffset = __shfl_sync(0xFFFFFFFF,hackOffset, 0) + hackLaneId;		
+    if (laneId == 0)
+      hackOffset = hackOffsets[hackId];
+    //__syncthreads();
+    hackOffset = __shfl_sync(0xFFFFFFFF,hackOffset, 0) + hackLaneId;		
 #endif
-      
-      rP += hackOffset; 
-      cM += hackOffset; 
-      
-      int rowSize = rS[i]; 
-      int rowSizeM = rowSize / 2;
-      
-      if (threadIdx.y == 0) {
-	  if (rowSize % 2)
-	    ++rowSizeM;
-      } else {
-	rP += hackSize; 
-	cM += hackSize;
-      }
-      
-		
-      for (int j = 0; j < rowSizeM; j++) {
-	int pointer;
-	VALUE_TYPE value;
-	VALUE_TYPE fetch;
-	
-	pointer = rP[0] - baseIndex;
-	rP += hackSize; 
-	rP += hackSize;
-	
-	value = cM[0];
-	cM += hackSize;
-	cM += hackSize;
-	
-#ifdef ENABLE_CACHE
-	fetch = fetchTex(pointer);
-#else
-	fetch = x[pointer];
-#endif	
-	
-	// avoid MAD on pre-Fermi
-	zProd = CONCAT(VALUE_TYPE, _fma)(value, fetch, zProd);
-      }
-      
-      // Reduction
-      if (threadIdx.y == 1)
-	temp[threadIdx.x] = zProd;
+    
+    rP += hackOffset; 
+    cM += hackOffset; 
+    
+    int rowSize = rS[i]; 
+    int rowSizeM = rowSize / 2;
+    
+    if (threadIdx.y == 0) {
+      if (rowSize % 2)
+	++rowSizeM;
+    } else {
+      rP += hackSize; 
+      cM += hackSize;
     }
-  
-  __syncthreads();
-  
-  if (i < rows)	{
+    
+    
+    for (int j = 0; j < rowSizeM; j++) {
+      int pointer;
+      VALUE_TYPE value;
+      VALUE_TYPE fetch;
+      
+      pointer = rP[0] - baseIndex;
+      rP += hackSize; 
+      rP += hackSize;
+      
+      value = cM[0];
+      cM += hackSize;
+      cM += hackSize;
+      
+#ifdef ENABLE_CACHE
+      fetch = fetchTex(pointer);
+#else
+      fetch = x[pointer];
+#endif	
+      
+      // avoid MAD on pre-Fermi
+      zProd = CONCAT(VALUE_TYPE, _fma)(value, fetch, zProd);
+    }
+    
+    // Reduction
+    if (threadIdx.y == 1)
+      temp[threadIdx.x] = zProd;
+    
+    __syncthreads();
+    
     if (threadIdx.y == 0)     {
       zProd = CONCAT(VALUE_TYPE, _add)(zProd, temp[threadIdx.x]);
       // Since z and y are accessed with the same offset by the same thread,
@@ -323,19 +320,15 @@ CONCAT(_,GEN_SPGPU_HELL_NAME(TYPE_SYMBOL))
   dim3 block (THREAD_BLOCK, avgNnzPerRow >= avgThreshold ? 2 : 1);
 #endif
 #else
-    dim3 block (THREAD_BLOCK, 1);
+  dim3 block (THREAD_BLOCK, 1);
 #endif
-  fprintf(stderr,"avgNnzPerRow %d  thresh %d\n",avgNnzPerRow, avgThreshold);
   dim3 grid ((rows + THREAD_BLOCK - 1) / THREAD_BLOCK);
-  
-  int shrMemSize;
-  if (handle->capabilityMajor < 3) {
-    int warpsPerBlock = THREAD_BLOCK/handle->warpSize;
-    shrMemSize = warpsPerBlock*sizeof(int);
-  } else {
-    shrMemSize = 0;
-  }
 
+  // Should we generalize the code to 1/2/4/8 threads per row?
+  // And maybe adjust THREAD_BLOCK size? 
+  int shrMemSize;
+  shrMemSize=THREAD_BLOCK*sizeof(VALUE_TYPE);
+  
 #ifdef ENABLE_CACHE
   bind_tex_x ((const TEX_FETCH_TYPE *) x);
 #endif

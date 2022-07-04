@@ -81,7 +81,6 @@ extern __shared__ int dynShrMem[];
 #define GEN_SPGPU_HELL_NAME(x) CONCAT(CONCAT(spgpu,x),hellspmv_vanilla)
 #define GEN_SPGPU_HELL_NAME_VANILLA(x) CONCAT(CONCAT(spgpu,x),hellspmv_vanilla)
 #include "hell_spmv_base_template.cuh"
-#if 0
 #undef GEN_SPGPU_HELL_NAME
 #define GEN_SPGPU_HELL_NAME(x) CONCAT(CONCAT(spgpu,x),hellspmv_prefetch)
 #define GEN_SPGPU_HELL_NAME_PREFETCH(x) CONCAT(CONCAT(spgpu,x),hellspmv_prefetch)
@@ -98,7 +97,6 @@ extern __shared__ int dynShrMem[];
 #define GEN_SPGPU_HELL_NAME(x) CONCAT(CONCAT(spgpu,x),hellspmv_texcache)
 #define GEN_SPGPU_HELL_NAME_TEX(x) CONCAT(CONCAT(spgpu,x),hellspmv_texcache)
 #include "hell_spmv_base_template.cuh"
-#endif
 #undef GEN_SPGPU_HELL_NAME
 #define GEN_SPGPU_HELL_NAME(x) CONCAT(CONCAT(spgpu,x),hellspmv)
 
