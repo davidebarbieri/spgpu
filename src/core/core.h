@@ -2,18 +2,8 @@
 
 /*
  * spGPU - Sparse matrices on GPU library.
- * 
- * Copyright (C) 2010 - 2013
- *     Davide Barbieri - University of Rome Tor Vergata
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * version 3 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * Copyright (C) 2010-2015 Davide Barbieri - University of Rome Tor Vergata
+ * SPDX-License-Identifier: BSD-3-Clause
  */
 
 
@@ -30,20 +20,6 @@
  * cd spgpu/build/cmake\n
  * sh configure.sh\n
  * make
- * \section cr_sec Copyright
- * Copyright (C) 2010 - 2013\n
- *     Davide Barbieri - University of Rome Tor Vergata\n
- *     Valeria Cardellini - University of Rome Tor Vergata\n
- *     Salvatore Filippone - University of Rome Tor Vergata
- *
- * This program is free software; you can redistribute it and/or\n
- * modify it under the terms of the GNU General Public License\n
- * version 3 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,\n
- * but WITHOUT ANY WARRANTY; without even the implied warranty of\n
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n
- * GNU General Public License for more details.
  */
 
  
